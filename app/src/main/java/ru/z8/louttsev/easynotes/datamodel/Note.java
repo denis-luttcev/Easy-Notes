@@ -1,19 +1,15 @@
-package ru.z8.louttsev.easynotes.DataModel;
-
-import android.content.Context;
-import android.view.View;
+package ru.z8.louttsev.easynotes.datamodel;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.Calendar;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
-abstract class Note {
+abstract class Note implements ContentContainer, Comparable<Note> {
 
     enum Color {
         RED, ORANGE, YELLOW, GREEN, BLUE, NONE
@@ -41,25 +37,22 @@ abstract class Note {
         updateLastModification();
     }
 
-    class BaseComparator implements Comparator<Note> {
-        @Override
-        public int compare(@NonNull Note note, @NonNull Note anotherNote) {
-            if (note.equals(anotherNote)) return 0;
+    @Override
+    public int compareTo(@NonNull Note note) {
+        if (this.equals(note)) return 0;
 
+        if (deadline != null) {
             if (note.deadline != null) {
-                if (anotherNote.deadline != null) {
-                    int deadlineComparing =
-                            note.deadline.compareTo(anotherNote.deadline);
-                    if (deadlineComparing != 0) {
-                        return deadlineComparing;
-                    }
-                } else return 1;
-            } else {
-                if (anotherNote.deadline != null) return -1;
-            }
-
-            return note.lastModification.compareTo(anotherNote.lastModification);
+                int deadlineComparing = deadline.compareTo(note.deadline);
+                if (deadlineComparing != 0) {
+                    return deadlineComparing;
+                }
+            } else return 1;
+        } else {
+            if (note.deadline != null) return -1;
         }
+
+        return lastModification.compareTo(note.lastModification);
     }
 
     private void updateLastModification() {
@@ -216,12 +209,4 @@ abstract class Note {
     public int hashCode() {
         return Objects.hash(id);
     }
-
-    @NonNull
-    abstract View getContentPreview(@NonNull Context context);
-
-    @NonNull
-    abstract View getContentView(@NonNull Context context);
-
-    abstract void createContent(@NonNull Object content);
 }

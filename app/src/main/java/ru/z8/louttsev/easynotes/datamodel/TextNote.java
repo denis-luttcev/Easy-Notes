@@ -1,4 +1,4 @@
-package ru.z8.louttsev.easynotes.DataModel;
+package ru.z8.louttsev.easynotes.datamodel;
 
 import android.content.Context;
 import android.text.TextUtils;
@@ -10,7 +10,7 @@ import androidx.annotation.NonNull;
 
 import ru.z8.louttsev.easynotes.GlobalSettings;
 
-class TextNote extends Note implements Editable {
+class TextNote extends Note {
     @NonNull
     private String content;
 
@@ -21,7 +21,7 @@ class TextNote extends Note implements Editable {
 
     @NonNull
     @Override
-    View getContentPreview(@NonNull Context context) {
+    public View getContentPreview(@NonNull Context context) {
         TextView contentPreview = new TextView(context);
         contentPreview.setText(content);
         contentPreview.setMaxLines(GlobalSettings.MAX_LINES_IN_PREVIEW);
@@ -31,15 +31,10 @@ class TextNote extends Note implements Editable {
 
     @NonNull
     @Override
-    View getContentView(@NonNull Context context) {
+    public View getContentView(@NonNull Context context) {
         EditText contentView = new EditText(context);
         contentView.setText(content);
         return contentView;
-    }
-
-    @Override
-    void createContent(@NonNull Object content) {
-        setContent(content);
     }
 
     @Override
