@@ -4,17 +4,17 @@ import androidx.annotation.NonNull;
 
 import java.util.Objects;
 
-class Category {
+public class Category {
     private String title;
 
-    Category(@NonNull String title) {
+    public Category(@NonNull String title) throws IllegalArgumentException {
         if (!title.trim().isEmpty()) {
             this.title = title;
-        }
+        } else throw new IllegalArgumentException();
     }
 
     @NonNull
-    String getTitle() {
+    public String getTitle() {
         return title;
     }
 

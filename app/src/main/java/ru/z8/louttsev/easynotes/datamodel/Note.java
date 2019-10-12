@@ -1,5 +1,7 @@
 package ru.z8.louttsev.easynotes.datamodel;
 
+import android.view.View;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -9,13 +11,13 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
-abstract class Note implements ContentContainer, Comparable<Note> {
+public abstract class Note implements Comparable<Note> {
 
-    enum Color {
+    public enum Color {
         RED, ORANGE, YELLOW, GREEN, BLUE, NONE
     }
 
-    enum DeadlineStatus {
+    public enum DeadlineStatus {
         OVERDUE, IMMEDIATE, AHEAD, NONE
     }
 
@@ -27,14 +29,14 @@ abstract class Note implements ContentContainer, Comparable<Note> {
     private Calendar deadline;
     private Calendar lastModification;
 
-    Note() {
+    public Note() {
         id = UUID.randomUUID();
         title = null;
         category = null;
         color = Color.NONE;
         tags = new HashSet<>();
         deadline = null;
-        updateLastModification();
+        modificationUpdate();
     }
 
     @Override
@@ -47,135 +49,139 @@ abstract class Note implements ContentContainer, Comparable<Note> {
                 if (deadlineComparing != 0) {
                     return deadlineComparing;
                 }
-            } else return 1;
+            } else return -1;
         } else {
-            if (note.deadline != null) return -1;
+            if (note.deadline != null) return 1;
         }
 
-        return lastModification.compareTo(note.lastModification);
+        return note.lastModification.compareTo(lastModification);
     }
 
-    private void updateLastModification() {
+    private void modificationUpdate() {
         lastModification = Calendar.getInstance();
     }
 
     @NonNull
-    UUID getId() {
+    public UUID getId() {
         return id;
     }
 
     @Nullable
-    String getTitle() {
+    public String getTitle() {
         return title;
     }
 
-    void setTitle(@NonNull String title) {
-        if (!title.trim().isEmpty()) {
+    public void setTitle(@Nullable String title) {
+        if (title != null && !title.trim().isEmpty()) {
             this.title = title;
-            updateLastModification();
         } else {
             this.title = null;
         }
+        modificationUpdate();
     }
 
-    void clearTitle() {
-        title = null;
-        updateLastModification();
+    public boolean hasTitle(@NonNull String title) {
+        if (isTitled()) {
+            return this.title.equals(title);
+        }
+        return false;
     }
 
-    boolean hasTitle(@NonNull String title) throws NullPointerException {
-        return this.title.equals(title);
-    }
-
-    boolean isTitled() {
+    public boolean isTitled() {
         return title != null;
     }
 
     @Nullable
-    Category getCategory() {
+    public Category getCategory() {
         return category;
     }
 
-    void setCategory(@Nullable Category category) {
+    public void setCategory(@Nullable Category category) {
         this.category = category;
-        updateLastModification();
+        modificationUpdate();
     }
 
-    boolean hasCategory(@NonNull Category category) throws NullPointerException {
-        return this.category.equals(category);
+    public boolean hasCategory(@NonNull Category category) {
+        if (isCategorized()) {
+            return this.category.equals(category);
+        }
+        return false;
     }
 
-    boolean isCategorized() {
+    public boolean isCategorized() {
         return category != null;
     }
 
     @NonNull
-    Color getColor() {
+    public Color getColor() {
         return color;
     }
 
-    void setColor(@NonNull Color color) {
+    public void setColor(@NonNull Color color) {
         this.color = color;
-        updateLastModification();
+        modificationUpdate();
     }
 
-    boolean hasColor(@NonNull Color color) {
+    public boolean hasColor(@NonNull Color color) {
         return this.color == color;
     }
 
-    boolean isColored() {
+    public boolean isColored() {
         return color != Color.NONE;
     }
 
-    @NonNull
-    Set<Tag> getTags() {
-        return tags;
+    @Nullable
+    public Set<Tag> getTags() {
+        if (isTagged()) {
+            return tags;
+        }
+        return null;
     }
 
-    void addTag(@NonNull Tag tag) {
+    public void markTag(@NonNull Tag tag) {
         tags.add(tag);
-        updateLastModification();
+        modificationUpdate();
     }
 
-    void removeTag(@NonNull Tag tag) {
+    public void unmarkTag(@NonNull Tag tag) {
         if (hasTag(tag)) {
             tags.remove(tag);
-            updateLastModification();
+            modificationUpdate();
         }
     }
 
-    boolean hasTag (@NonNull Tag tag) {
+    public boolean hasTag(@NonNull Tag tag) {
         return tags.contains(tag);
     }
 
-    boolean isTagged() {
+    public boolean isTagged() {
         return !tags.isEmpty();
     }
 
     @Nullable
-    Calendar getDeadline() {
+    public Calendar getDeadline() {
         return deadline;
     }
 
-    void setDeadline(@Nullable Calendar deadline) {
+    public void setDeadline(@Nullable Calendar deadline) {
         this.deadline = deadline;
-        updateLastModification();
+        modificationUpdate();
     }
 
-    boolean isOverdue(@NonNull Calendar toDate) throws NullPointerException {
+    public boolean isOverdue(@NonNull Calendar toDate) throws NullPointerException {
         return deadline.before(toDate);
     }
 
-    boolean isImmediate(@NonNull Calendar toDate) throws NullPointerException {
+    public boolean isImmediate(@NonNull Calendar toDate) throws NullPointerException {
         return deadline.equals(toDate);
     }
 
-    boolean isAhead(@NonNull Calendar toDate) throws NullPointerException {
+    public boolean isAhead(@NonNull Calendar toDate) throws NullPointerException {
         return deadline.after(toDate);
     }
 
     @NonNull
-    DeadlineStatus getDeadlineStatus(@NonNull Calendar toDate) {
+    public DeadlineStatus getDeadlineStatus(@NonNull Calendar toDate) {
         try {
             if (isOverdue(toDate)) return DeadlineStatus.OVERDUE;
             if (isImmediate(toDate)) return DeadlineStatus.IMMEDIATE;
@@ -184,16 +190,16 @@ abstract class Note implements ContentContainer, Comparable<Note> {
         return DeadlineStatus.NONE;
     }
 
-    boolean isDeadlined() {
+    public boolean isDeadlined() {
         return deadline != null;
     }
 
     @NonNull
-    Calendar getLastModification() {
+    public Calendar getLastModification() {
         return lastModification;
     }
 
-    boolean isModified(@NonNull Calendar toDate) {
+    public boolean isModified(@NonNull Calendar toDate) {
         return lastModification.after(toDate);
     }
 
@@ -209,4 +215,14 @@ abstract class Note implements ContentContainer, Comparable<Note> {
     public int hashCode() {
         return Objects.hash(id);
     }
+
+    public abstract boolean isEditable();
+
+    @NonNull
+    public abstract View fillContentPreView(@NonNull View contentPreView);
+
+    @NonNull
+    public abstract View fillContentView(@NonNull View contentView);
+
+    public abstract void setContent(@NonNull Object content);
 }

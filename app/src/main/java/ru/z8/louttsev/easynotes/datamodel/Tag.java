@@ -4,17 +4,17 @@ import androidx.annotation.NonNull;
 
 import java.util.Objects;
 
-class Tag {
+public class Tag {
     private String title;
 
-    Tag(@NonNull String title) {
+    public Tag(@NonNull String title) throws IllegalArgumentException {
         if (!title.trim().isEmpty()) {
             this.title = title;
-        }
+        } else throw new IllegalArgumentException();
     }
 
     @NonNull
-    String getTitle() {
+    public String getTitle() {
         return title;
     }
 
