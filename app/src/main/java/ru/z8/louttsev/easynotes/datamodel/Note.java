@@ -1,6 +1,8 @@
 package ru.z8.louttsev.easynotes.datamodel;
 
+import android.content.Context;
 import android.view.View;
+import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -219,10 +221,13 @@ public abstract class Note implements Comparable<Note> {
     public abstract boolean isEditable();
 
     @NonNull
-    public abstract View fillContentPreView(@NonNull View contentPreView);
+    public abstract void fillContentPreView(@NonNull FrameLayout contentPreView, Context context);
 
     @NonNull
-    public abstract View fillContentView(@NonNull View contentView);
+    public abstract View getContentView(@NonNull Context context);
 
-    public abstract void setContent(@NonNull Object content);
+    public abstract void setContent(@NonNull View contentView);
+
+    //TODO: remove
+    public abstract void setContent(String content);
 }

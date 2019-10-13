@@ -3,30 +3,28 @@ package ru.z8.louttsev.easynotes.datamodel;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
-import java.util.SortedMap;
-import java.util.TreeMap;
 import java.util.UUID;
 
 public class NotesRepository implements NotesKeeper {
     private Set<Category> categories;
     private Set<Tag> tags;
-    private SortedMap<UUID, Note> notes;
+    private List<Note> notes;
 
     public NotesRepository() {
         this.categories = new HashSet<>();
         this.tags = new HashSet<>();
-        this.notes = new TreeMap<>();
+        this.notes = new ArrayList<>();
     }
 
-    @Nullable
+    @NonNull
     @Override
     public Set<Category> getCategories() {
-        if (!categories.isEmpty()) {
-            return categories;
-        }
-        return null;
+        return categories;
     }
 
     @Override
@@ -62,13 +60,10 @@ public class NotesRepository implements NotesKeeper {
         return null;
     }
 
-    @Nullable
+    @NonNull
     @Override
     public Set<Tag> getTags() {
-        if (!tags.isEmpty()) {
-            return tags;
-        }
-        return null;
+        return tags;
     }
 
     @Override
@@ -104,29 +99,39 @@ public class NotesRepository implements NotesKeeper {
         return null;
     }
 
+    @NonNull
     @Override
-    public void addNote(@NonNull Note note) {
-        notes.put(note.getId(), note);
+    public List<Note> getNotes() {
+        return notes;
     }
 
     @Override
-    public void removeNote(@NonNull UUID uuid) {
-        if (containNote(uuid)) {
-            notes.remove(uuid);
+    public void addNote(@NonNull Note note) {
+        int position = Collections.binarySearch(notes, note);
+        if (position < 0) {
+            position = -position - 1;
         }
+        notes.add(position, note);
+    }
+
+    @Override
+    public void removeNote(int position) {
+        notes.remove(position);
     }
 
     @Override
     public boolean containNote(@NonNull UUID uuid) {
-        return notes.containsKey(uuid);
+        for (Note note : notes) {
+            if (note.getId().equals(uuid)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Nullable
     @Override
-    public Note getNote(@NonNull UUID uuid) {
-        if (containNote(uuid)) {
-            return notes.get(uuid);
-        }
-        return null;
+    public Note getNote(int position) {
+        return notes.get(position);
     }
 }
