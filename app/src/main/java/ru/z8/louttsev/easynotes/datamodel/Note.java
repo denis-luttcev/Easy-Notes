@@ -16,7 +16,7 @@ import java.util.UUID;
 public abstract class Note implements Comparable<Note> {
 
     public enum Color {
-        RED, ORANGE, YELLOW, GREEN, BLUE, NONE
+        URGENT, ATTENTION, NORMAL, QUIET, ACCESSORY, NONE
     }
 
     public enum DeadlineStatus {

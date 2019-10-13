@@ -13,9 +13,13 @@ import androidx.appcompat.widget.Toolbar;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
+import java.util.Calendar;
+
+import ru.z8.louttsev.easynotes.datamodel.Category;
 import ru.z8.louttsev.easynotes.datamodel.Note;
 import ru.z8.louttsev.easynotes.datamodel.NotesKeeper;
 import ru.z8.louttsev.easynotes.datamodel.NotesRepository;
+import ru.z8.louttsev.easynotes.datamodel.Tag;
 import ru.z8.louttsev.easynotes.datamodel.TextNote;
 
 public class MainActivity extends AppCompatActivity {
@@ -47,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         //TODO: change to read from db
-        readNotes();
+        readData();
 
         //TODO: change implementation to RecyclerView
         ListView mListView = findViewById(R.id.notes_list);
@@ -55,19 +59,33 @@ public class MainActivity extends AppCompatActivity {
         mListView.setAdapter(mNoteAdapter);
     }
 
-    private void readNotes() {
+    private void readData() {
+        Category category1 = new Category("Holiday");
+        Category category2 = new Category("Work");
+        Tag tag1 = new Tag("Ideas");
+        Tag tag2 = new Tag("Todo");
         Note note;
         note = new TextNote();
         note.setTitle("note1");
         note.setContent("note1 content");
+        note.setColor(Note.Color.ATTENTION);
+        note.setCategory(category1);
         mNotesKeeper.addNote(note);
+
         note = new TextNote();
-        note.setTitle("note2");
+        note.setTitle(null);
         note.setContent("note2 content");
+        note.setCategory(category2);
+        note.markTag(tag1);
+        note.setDeadline(Calendar.getInstance());
         mNotesKeeper.addNote(note);
+
         note = new TextNote();
         note.setTitle("note3");
         note.setContent("note3 content");
+        note.setColor(Note.Color.ACCESSORY);
+        note.markTag(tag1);
+        note.markTag(tag2);
         mNotesKeeper.addNote(note);
     }
 

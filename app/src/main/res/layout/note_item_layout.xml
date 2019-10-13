@@ -23,4 +23,28 @@
 
     </FrameLayout>
 
+    <TextView
+        android:id="@+id/note_category"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/content_preview" />
+
+    <TextView
+        android:id="@+id/note_tags"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/note_category" />
+
+    <TextView
+        android:id="@+id/note_deadline"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/note_tags" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
