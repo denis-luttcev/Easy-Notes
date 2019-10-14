@@ -15,7 +15,7 @@ public class App extends Application {
         sNotesKeeper = new NotesRepository();
     }
 
-    public static NotesKeeper getsNotesKeeper() {
+    public static NotesKeeper getNotesKeeper() {
         return sNotesKeeper;
     }
 }

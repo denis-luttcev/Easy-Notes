@@ -23,12 +23,12 @@ import java.util.Set;
 import ru.z8.louttsev.easynotes.datamodel.Note;
 import ru.z8.louttsev.easynotes.datamodel.Tag;
 
-class NoteAdapter extends BaseAdapter {
+class NotesAdapter extends BaseAdapter {
     private List<Note> mNotes;
     private LayoutInflater mInflater;
     private Context mContext;
 
-    public NoteAdapter(List<Note> notes, Context context) {
+    public NotesAdapter(List<Note> notes, Context context) {
         mContext = context;
         mNotes = notes;
         mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);

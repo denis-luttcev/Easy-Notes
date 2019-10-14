@@ -18,20 +18,19 @@ import java.util.Calendar;
 import ru.z8.louttsev.easynotes.datamodel.Category;
 import ru.z8.louttsev.easynotes.datamodel.Note;
 import ru.z8.louttsev.easynotes.datamodel.NotesKeeper;
-import ru.z8.louttsev.easynotes.datamodel.NotesRepository;
 import ru.z8.louttsev.easynotes.datamodel.Tag;
 import ru.z8.louttsev.easynotes.datamodel.TextNote;
 
-public class MainActivity extends AppCompatActivity {
+public class NotesActivity extends AppCompatActivity {
     private NotesKeeper mNotesKeeper;
-    private BaseAdapter mNoteAdapter;
+    private BaseAdapter mNotesAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_notes);
 
-        mNotesKeeper = App.getsNotesKeeper();
+        mNotesKeeper = App.getNotesKeeper();
         initViews();
     }
 
@@ -52,9 +51,9 @@ public class MainActivity extends AppCompatActivity {
         readData();
 
         //TODO: change implementation to RecyclerView
-        ListView mListView = findViewById(R.id.notes_list);
-        mNoteAdapter = new NoteAdapter(mNotesKeeper.getNotes(), MainActivity.this);
-        mListView.setAdapter(mNoteAdapter);
+        /*ListView mListView = findViewById(R.id.notes_list);
+        mNotesAdapter = new NotesAdapter(mNotesKeeper.getNotes(), NotesActivity.this);
+        mListView.setAdapter(mNotesAdapter);*/
     }
 
     private void readData() {
