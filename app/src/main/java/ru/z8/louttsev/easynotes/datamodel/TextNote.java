@@ -8,6 +8,9 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
+
+import ru.z8.louttsev.easynotes.R;
 
 public class TextNote extends Note {
     private String content;
@@ -35,6 +38,7 @@ public class TextNote extends Note {
         preView.setText(content);
         preView.setMaxLines(MAX_LINES_PREVIEW);
         preView.setEllipsize(TextUtils.TruncateAt.END);
+        preView.setTextAppearance(context, R.style.TextAppearance_MaterialComponents_Body2);
         contentPreView.addView(preView);
     }
 
