@@ -29,7 +29,6 @@ public class TextNote extends Note {
         return true;
     }
 
-    @NonNull
     @Override
     public void fillContentPreView(@NonNull FrameLayout contentPreView, Context context) {
         TextView preView = new TextView(context);
@@ -39,12 +38,11 @@ public class TextNote extends Note {
         contentPreView.addView(preView);
     }
 
-    @NonNull
     @Override
-    public View getContentView(@NonNull Context context) {
-        EditText contentView = new EditText(context);
-        contentView.setText(content);
-        return contentView;
+    public void fillContentView(@NonNull FrameLayout contentView, Context context) {
+        EditText view = new EditText(context);
+        view.setText(content);
+        contentView.addView(view);
     }
 
     @Override

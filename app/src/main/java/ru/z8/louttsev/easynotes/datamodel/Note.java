@@ -47,7 +47,7 @@ public abstract class Note implements Comparable<Note> {
 
         if (deadline != null) {
             if (note.deadline != null) {
-                int deadlineComparing = deadline.compareTo(note.deadline);
+                int deadlineComparing = note.getDeadline().compareTo(deadline);
                 if (deadlineComparing != 0) {
                     return deadlineComparing;
                 }
@@ -56,11 +56,12 @@ public abstract class Note implements Comparable<Note> {
             if (note.deadline != null) return 1;
         }
 
-        return note.lastModification.compareTo(lastModification);
+        return note.getLastModification().compareTo(lastModification);
     }
 
     private void modificationUpdate() {
         lastModification = Calendar.getInstance();
+        //TODO: point to write new or edited note to DB
     }
 
     @NonNull
@@ -185,9 +186,9 @@ public abstract class Note implements Comparable<Note> {
     @NonNull
     public DeadlineStatus getDeadlineStatus(@NonNull Calendar toDate) {
         try {
-            if (isOverdue(toDate)) return DeadlineStatus.OVERDUE;
-            if (isImmediate(toDate)) return DeadlineStatus.IMMEDIATE;
             if (isAhead(toDate)) return DeadlineStatus.AHEAD;
+            if (isImmediate(toDate)) return DeadlineStatus.IMMEDIATE;
+            if (isOverdue(toDate)) return DeadlineStatus.OVERDUE;
         } catch (NullPointerException ignored) {}
         return DeadlineStatus.NONE;
     }
@@ -220,11 +221,9 @@ public abstract class Note implements Comparable<Note> {
 
     public abstract boolean isEditable();
 
-    @NonNull
     public abstract void fillContentPreView(@NonNull FrameLayout contentPreView, Context context);
 
-    @NonNull
-    public abstract View getContentView(@NonNull Context context);
+    public abstract void fillContentView(@NonNull FrameLayout contentView, Context context);
 
     public abstract void setContent(@NonNull View contentView);
 

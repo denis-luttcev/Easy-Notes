@@ -23,9 +23,7 @@ import ru.z8.louttsev.easynotes.datamodel.Tag;
 import ru.z8.louttsev.easynotes.datamodel.TextNote;
 
 public class MainActivity extends AppCompatActivity {
-
-    //TODO: change to singletone
-    private NotesKeeper mNotesKeeper = new NotesRepository();
+    private NotesKeeper mNotesKeeper;
     private BaseAdapter mNoteAdapter;
 
     @Override
@@ -33,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        mNotesKeeper = App.getsNotesKeeper();
         initViews();
     }
 
@@ -50,7 +49,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        //TODO: change to read from db
         readData();
 
         //TODO: change implementation to RecyclerView
@@ -60,6 +58,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void readData() {
+        //TODO: change to read from db
+
         Category category1 = new Category("Holiday");
         Category category2 = new Category("Work");
         Tag tag1 = new Tag("Ideas");
