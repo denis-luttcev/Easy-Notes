@@ -64,6 +64,15 @@ public class MainActivity extends AppCompatActivity {
         Category category2 = new Category("Work");
         Tag tag1 = new Tag("Ideas");
         Tag tag2 = new Tag("Todo");
+        Tag tag3 = new Tag("Photo");
+        Tag tag4 = new Tag("Smile");
+        Tag tag5 = new Tag("Class");
+        Tag tag6 = new Tag("Share");
+        Tag tag7 = new Tag("Common");
+        Tag tag8 = new Tag("Private");
+        Tag tag9 = new Tag("Plus");
+        Tag tag10 = new Tag("Native");
+
         Note note;
         note = new TextNote();
         note.setTitle("note1");
@@ -82,10 +91,18 @@ public class MainActivity extends AppCompatActivity {
 
         note = new TextNote();
         note.setTitle("note3");
-        note.setContent("note3 content");
+        note.setContent("note3 long content: Lorem ipsum dolor sit amet, consectetur adipiscing elit. In varius malesuada neque sed pellentesque. Aenean sit amet luctus justo. Maecenas venenatis lorem sit amet orci ultricies maximus. Morbi sagittis neque vitae risus tristique tincidunt. Ut tellus lectus, tempor vitae iaculis quis, tempor non ex. Maecenas imperdiet pretium ligula ac rutrum. Mauris massa felis, vulputate eget sem et, ullamcorper convallis augue.");
         note.setColor(Note.Color.ACCESSORY);
         note.markTag(tag1);
         note.markTag(tag2);
+        note.markTag(tag3);
+        note.markTag(tag4);
+        note.markTag(tag5);
+        note.markTag(tag6);
+        note.markTag(tag7);
+        note.markTag(tag8);
+        note.markTag(tag9);
+        note.markTag(tag10);
         mNotesKeeper.addNote(note);
     }
 

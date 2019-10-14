@@ -110,6 +110,8 @@ class NoteAdapter extends BaseAdapter {
     }
 
     private void showTags(@NonNull Note note, @NonNull TextView tagsView) {
+        final String SOFT_HYPHEN = "­";
+
         Set<Tag> noteTags = note.getTags();
         StringBuilder tagsLine = new StringBuilder();
         Iterator<Tag> tags = Objects.requireNonNull(noteTags).iterator();
@@ -118,6 +120,7 @@ class NoteAdapter extends BaseAdapter {
             tagsLine.append(tags.next().getTitle());
             if (tags.hasNext()) {
                 tagsLine.append(" ");
+                tagsLine.append(SOFT_HYPHEN);
             }
         }
         tagsView.setText(tagsLine.toString());
