@@ -1,6 +1,7 @@
 package ru.z8.louttsev.easynotes;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -49,43 +50,43 @@ class NoteAdapter extends BaseAdapter {
     }
 
     @Override
-    public View getView(int position, View view, ViewGroup viewGroup) {
-        if (view == null) {
-            view = mInflater.inflate(R.layout.note_item_layout, viewGroup, false);
+    public View getView(int position, View noteView, ViewGroup viewGroup) {
+        if (noteView == null) {
+            noteView = mInflater.inflate(R.layout.note_item_layout, viewGroup, false);
         }
 
         Note note = mNotes.get(position);
 
         if (note.isColored()) {
-            applyColor(view, note);
+            applyNoteViewColor(noteView, note);
         }
 
-        TextView titleView = view.findViewById(R.id.note_title);
+        TextView titleView = noteView.findViewById(R.id.note_title);
         if (note.isTitled()) {
             titleView.setText(note.getTitle());
         } else titleView.setVisibility(View.GONE);
 
-        note.fillContentPreView((FrameLayout) view.findViewById(R.id.content_preview), mContext);
+        note.fillContentPreView((FrameLayout) noteView.findViewById(R.id.content_preview), mContext);
 
-        TextView categoryView = view.findViewById(R.id.note_category);
+        TextView categoryView = noteView.findViewById(R.id.note_category);
         if (note.isCategorized()) {
             categoryView.setText(Objects.requireNonNull(note.getCategory()).getTitle());
         } else categoryView.setVisibility(View.GONE);
 
-        TextView tagsView = view.findViewById(R.id.note_tags);
+        TextView tagsView = noteView.findViewById(R.id.note_tags);
         if (note.isTagged()) {
             showTags(note, tagsView);
         } else tagsView.setVisibility(View.GONE);
 
-        TextView deadlineView = view.findViewById(R.id.note_deadline);
+        TextView deadlineView = noteView.findViewById(R.id.note_deadline);
         if (note.isDeadlined()) {
             showDeadline(note, deadlineView);
         } else deadlineView.setVisibility(View.GONE);
 
-        return view;
+        return noteView;
     }
 
-    private void applyColor(@NonNull View view, @NonNull Note note) {
+    private void applyNoteViewColor(@NonNull View noteView, @NonNull Note note) {
         int color = ContextCompat.getColor(mContext, R.color.colorNoneNote);
         switch (note.getColor()) {
             case URGENT:
@@ -105,7 +106,7 @@ class NoteAdapter extends BaseAdapter {
                 break;
             default: // ignored
         }
-        view.setBackgroundColor(color);
+        noteView.setBackgroundColor(color);
     }
 
     private void showTags(@NonNull Note note, @NonNull TextView tagsView) {
@@ -126,5 +127,23 @@ class NoteAdapter extends BaseAdapter {
         Calendar deadline = note.getDeadline();
         DateFormat dateFormat = SimpleDateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
         deadlineView.setText(dateFormat.format(Objects.requireNonNull(deadline).getTime()));
+        applyDeadlineColor(note, deadlineView);
+    }
+
+    private void applyDeadlineColor(@NonNull Note note, @NonNull TextView deadlineView) {
+        int color = ContextCompat.getColor(mContext, R.color.colorDeadlineAhead);
+        switch (note.getDeadlineStatus(Calendar.getInstance())) {
+            case OVERDUE:
+                color = ContextCompat.getColor(mContext, R.color.colorDeadlineOverdue);
+                deadlineView.setTypeface(Typeface.DEFAULT_BOLD);
+                break;
+            case IMMEDIATE:
+                color = ContextCompat.getColor(mContext, R.color.colorDeadlineImmediate);
+                deadlineView.setTypeface(Typeface.DEFAULT_BOLD);
+                break;
+            default:
+                deadlineView.setTypeface(Typeface.DEFAULT);
+        }
+        deadlineView.setTextColor(color);
     }
 }
