@@ -47,7 +47,7 @@ public abstract class Note implements Comparable<Note> {
 
         if (deadline != null) {
             if (note.deadline != null) {
-                int deadlineComparing = note.getDeadline().compareTo(deadline);
+                int deadlineComparing = deadline.compareTo(note.getDeadline());
                 if (deadlineComparing != 0) {
                     return deadlineComparing;
                 }
