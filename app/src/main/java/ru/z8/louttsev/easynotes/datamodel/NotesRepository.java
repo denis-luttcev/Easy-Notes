@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -19,6 +20,56 @@ public class NotesRepository implements NotesKeeper {
         this.categories = new HashSet<>();
         this.tags = new HashSet<>();
         this.notes = new ArrayList<>();
+        readData();
+    }
+
+    private void readData() {
+        //TODO: change to read from db
+
+        Category category1 = new Category("Holiday");
+        Category category2 = new Category("Work");
+        Tag tag1 = new Tag("Ideas");
+        Tag tag2 = new Tag("Todo");
+        Tag tag3 = new Tag("Photo");
+        Tag tag4 = new Tag("Smile");
+        Tag tag5 = new Tag("Class");
+        Tag tag6 = new Tag("Share");
+        Tag tag7 = new Tag("Common");
+        Tag tag8 = new Tag("Private");
+        Tag tag9 = new Tag("Plus");
+        Tag tag10 = new Tag("Native");
+
+        Note note;
+        note = new TextNote();
+        note.setTitle("note1");
+        note.setContent("note1 content");
+        note.setColor(Note.Color.ATTENTION);
+        note.setCategory(category1);
+        addNote(note);
+
+        note = new TextNote();
+        note.setTitle(null);
+        note.setContent("note2 content");
+        note.setCategory(category2);
+        note.markTag(tag1);
+        note.setDeadline(Calendar.getInstance());
+        addNote(note);
+
+        note = new TextNote();
+        note.setTitle("note3");
+        note.setContent("note3 long content: Lorem ipsum dolor sit amet, consectetur adipiscing elit. In varius malesuada neque sed pellentesque. Aenean sit amet luctus justo. Maecenas venenatis lorem sit amet orci ultricies maximus. Morbi sagittis neque vitae risus tristique tincidunt. Ut tellus lectus, tempor vitae iaculis quis, tempor non ex. Maecenas imperdiet pretium ligula ac rutrum. Mauris massa felis, vulputate eget sem et, ullamcorper convallis augue.");
+        note.setColor(Note.Color.ACCESSORY);
+        note.markTag(tag1);
+        note.markTag(tag2);
+        note.markTag(tag3);
+        note.markTag(tag4);
+        note.markTag(tag5);
+        note.markTag(tag6);
+        note.markTag(tag7);
+        note.markTag(tag8);
+        note.markTag(tag9);
+        note.markTag(tag10);
+        addNote(note);
     }
 
     @NonNull
