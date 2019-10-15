@@ -15,7 +15,7 @@ import androidx.fragment.app.Fragment;
 import ru.z8.louttsev.easynotes.datamodel.Note;
 import ru.z8.louttsev.easynotes.datamodel.TextNote;
 
-class NoteFragment extends Fragment {
+public class NoteFragment extends Fragment {
     private Note mNote;
     private EditText mTitle;
 
@@ -34,6 +34,7 @@ class NoteFragment extends Fragment {
         mTitle = (EditText) noteView.findViewById(R.id.title_note);
         //TODO: add setText if edit
         mTitle.addTextChangedListener(new TextWatcher() {
+            //TODO: change to save text on button click listener
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 // ignored
