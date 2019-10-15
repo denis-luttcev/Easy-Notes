@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
@@ -49,6 +50,7 @@ public class NotesListFragment extends Fragment {
                 Fragment fragment = fragmentManager.findFragmentById(R.id.fragment_container);
                 fragment = new NoteFragment();
                 fragmentManager.beginTransaction()
+                        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                         .replace(R.id.fragment_container, fragment)
                         .addToBackStack(null)
                         .commit();
