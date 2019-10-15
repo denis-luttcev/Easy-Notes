@@ -24,4 +24,11 @@
         <item name="android:padding">4dp</item>
     </style>
 
+    <style name="roundedTextField" parent="TextAppearance.MaterialComponents.Body1">
+        <item name="android:background">@drawable/rounded_field</item>
+        <item name="android:textSize">24sp</item>
+        <item name="android:textColor">@color/colorPrimaryText</item>
+        <item name="android:padding">4dp</item>
+    </style>
+
 </resources>

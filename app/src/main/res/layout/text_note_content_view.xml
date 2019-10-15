@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<EditText xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/text_note_view"
+    style="@style/roundedTextField"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="start|top"
+    android:inputType="textMultiLine">
+
+</EditText>

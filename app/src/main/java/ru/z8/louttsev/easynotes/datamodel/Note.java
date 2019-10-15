@@ -225,7 +225,7 @@ public abstract class Note implements Comparable<Note> {
 
     public abstract void fillContentView(@NonNull FrameLayout contentView, Context context);
 
-    public abstract void setContent(@NonNull View contentView);
+    public abstract void setContent(@NonNull FrameLayout contentView);
 
     //TODO: remove
     public abstract void setContent(String content);
