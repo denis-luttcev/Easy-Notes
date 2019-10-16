@@ -39,7 +39,7 @@ public class NoteFragment extends Fragment {
         final View noteView = inflater.inflate(R.layout.fragment_note, container, false);
 
         //TODO: add setText if edit
-        mTitle = (EditText) noteView.findViewById(R.id.title_note);
+        mTitle = noteView.findViewById(R.id.title_note);
 
         mNote.fillContentView((FrameLayout) noteView.findViewById(R.id.content_view), getActivity());
 

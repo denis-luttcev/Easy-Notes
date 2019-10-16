@@ -1,21 +1,29 @@
 package ru.z8.louttsev.easynotes;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
+import androidx.appcompat.widget.Toolbar;
 
-public class NotesActivity extends AppCompatActivity {
+import ru.z8.louttsev.easynotes.security.KeyKeeper;
+
+public class MainActivity extends AppCompatActivity {
+    private KeyKeeper mKeyKeeper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_notes);
+        setContentView(R.layout.activity_main);
 
-        FragmentManager fragmentManager = getSupportFragmentManager();
+        mKeyKeeper = App.getKeyKeeper();
+
+        Toolbar mToolBar = findViewById(R.id.toolbar);
+        setSupportActionBar(mToolBar);
+
+        //FragmentManager fragmentManager = getSupportFragmentManager();
         /*Fragment fragment = fragmentManager.findFragmentById(R.id.fragment_container);
         if (fragment == null) {
             fragment = new NoteFragment();
@@ -23,12 +31,26 @@ public class NotesActivity extends AppCompatActivity {
                     .add(R.id.fragment_container, fragment)
                     .commit();
         }*/
-        Fragment fragment = fragmentManager.findFragmentById(R.id.fragment_container);
+        /*Fragment fragment = fragmentManager.findFragmentById(R.id.fragment_container);
         if (fragment == null) {
             fragment = new NotesListFragment();
             fragmentManager.beginTransaction()
                     .add(R.id.fragment_container, fragment)
                     .commit();
+        }*/
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        try {
+            if (!mKeyKeeper.isProtectionDisabled()) {
+                //TODO: check pin
+            }
+        } catch (Exception e) {
+            Intent settingIntent = new Intent(MainActivity.this, SettingActivity.class);
+            startActivity(settingIntent);
         }
     }
 
