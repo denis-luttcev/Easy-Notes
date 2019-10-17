@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingStart="8dp"
-    android:paddingTop="16dp"
+    android:paddingTop="8dp"
     android:paddingEnd="8dp"
     android:paddingBottom="8dp"
     tools:context=".SettingActivity">
@@ -14,7 +14,8 @@
         android:id="@+id/protection"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="@string/protection_label"
+        android:layout_marginTop="8dp"
+        android:text="@string/protection_setting_label"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -25,50 +26,30 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="64dp"
-        android:text="@string/protection_description_text"
+        android:text="@string/protection_setting_description_text"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/protection" />
 
-    <EditText
-        android:id="@+id/pin_code"
-        style="@style/roundedField"
+    <FrameLayout
+        android:id="@+id/protection_container"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="8dp"
-        android:ems="10"
-        android:gravity="center"
-        android:hint="@string/pin_code_hint"
-        android:inputType="number"
-        app:layout_constraintEnd_toStartOf="@+id/show_password"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/protection_description" />
-
-    <ImageButton
-        android:id="@+id/show_password"
-        android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="@+id/pin_code"
+        android:layout_marginTop="8dp"
+        android:background="@color/colorBackground"
+        android:translationY="4dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/pin_code"
-        app:srcCompat="@android:drawable/ic_secure" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/protection_description"/>
 
     <Button
-        android:id="@+id/button2save"
-        android:layout_width="wrap_content"
+        android:id="@+id/save_setting_btn"
+        style="@style/Widget.AppCompat.Button.Colored"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Save"
+        android:text="@string/save_setting_btn_text"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <androidx.constraintlayout.widget.Group
-        android:id="@+id/pin_group"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
-        app:constraint_referenced_ids="pin_code,show_password"
-        tools:layout_editor_absoluteX="8dp"
-        tools:layout_editor_absoluteY="16dp" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

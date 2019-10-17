@@ -8,17 +8,17 @@ import android.view.MenuItem;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
-import ru.z8.louttsev.easynotes.security.KeyKeeper;
+import ru.z8.louttsev.easynotes.security.Protector;
 
 public class MainActivity extends AppCompatActivity {
-    private KeyKeeper mKeyKeeper;
+    private Protector mProtector;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mKeyKeeper = App.getKeyKeeper();
+        mProtector = App.getProtector();
 
         Toolbar mToolBar = findViewById(R.id.toolbar);
         setSupportActionBar(mToolBar);
@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
         super.onStart();
 
         try {
-            if (!mKeyKeeper.isProtectionDisabled()) {
+            if (mProtector.isProtectionEnabled()) {
                 //TODO: check pin
             }
         } catch (Exception e) {

@@ -2,8 +2,9 @@
     <string name="app_name">Easy Notes</string>
     <string name="action_settings">Settings</string>
     <string name="activity_settings_title">Settings</string>
-    <string name="protection_label">Enable storage protection</string>
-    <string name="protection_description_text">Protects access to notes with a pin code</string>
-    <string name="pin_code_hint">Pin code</string>
+    <string name="protection_setting_label">Enable storage protection</string>
+    <string name="protection_setting_description_text">Protects access to your notes</string>
+    <string name="save_setting_btn_text">Save settings</string>
+    <string name="protection_enabled_error_toast_message">Impossible to enable protection</string>
     <string name="note_title_hint">Title</string>
 </resources>
