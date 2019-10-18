@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -19,6 +20,21 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         mProtector = App.getProtector();
+
+        if (!mProtector.isProtectionConfigured()) {
+            Intent settingIntent = new Intent(MainActivity.this, SettingActivity.class);
+            startActivity(settingIntent);
+        }
+
+        /*if (mProtector.isProtectionEnabled()) {
+            if (!mProtector.isAccessAllowed(getSupportFragmentManager())) {
+                Toast.makeText(MainActivity.this,
+                        getString(R.string.access_denied_toast_message),
+                        Toast.LENGTH_LONG)
+                        .show();
+                finish();
+            }
+        }*/
 
         Toolbar mToolBar = findViewById(R.id.toolbar);
         setSupportActionBar(mToolBar);
@@ -38,20 +54,6 @@ public class MainActivity extends AppCompatActivity {
                     .add(R.id.fragment_container, fragment)
                     .commit();
         }*/
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-
-        try {
-            if (mProtector.isProtectionEnabled()) {
-                //TODO: check pin
-            }
-        } catch (Exception e) {
-            Intent settingIntent = new Intent(MainActivity.this, SettingActivity.class);
-            startActivity(settingIntent);
-        }
     }
 
     @Override

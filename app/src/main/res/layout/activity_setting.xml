@@ -11,17 +11,17 @@
     tools:context=".SettingActivity">
 
     <Switch
-        android:id="@+id/protection"
+        android:id="@+id/protection_setting_switch"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:text="@string/protection_setting_label"
+        android:text="@string/protection_setting_switch_label"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/protection_description"
+        android:id="@+id/protection_setting_description"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
@@ -29,27 +29,6 @@
         android:text="@string/protection_setting_description_text"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/protection" />
-
-    <FrameLayout
-        android:id="@+id/protection_container"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:background="@color/colorBackground"
-        android:translationY="4dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/protection_description"/>
-
-    <Button
-        android:id="@+id/save_setting_btn"
-        style="@style/Widget.AppCompat.Button.Colored"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="@string/save_setting_btn_text"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/protection_setting_switch" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

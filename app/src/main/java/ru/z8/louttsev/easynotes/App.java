@@ -5,7 +5,7 @@ import android.app.Application;
 import ru.z8.louttsev.easynotes.datamodel.NotesKeeper;
 import ru.z8.louttsev.easynotes.datamodel.NotesRepository;
 import ru.z8.louttsev.easynotes.security.Protector;
-import ru.z8.louttsev.easynotes.security.PinStore;
+import ru.z8.louttsev.easynotes.security.PinCodeProtector;
 
 public class App extends Application {
     private static NotesKeeper sNotesKeeper;
@@ -16,7 +16,7 @@ public class App extends Application {
         super.onCreate();
 
         sNotesKeeper = new NotesRepository();
-        sProtector = new PinStore(this);
+        sProtector = new PinCodeProtector(this);
     }
 
     public static NotesKeeper getNotesKeeper() {
