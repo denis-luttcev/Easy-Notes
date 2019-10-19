@@ -3,6 +3,9 @@ package ru.z8.louttsev.easynotes;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.Toast;
@@ -13,11 +16,14 @@ public class SettingActivity extends AppCompatActivity {
     private Protector mProtector;
 
     private Switch mProtectionSettingSwitch;
+    private Button mProtectionSettingChangeKeyButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_setting);
+
+        Log.e("TAG", "setting onCreate");
 
         mProtector = App.getProtector();
 
@@ -25,13 +31,26 @@ public class SettingActivity extends AppCompatActivity {
     }
 
     private void initViews() {
+        mProtectionSettingChangeKeyButton = findViewById(R.id.protection_setting_change_key_button);
+        mProtectionSettingChangeKeyButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                changeProtectionKey();
+            }
+        });
+
         mProtectionSettingSwitch = findViewById(R.id.protection_setting_switch);
-        mProtectionSettingSwitch
-                .setChecked(mProtector.isProtectionConfigured() && mProtector.isProtectionEnabled());
+        if (mProtector.isProtectionConfigured() && mProtector.isProtectionEnabled()) {
+            mProtectionSettingSwitch.setChecked(true);
+            mProtectionSettingChangeKeyButton.setVisibility(View.VISIBLE);
+        } else {
+            mProtectionSettingSwitch.setChecked(false);
+            mProtectionSettingChangeKeyButton.setVisibility(View.GONE);
+        }
+
         mProtectionSettingSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton protectionSettingSwitch, boolean isChecked) {
-                //TODO: logged
                 if (isChecked) {
                     switchProtectionToEnabled();
                 } else {
@@ -41,20 +60,58 @@ public class SettingActivity extends AppCompatActivity {
         });
     }
 
+    private void changeProtectionKey() {
+        mProtector.enableProtection(getSupportFragmentManager(),
+                new Protector.OnProtectionResultListener() {
+            @Override
+            public void onProtectionResultSuccess() {
+                Toast.makeText(SettingActivity.this,
+                        getString(R.string.protection_key_changed_success_toast_message),
+                        Toast.LENGTH_SHORT)
+                        .show();
+            }
+
+            @Override
+            public void onProtectionResultFailure() {
+                Toast.makeText(SettingActivity.this,
+                        getString(R.string.protection_key_changed_error_toast_message),
+                        Toast.LENGTH_SHORT)
+                        .show();
+            }
+        });
+    }
+
     private void switchProtectionToEnabled() {
-        //TODO: logged
-        if (!mProtector.enableProtection(getSupportFragmentManager())) {
-            Toast.makeText(SettingActivity.this,
-                    getString(R.string.protection_enabled_error_toast_message),
-                    Toast.LENGTH_SHORT)
-                    .show();
-            mProtectionSettingSwitch.setChecked(false);
-            switchProtectionToDisabled();
-        }
+        mProtector.enableProtection(getSupportFragmentManager(),
+                new Protector.OnProtectionResultListener() {
+            @Override
+            public void onProtectionResultSuccess() {
+                Toast.makeText(SettingActivity.this,
+                        getString(R.string.protection_enabled_success_toast_message),
+                        Toast.LENGTH_SHORT)
+                        .show();
+                mProtectionSettingSwitch.setChecked(true);
+                mProtectionSettingChangeKeyButton.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onProtectionResultFailure() {
+                Toast.makeText(SettingActivity.this,
+                        getString(R.string.protection_enabled_error_toast_message),
+                        Toast.LENGTH_SHORT)
+                        .show();
+                switchProtectionToDisabled();
+            }
+        });
     }
 
     private void switchProtectionToDisabled() {
-        //TODO: Logged
+        Toast.makeText(SettingActivity.this,
+                getString(R.string.protection_disabled_toast_message),
+                Toast.LENGTH_SHORT)
+                .show();
+        mProtectionSettingSwitch.setChecked(false);
+        mProtectionSettingChangeKeyButton.setVisibility(View.GONE);
         mProtector.disableProtection();
     }
 }

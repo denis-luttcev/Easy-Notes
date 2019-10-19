@@ -2,6 +2,7 @@ package ru.z8.louttsev.easynotes.security;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentManager;
@@ -24,6 +25,7 @@ public class PinCodeProtector implements Protector {
     // separate storage of hash (in shared preferences) and salt (in file) is used
     private final String PROTECTION_CODE = "protection";
     private final String SALT_FILE_NAME = "data.txt";
+    private final String DIALOG_PIN_CODE_INPUT = "pincode";
 
     /**
      * Main hash encrypt settings set in constants
@@ -37,8 +39,6 @@ public class PinCodeProtector implements Protector {
 
     private SharedPreferences preferences;
     private Context context;
-
-    private String pinCode = "";
 
     public PinCodeProtector(@NonNull Context context) {
         this.context = context;
@@ -60,34 +60,26 @@ public class PinCodeProtector implements Protector {
 
     /**
      * Tryes to enable protection (possible technical problems or user refusal)
-     *
-     * @return true if protection enabled successfully
      */
     @Override
-    public boolean enableProtection(@NonNull FragmentManager fragmentManager) {
-        String pinCode = requestPinCode(fragmentManager);
-        //TODO: merge to OnDialogDismiss?
-        if (!pinCode.isEmpty()) { // user refusal will cause empty
-            return savePinCode(pinCode); // technical problems will cause false
-        } else return false;
-    }
-
-    /**
-     * @return empty if user refusal
-     */
-    @NonNull
-    private String requestPinCode(@NonNull FragmentManager fragmentManager) {
+    public void enableProtection(@NonNull FragmentManager fragmentManager,
+                                 @NonNull final OnProtectionResultListener resultListener) {
         PinCodeInputFragment pinCodeInput = new PinCodeInputFragment();
-        pinCodeInput.setPinCodeInputDialogListener(new PinCodeInputFragment.PinCodeInputDialogListener() {
+        pinCodeInput
+                .setPinCodeInputDialogListener(new PinCodeInputFragment.PinCodeInputResultListener() {
             @Override
-            public void onDialogDismiss(String inputedPinCode) {
-                pinCode = inputedPinCode;
-                //TODO: how return from this parent method?
+            public void onDismiss(String inputedPinCode) {
+                if (savePinCode(inputedPinCode)) { // technical problems will cause false
+                    resultListener.onProtectionResultSuccess();
+                } else resultListener.onProtectionResultFailure();
+            }
+
+            @Override
+            public void onCancel() {
+                resultListener.onProtectionResultFailure();
             }
         });
-        final String DIALOG_PIN_CODE_INPUT = "pincode";
         pinCodeInput.show(fragmentManager, DIALOG_PIN_CODE_INPUT);
-        return "";
     }
 
     /**
@@ -150,11 +142,24 @@ public class PinCodeProtector implements Protector {
      * Technical problems and user refusal are need considered as access denied
      */
     @Override
-    public boolean isAccessAllowed(@NonNull FragmentManager fragmentManager) {
-        String pinCode = requestPinCode(fragmentManager);
-        if (!pinCode.isEmpty()) { // user refusal will cause empty
-            return checkPinCode(pinCode); // technical problems will cause false
-        } else return false;
+    public void checkAuthorization(@NonNull FragmentManager fragmentManager,
+                                   @NonNull final OnProtectionResultListener resultListener) {
+        PinCodeInputFragment pinCodeInput = new PinCodeInputFragment();
+        pinCodeInput
+                .setPinCodeInputDialogListener(new PinCodeInputFragment.PinCodeInputResultListener() {
+            @Override
+            public void onDismiss(String inputedPinCode) {
+                if (checkPinCode(inputedPinCode)) { // technical problems will cause false
+                    resultListener.onProtectionResultSuccess();
+                } else resultListener.onProtectionResultFailure();
+            }
+
+            @Override
+            public void onCancel() {
+                resultListener.onProtectionResultFailure();
+            }
+        });
+        pinCodeInput.show(fragmentManager, DIALOG_PIN_CODE_INPUT);
     }
 
     /**
@@ -162,7 +167,10 @@ public class PinCodeProtector implements Protector {
      */
     private boolean checkPinCode(@NonNull String pinCode) {
         try {
-            return Arrays.equals(hashPinCode(pinCode, readSalt()), readHash());
+            Log.e("TAG", hashPinCode(pinCode, readSalt()).toString());
+            Log.e("TAG", readHash().toString());
+            return true;
+            //return Arrays.equals(hashPinCode(pinCode, readSalt()), readHash());
         } catch (NoSuchAlgorithmException | InvalidKeySpecException | IOException e) {
             return false;
         }

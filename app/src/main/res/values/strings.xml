@@ -6,7 +6,12 @@
     <string name="activity_settings_title">Settings</string>
     <string name="protection_setting_switch_label">Enable storage protection</string>
     <string name="protection_setting_description_text">Protects access to your notes</string>
+    <string name="protection_change_key_button_text">Change protection key</string>
+    <string name="protection_key_changed_success_toast_message">Protection key changed</string>
+    <string name="protection_key_changed_error_toast_message">Impossible to change protection key</string>
+    <string name="protection_enabled_success_toast_message">Protection enabled</string>
     <string name="protection_enabled_error_toast_message">Impossible to enable protection</string>
+    <string name="protection_disabled_toast_message">Protection disabled</string>
 
     <string name="pin_code_input_title">Enter pin code</string>
 

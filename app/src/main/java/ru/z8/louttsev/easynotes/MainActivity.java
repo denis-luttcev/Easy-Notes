@@ -24,17 +24,26 @@ public class MainActivity extends AppCompatActivity {
         if (!mProtector.isProtectionConfigured()) {
             Intent settingIntent = new Intent(MainActivity.this, SettingActivity.class);
             startActivity(settingIntent);
-        }
+        } else {
+            if (mProtector.isProtectionEnabled()) {
+                mProtector.checkAuthorization(getSupportFragmentManager(),
+                        new Protector.OnProtectionResultListener() {
+                            @Override
+                            public void onProtectionResultSuccess() {
+                                // ignored
+                            }
 
-        /*if (mProtector.isProtectionEnabled()) {
-            if (!mProtector.isAccessAllowed(getSupportFragmentManager())) {
-                Toast.makeText(MainActivity.this,
-                        getString(R.string.access_denied_toast_message),
-                        Toast.LENGTH_LONG)
-                        .show();
-                finish();
+                            @Override
+                            public void onProtectionResultFailure() {
+                                Toast.makeText(MainActivity.this,
+                                        getString(R.string.access_denied_toast_message),
+                                        Toast.LENGTH_LONG)
+                                        .show();
+                                finish();
+                            }
+                        });
             }
-        }*/
+        }
 
         Toolbar mToolBar = findViewById(R.id.toolbar);
         setSupportActionBar(mToolBar);
@@ -72,6 +81,8 @@ public class MainActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            Intent settingIntent = new Intent(MainActivity.this, SettingActivity.class);
+            startActivity(settingIntent);
             return true;
         }
 

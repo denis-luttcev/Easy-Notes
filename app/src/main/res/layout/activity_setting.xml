@@ -25,10 +25,19 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:layout_marginEnd="64dp"
         android:text="@string/protection_setting_description_text"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/protection_setting_switch" />
+
+    <Button
+        android:id="@+id/protection_setting_change_key_button"
+        style="@style/Widget.AppCompat.Button.Colored"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/protection_change_key_button_text"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/protection_setting_description"
+        app:layout_constraintTop_toBottomOf="@+id/protection_setting_description" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

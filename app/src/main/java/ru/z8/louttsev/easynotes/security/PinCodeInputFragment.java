@@ -2,6 +2,7 @@ package ru.z8.louttsev.easynotes.security;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.InputType;
 import android.view.LayoutInflater;
@@ -22,14 +23,15 @@ import ru.z8.louttsev.easynotes.R;
 
 public class PinCodeInputFragment extends DialogFragment {
 
-    interface PinCodeInputDialogListener {
-        void onDialogDismiss(String inputedPinCode);
+    interface PinCodeInputResultListener {
+        void onDismiss(String inputedPinCode);
+        void onCancel();
     }
 
-    private PinCodeInputDialogListener listener;
+    private PinCodeInputResultListener resultListener;
 
-    void setPinCodeInputDialogListener(PinCodeInputDialogListener listener) {
-        this.listener = listener;
+    void setPinCodeInputDialogListener(PinCodeInputResultListener resultListener) {
+        this.resultListener = resultListener;
     }
 
     @NonNull
@@ -39,17 +41,18 @@ public class PinCodeInputFragment extends DialogFragment {
                 .inflate(R.layout.pin_code_input_layout, null);
 
         final EditText pinCodeField = pinCodeInputView.findViewById(R.id.pin_code_field);
-        pinCodeField.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        pinCodeField.setInputType(InputType.TYPE_CLASS_TEXT
+                | InputType.TYPE_TEXT_VARIATION_PASSWORD);
 
         final CheckBox visibilityCheckbox = pinCodeInputView.findViewById(R.id.visibility_checkbox);
         visibilityCheckbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton visibilityCheckbox, boolean isChecked) {
-                int a = pinCodeField.getInputType();
                 if (pinCodeField.getInputType() != InputType.TYPE_CLASS_TEXT) {
                     pinCodeField.setInputType(InputType.TYPE_CLASS_TEXT);
                 } else {
-                    pinCodeField.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+                    pinCodeField.setInputType(InputType.TYPE_CLASS_TEXT
+                            | InputType.TYPE_TEXT_VARIATION_PASSWORD);
                 }
             }
         });
@@ -62,8 +65,7 @@ public class PinCodeInputFragment extends DialogFragment {
                 pinCodeField.setText(currentPinCode);
                 final int PIN_LENGTH = 4;
                 if (currentPinCode.length() == PIN_LENGTH) {
-                    listener.onDialogDismiss(currentPinCode);
-                    PinCodeInputFragment.this.dismiss();
+                    returnPinCode(currentPinCode);
                 }
             }
         };
@@ -99,5 +101,21 @@ public class PinCodeInputFragment extends DialogFragment {
                 .setView(pinCodeInputView)
                 .setTitle(R.string.pin_code_input_title)
                 .create();
+    }
+
+    private void returnPinCode(@NonNull String pinCode) {
+        resultListener.onDismiss(pinCode);
+        dismiss();
+    }
+
+    @Override
+    public void onDismiss(DialogInterface dialog) {
+        super.onDismiss(dialog);
+    }
+
+    @Override
+    public void onCancel(DialogInterface dialog) {
+        resultListener.onCancel();
+        super.onCancel(dialog);
     }
 }
