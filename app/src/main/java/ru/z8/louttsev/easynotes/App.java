@@ -7,7 +7,7 @@ import ru.z8.louttsev.easynotes.datamodel.NotesRepository;
 import ru.z8.louttsev.easynotes.security.Protector;
 import ru.z8.louttsev.easynotes.security.PinCodeProtector;
 
-public class App extends Application {
+class App extends Application {
     private static NotesKeeper sNotesKeeper;
     private static Protector sProtector;
 

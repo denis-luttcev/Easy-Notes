@@ -1,7 +1,6 @@
 package ru.z8.louttsev.easynotes.datamodel;
 
 import android.content.Context;
-import android.view.View;
 import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
@@ -47,7 +46,7 @@ public abstract class Note implements Comparable<Note> {
 
         if (deadline != null) {
             if (note.deadline != null) {
-                int deadlineComparing = deadline.compareTo(note.getDeadline());
+                int deadlineComparing = deadline.compareTo(Objects.requireNonNull(note.getDeadline()));
                 if (deadlineComparing != 0) {
                     return deadlineComparing;
                 }

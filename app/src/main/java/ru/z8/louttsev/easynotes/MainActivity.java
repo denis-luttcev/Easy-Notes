@@ -21,7 +21,7 @@ public class MainActivity extends AppCompatActivity {
 
         mProtector = App.getProtector();
 
-        if (!mProtector.isProtectionConfigured()) {
+        if (mProtector.isProtectionConfigured()) {
             Intent settingIntent = new Intent(MainActivity.this, SettingActivity.class);
             startActivity(settingIntent);
         } else {
@@ -79,7 +79,6 @@ public class MainActivity extends AppCompatActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             Intent settingIntent = new Intent(MainActivity.this, SettingActivity.class);
             startActivity(settingIntent);

@@ -52,7 +52,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_chainStyle="spread"
         app:layout_constraintStart_toEndOf="@+id/btn8"
-        app:layout_constraintTop_toTopOf="@+id/btn8" />
+        app:layout_constraintTop_toTopOf="@+id/btn8"
+        tools:ignore="HardcodedText" />
 
     <Button
         android:id="@+id/btn6"

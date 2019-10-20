@@ -28,7 +28,7 @@ public class SettingActivity extends AppCompatActivity {
     }
 
     private void initViews() {
-        if (!mProtector.isProtectionConfigured()) {
+        if (mProtector.isProtectionConfigured()) {
             mProtector.disableProtection();
         }
 

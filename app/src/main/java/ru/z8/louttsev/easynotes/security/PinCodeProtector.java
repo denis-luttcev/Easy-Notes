@@ -36,8 +36,8 @@ public class PinCodeProtector implements Protector {
     @SuppressWarnings("FieldCanBeLocal")
     private final int ITERATIONS = 16384;
 
-    private SharedPreferences preferences;
-    private Context context;
+    private final SharedPreferences preferences;
+    private final Context context;
 
     public PinCodeProtector(@NonNull Context context) {
         this.context = context;
@@ -48,7 +48,7 @@ public class PinCodeProtector implements Protector {
     @Override
     public boolean isProtectionConfigured() {
         // missing of saved hash considered as unconfigured protection (possible at the first run)
-        return preferences.getString(PROTECTION_CODE, null) != null;
+        return preferences.getString(PROTECTION_CODE, null) == null;
     }
 
     @Override
