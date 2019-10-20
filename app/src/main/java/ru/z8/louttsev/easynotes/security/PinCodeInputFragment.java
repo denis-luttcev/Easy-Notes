@@ -29,13 +29,13 @@ public class PinCodeInputFragment extends DialogFragment {
         void onCancel();
     }
 
-    private EditText mPinCodeField;
-
     private PinCodeInputResultListener resultListener;
 
-    void setPinCodeInputDialogListener(PinCodeInputResultListener resultListener) {
+    void setPinCodeInputDialogListener(@NonNull PinCodeInputResultListener resultListener) {
         this.resultListener = resultListener;
     }
+
+    private EditText mPinCodeField;
 
     @NonNull
     @Override
@@ -46,6 +46,10 @@ public class PinCodeInputFragment extends DialogFragment {
         mPinCodeField = pinCodeInputView.findViewById(R.id.pin_code_field);
         mPinCodeField.setInputType(InputType.TYPE_CLASS_TEXT
                 | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+
+        if (savedInstanceState != null) {
+            Log.e("TAG", "instance not null");
+        } else Log.e("TAG", "instance null");
 
         final CheckBox visibilityCheckbox = pinCodeInputView.findViewById(R.id.visibility_checkbox);
         visibilityCheckbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {

@@ -28,6 +28,10 @@ public class SettingActivity extends AppCompatActivity {
     }
 
     private void initViews() {
+        if (!mProtector.isProtectionConfigured()) {
+            mProtector.disableProtection();
+        }
+
         mProtectionSettingChangeKeyButton = findViewById(R.id.protection_setting_change_key_button);
         mProtectionSettingChangeKeyButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -37,7 +41,7 @@ public class SettingActivity extends AppCompatActivity {
         });
 
         mProtectionSettingSwitch = findViewById(R.id.protection_setting_switch);
-        if (mProtector.isProtectionConfigured() && mProtector.isProtectionEnabled()) {
+        if (mProtector.isProtectionEnabled()) {
             mProtectionSettingSwitch.setChecked(true);
             mProtectionSettingChangeKeyButton.setVisibility(View.VISIBLE);
         } else {
