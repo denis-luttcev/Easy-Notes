@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.InputType;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -28,6 +29,8 @@ public class PinCodeInputFragment extends DialogFragment {
         void onCancel();
     }
 
+    private EditText mPinCodeField;
+
     private PinCodeInputResultListener resultListener;
 
     void setPinCodeInputDialogListener(PinCodeInputResultListener resultListener) {
@@ -40,18 +43,18 @@ public class PinCodeInputFragment extends DialogFragment {
         @SuppressLint("InflateParams") View pinCodeInputView = LayoutInflater.from(getActivity())
                 .inflate(R.layout.pin_code_input_layout, null);
 
-        final EditText pinCodeField = pinCodeInputView.findViewById(R.id.pin_code_field);
-        pinCodeField.setInputType(InputType.TYPE_CLASS_TEXT
+        mPinCodeField = pinCodeInputView.findViewById(R.id.pin_code_field);
+        mPinCodeField.setInputType(InputType.TYPE_CLASS_TEXT
                 | InputType.TYPE_TEXT_VARIATION_PASSWORD);
 
         final CheckBox visibilityCheckbox = pinCodeInputView.findViewById(R.id.visibility_checkbox);
         visibilityCheckbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton visibilityCheckbox, boolean isChecked) {
-                if (pinCodeField.getInputType() != InputType.TYPE_CLASS_TEXT) {
-                    pinCodeField.setInputType(InputType.TYPE_CLASS_TEXT);
+                if (mPinCodeField.getInputType() != InputType.TYPE_CLASS_TEXT) {
+                    mPinCodeField.setInputType(InputType.TYPE_CLASS_TEXT);
                 } else {
-                    pinCodeField.setInputType(InputType.TYPE_CLASS_TEXT
+                    mPinCodeField.setInputType(InputType.TYPE_CLASS_TEXT
                             | InputType.TYPE_TEXT_VARIATION_PASSWORD);
                 }
             }
@@ -60,9 +63,9 @@ public class PinCodeInputFragment extends DialogFragment {
         View.OnClickListener numericButtonsOnClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View numericButton) {
-                String currentPinCode = pinCodeField.getText().toString()
+                String currentPinCode = mPinCodeField.getText().toString()
                         + ((Button) numericButton).getText();
-                pinCodeField.setText(currentPinCode);
+                mPinCodeField.setText(currentPinCode);
                 final int PIN_LENGTH = 4;
                 if (currentPinCode.length() == PIN_LENGTH) {
                     returnPinCode(currentPinCode);
@@ -84,16 +87,16 @@ public class PinCodeInputFragment extends DialogFragment {
         pinCodeInputView.findViewById(R.id.clear_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                pinCodeField.setText("");
+                mPinCodeField.setText("");
             }
         });
 
         pinCodeInputView.findViewById(R.id.backspace_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String pinCode = pinCodeField.getText().toString();
+                String pinCode = mPinCodeField.getText().toString();
                 pinCode = pinCode.substring(0, pinCode.length() - 1);
-                pinCodeField.setText(pinCode);
+                mPinCodeField.setText(pinCode);
             }
         });
 
@@ -106,11 +109,6 @@ public class PinCodeInputFragment extends DialogFragment {
     private void returnPinCode(@NonNull String pinCode) {
         resultListener.onDismiss(pinCode);
         dismiss();
-    }
-
-    @Override
-    public void onDismiss(DialogInterface dialog) {
-        super.onDismiss(dialog);
     }
 
     @Override

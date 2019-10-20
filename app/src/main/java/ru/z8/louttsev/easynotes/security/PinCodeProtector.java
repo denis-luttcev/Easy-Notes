@@ -2,7 +2,7 @@ package ru.z8.louttsev.easynotes.security;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.util.Log;
+import android.util.Base64;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentManager;
@@ -10,7 +10,6 @@ import androidx.fragment.app.FragmentManager;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
@@ -35,7 +34,7 @@ public class PinCodeProtector implements Protector {
     private final int KEY_LENGTH = 128;
     private final SecureRandom RANDOMIZER = new SecureRandom();
     @SuppressWarnings("FieldCanBeLocal")
-    private final int ITERATIONS = 65536;
+    private final int ITERATIONS = 16384;
 
     private SharedPreferences preferences;
     private Context context;
@@ -106,7 +105,6 @@ public class PinCodeProtector implements Protector {
     @NonNull
     private byte[] hashPinCode(@NonNull String pinCode, @NonNull byte[] salt)
             throws NoSuchAlgorithmException, InvalidKeySpecException {
-
         KeySpec spec = new PBEKeySpec(pinCode.toCharArray(), salt, ITERATIONS, KEY_LENGTH);
         SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
         return factory.generateSecret(spec).getEncoded();
@@ -115,7 +113,7 @@ public class PinCodeProtector implements Protector {
     private void saveHash(@NonNull byte[] hash) {
         preferences
                 .edit()
-                .putString(PROTECTION_CODE, new String(hash, StandardCharsets.UTF_8))
+                .putString(PROTECTION_CODE, Base64.encodeToString(hash, Base64.DEFAULT))
                 .apply();
     }
 
@@ -167,10 +165,7 @@ public class PinCodeProtector implements Protector {
      */
     private boolean checkPinCode(@NonNull String pinCode) {
         try {
-            Log.e("TAG", hashPinCode(pinCode, readSalt()).toString());
-            Log.e("TAG", readHash().toString());
-            return true;
-            //return Arrays.equals(hashPinCode(pinCode, readSalt()), readHash());
+            return Arrays.equals(hashPinCode(pinCode, readSalt()), readHash());
         } catch (NoSuchAlgorithmException | InvalidKeySpecException | IOException e) {
             return false;
         }
@@ -189,6 +184,6 @@ public class PinCodeProtector implements Protector {
     @NonNull
     private byte[] readHash() {
         // the call is supposed strictly after checking the protection code exist
-        return Objects.requireNonNull(preferences.getString(PROTECTION_CODE, null)).getBytes();
+        return Base64.decode(preferences.getString(PROTECTION_CODE, null), Base64.DEFAULT);
     }
 }
