@@ -30,7 +30,7 @@ public abstract class Note implements Comparable<Note> {
     private Calendar deadline;
     private Calendar lastModification;
 
-    public Note() {
+    Note() {
         id = UUID.randomUUID();
         title = null;
         category = null;

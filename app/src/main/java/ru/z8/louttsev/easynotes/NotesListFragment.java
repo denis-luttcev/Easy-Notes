@@ -21,6 +21,7 @@ import java.util.Objects;
 
 import ru.z8.louttsev.easynotes.datamodel.NotesKeeper;
 
+@SuppressWarnings("WeakerAccess")
 public class NotesListFragment extends Fragment {
     private NotesKeeper mNotesKeeper;
     private BaseAdapter mNotesAdapter;

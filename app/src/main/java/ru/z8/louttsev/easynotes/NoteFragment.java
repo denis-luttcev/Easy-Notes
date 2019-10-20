@@ -20,7 +20,7 @@ import ru.z8.louttsev.easynotes.datamodel.Note;
 import ru.z8.louttsev.easynotes.datamodel.NotesKeeper;
 import ru.z8.louttsev.easynotes.datamodel.TextNote;
 
-public class NoteFragment extends Fragment {
+class NoteFragment extends Fragment {
     private NotesKeeper mNotesKeeper;
     private Note mNote;
     private EditText mTitle;

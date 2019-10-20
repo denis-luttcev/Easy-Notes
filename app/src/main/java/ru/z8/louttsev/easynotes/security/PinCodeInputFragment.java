@@ -22,7 +22,8 @@ import java.util.Objects;
 
 import ru.z8.louttsev.easynotes.R;
 
-public class PinCodeInputFragment extends DialogFragment {
+@SuppressWarnings("WeakerAccess")
+class PinCodeInputFragment extends DialogFragment {
 
     interface PinCodeInputResultListener {
         void onDismiss(String inputedPinCode);
@@ -41,7 +42,7 @@ public class PinCodeInputFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
         @SuppressLint("InflateParams") View pinCodeInputView = LayoutInflater.from(getActivity())
-                .inflate(R.layout.pin_code_input_layout, null);
+                .inflate(R.layout.pin_code_input, null);
 
         mPinCodeField = pinCodeInputView.findViewById(R.id.pin_code_field);
         mPinCodeField.setInputType(InputType.TYPE_CLASS_TEXT

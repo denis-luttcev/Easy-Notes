@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -50,40 +51,44 @@ class NotesAdapter extends BaseAdapter {
     }
 
     @Override
-    public View getView(int position, View noteView, ViewGroup viewGroup) {
-        if (noteView == null) {
-            noteView = mInflater.inflate(R.layout.note_item_layout, viewGroup, false);
+    public View getView(int position, View notePreView, ViewGroup viewGroup) {
+        if (notePreView == null) {
+            notePreView = mInflater.inflate(R.layout.note_list_item, viewGroup, false);
         }
 
         Note note = mNotes.get(position);
 
         if (note.isColored()) {
-            applyNoteViewColor(noteView, note);
+            applyNoteViewColor(notePreView, note);
         }
 
-        TextView titleView = noteView.findViewById(R.id.note_title);
+        TextView titleView = notePreView.findViewById(R.id.note_title);
         if (note.isTitled()) {
             titleView.setText(note.getTitle());
         } else titleView.setVisibility(View.GONE);
 
-        note.fillContentPreView((FrameLayout) noteView.findViewById(R.id.content_preview), mContext);
+        note.fillContentPreView((FrameLayout) notePreView.findViewById(R.id.content_preview), mContext);
 
-        TextView categoryView = noteView.findViewById(R.id.note_category);
+        ImageView categoryIcon = notePreView.findViewById(R.id.category_icon);
+        TextView categoryView = notePreView.findViewById(R.id.note_category);
         if (note.isCategorized()) {
             categoryView.setText(Objects.requireNonNull(note.getCategory()).getTitle());
-        } else categoryView.setVisibility(View.GONE);
+        } else {
+            categoryIcon.setVisibility(View.GONE);
+            categoryView.setVisibility(View.GONE);
+        }
 
-        TextView tagsView = noteView.findViewById(R.id.note_tags);
+        TextView tagsView = notePreView.findViewById(R.id.note_tags);
         if (note.isTagged()) {
             showTags(note, tagsView);
         } else tagsView.setVisibility(View.GONE);
 
-        TextView deadlineView = noteView.findViewById(R.id.note_deadline);
+        TextView deadlineView = notePreView.findViewById(R.id.note_deadline);
         if (note.isDeadlined()) {
             showDeadline(note, deadlineView);
         } else deadlineView.setVisibility(View.GONE);
 
-        return noteView;
+        return notePreView;
     }
 
     private void applyNoteViewColor(@NonNull View noteView, @NonNull Note note) {
