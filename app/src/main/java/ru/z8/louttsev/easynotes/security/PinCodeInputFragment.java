@@ -22,7 +22,7 @@ import java.util.Objects;
 
 import ru.z8.louttsev.easynotes.R;
 
-class PinCodeInputFragment extends DialogFragment {
+public class PinCodeInputFragment extends DialogFragment {
 
     interface PinCodeInputResultListener {
         void onDismiss(String inputedPinCode);

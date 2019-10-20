@@ -45,14 +45,14 @@ public class NotesListFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 //TODO: change implementation to add note
-                FragmentManager fragmentManager = Objects.requireNonNull(getActivity()).getSupportFragmentManager();
+                /*FragmentManager fragmentManager = Objects.requireNonNull(getActivity()).getSupportFragmentManager();
                 Fragment fragment = fragmentManager.findFragmentById(R.id.fragment_container);
                 fragment = new NoteFragment();
                 fragmentManager.beginTransaction()
                         .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                         .replace(R.id.fragment_container, fragment)
                         .addToBackStack(null)
-                        .commit();
+                        .commit();*/
             }
         });
 
