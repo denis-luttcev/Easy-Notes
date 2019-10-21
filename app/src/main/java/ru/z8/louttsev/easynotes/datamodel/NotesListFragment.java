@@ -1,4 +1,4 @@
-package ru.z8.louttsev.easynotes;
+package ru.z8.louttsev.easynotes.datamodel;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -12,14 +12,13 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.Objects;
 
-import ru.z8.louttsev.easynotes.datamodel.NotesKeeper;
+import ru.z8.louttsev.easynotes.App;
+import ru.z8.louttsev.easynotes.R;
 
 @SuppressWarnings("WeakerAccess")
 public class NotesListFragment extends Fragment {

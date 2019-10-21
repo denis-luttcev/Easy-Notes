@@ -1,4 +1,4 @@
-package ru.z8.louttsev.easynotes;
+package ru.z8.louttsev.easynotes.datamodel;
 
 import android.content.Context;
 import android.graphics.Typeface;
@@ -21,8 +21,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
-import ru.z8.louttsev.easynotes.datamodel.Note;
-import ru.z8.louttsev.easynotes.datamodel.Tag;
+import ru.z8.louttsev.easynotes.R;
 
 class NotesAdapter extends BaseAdapter {
     private List<Note> mNotes;
@@ -78,15 +77,24 @@ class NotesAdapter extends BaseAdapter {
             categoryView.setVisibility(View.GONE);
         }
 
+        ImageView tagsIcon = notePreView.findViewById(R.id.tags_icon);
         TextView tagsView = notePreView.findViewById(R.id.note_tags);
         if (note.isTagged()) {
             showTags(note, tagsView);
-        } else tagsView.setVisibility(View.GONE);
+        } else {
+            tagsIcon.setVisibility(View.GONE);
+            tagsView.setVisibility(View.GONE);
+        }
 
+        ImageView deadlineIcon = notePreView.findViewById(R.id.deadline_icon);
         TextView deadlineView = notePreView.findViewById(R.id.note_deadline);
         if (note.isDeadlined()) {
             showDeadline(note, deadlineView);
-        } else deadlineView.setVisibility(View.GONE);
+            deadlineIcon.setColorFilter(R.color.colorAccent);
+        } else {
+            deadlineIcon.setVisibility(View.GONE);
+            deadlineView.setVisibility(View.GONE);
+        }
 
         return notePreView;
     }
@@ -115,17 +123,13 @@ class NotesAdapter extends BaseAdapter {
     }
 
     private void showTags(@NonNull Note note, @NonNull TextView tagsView) {
-        final String SOFT_HYPHEN = "­";
-
         Set<Tag> noteTags = note.getTags();
         StringBuilder tagsLine = new StringBuilder();
         Iterator<Tag> tags = Objects.requireNonNull(noteTags).iterator();
         while (tags.hasNext()){
-            tagsLine.append("#");
             tagsLine.append(tags.next().getTitle());
             if (tags.hasNext()) {
                 tagsLine.append(" ");
-                tagsLine.append(SOFT_HYPHEN);
             }
         }
         tagsView.setText(tagsLine.toString());

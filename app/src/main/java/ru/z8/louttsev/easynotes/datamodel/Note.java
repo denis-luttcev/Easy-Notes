@@ -22,10 +22,16 @@ public abstract class Note implements Comparable<Note> {
         OVERDUE, IMMEDIATE, AHEAD, NONE
     }
 
-    private UUID id;
+    /**
+     * Unique id (primary key), null not allowable
+     */
+    private final UUID id;
+    /**
+     * Allowable: null or any not empty
+     */
     private String title;
     private Category category;
-    private Set<Tag> tags;
+    private final Set<Tag> tags;
     private Color color;
     private Calendar deadline;
     private Calendar lastModification;
@@ -40,13 +46,19 @@ public abstract class Note implements Comparable<Note> {
         modificationUpdate();
     }
 
+    /**
+     * Comparison for base sorting implementation:
+     * (1) any deadlined note before any not deadlined
+     * (2) among deadlined notes: by deadline ascending order
+     * (3) among not deadlined notes: by last modification descending order
+     */
     @Override
     public int compareTo(@NonNull Note note) {
         if (this.equals(note)) return 0;
 
         if (deadline != null) {
             if (note.deadline != null) {
-                int deadlineComparing = deadline.compareTo(Objects.requireNonNull(note.getDeadline()));
+                int deadlineComparing = deadline.compareTo(note.deadline);
                 if (deadlineComparing != 0) {
                     return deadlineComparing;
                 }
@@ -55,7 +67,7 @@ public abstract class Note implements Comparable<Note> {
             if (note.deadline != null) return 1;
         }
 
-        return note.getLastModification().compareTo(lastModification);
+        return note.lastModification.compareTo(lastModification);
     }
 
     private void modificationUpdate() {
@@ -74,7 +86,8 @@ public abstract class Note implements Comparable<Note> {
     }
 
     public void setTitle(@Nullable String title) {
-        if (title != null && !title.trim().isEmpty()) {
+        // empty senselessly and replace to null
+        if (title != null && !title.isEmpty()) {
             this.title = title;
         } else {
             this.title = null;

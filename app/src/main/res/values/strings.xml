@@ -16,4 +16,5 @@
     <string name="pin_code_input_title">Enter pin code</string>
 
     <string name="note_title_hint">Title</string>
+    <string name="note_text_hint">Text</string>
 </resources>

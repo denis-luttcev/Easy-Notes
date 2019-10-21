@@ -1,4 +1,4 @@
-package ru.z8.louttsev.easynotes;
+package ru.z8.louttsev.easynotes.datamodel;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -16,6 +16,8 @@ import androidx.fragment.app.Fragment;
 
 import java.util.Objects;
 
+import ru.z8.louttsev.easynotes.App;
+import ru.z8.louttsev.easynotes.R;
 import ru.z8.louttsev.easynotes.datamodel.Note;
 import ru.z8.louttsev.easynotes.datamodel.NotesKeeper;
 import ru.z8.louttsev.easynotes.datamodel.TextNote;

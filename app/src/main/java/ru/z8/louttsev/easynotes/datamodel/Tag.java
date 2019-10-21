@@ -5,10 +5,16 @@ import androidx.annotation.NonNull;
 import java.util.Objects;
 
 public class Tag {
+    /**
+     * Allowable: any, exclude null ald empty (senselessly)
+     */
     private String title;
 
+    /**
+     * @throws IllegalArgumentException if title is empty
+     */
     public Tag(@NonNull String title) throws IllegalArgumentException {
-        if (!title.trim().isEmpty()) {
+        if (!title.isEmpty()) {
             this.title = title;
         } else throw new IllegalArgumentException();
     }
