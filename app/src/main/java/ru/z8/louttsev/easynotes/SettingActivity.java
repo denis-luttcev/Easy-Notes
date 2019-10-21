@@ -28,7 +28,8 @@ public class SettingActivity extends AppCompatActivity {
     }
 
     private void initViews() {
-        if (mProtector.isProtectionConfigured()) {
+        // set default protection status
+        if (mProtector.isProtectionNotConfigured()) {
             mProtector.disableProtection();
         }
 
@@ -48,7 +49,6 @@ public class SettingActivity extends AppCompatActivity {
             mProtectionSettingSwitch.setChecked(false);
             mProtectionSettingChangeKeyButton.setVisibility(View.GONE);
         }
-
         mProtectionSettingSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton protectionSettingSwitch, boolean isChecked) {
@@ -62,8 +62,8 @@ public class SettingActivity extends AppCompatActivity {
     }
 
     private void changeProtectionKey() {
-        mProtector.enableProtection(getSupportFragmentManager(),
-                new Protector.OnProtectionResultListener() {
+        mProtector
+                .enableProtection(getSupportFragmentManager(), new Protector.ResultListener() {
             @Override
             public void onProtectionResultSuccess() {
                 Toast.makeText(SettingActivity.this,
@@ -83,8 +83,8 @@ public class SettingActivity extends AppCompatActivity {
     }
 
     private void switchProtectionToEnabled() {
-        mProtector.enableProtection(getSupportFragmentManager(),
-                new Protector.OnProtectionResultListener() {
+        mProtector
+                .enableProtection(getSupportFragmentManager(), new Protector.ResultListener() {
             @Override
             public void onProtectionResultSuccess() {
                 Toast.makeText(SettingActivity.this,

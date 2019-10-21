@@ -23,13 +23,13 @@ public class MainActivity extends AppCompatActivity {
 
         mProtector = App.getProtector();
 
-        if (mProtector.isProtectionConfigured()) {
+        if (mProtector.isProtectionNotConfigured()) {
             Intent settingIntent = new Intent(MainActivity.this, SettingActivity.class);
             startActivity(settingIntent);
         } else {
             if (mProtector.isProtectionEnabled()) {
                 mProtector.checkAuthorization(getSupportFragmentManager(),
-                        new Protector.OnProtectionResultListener() {
+                        new Protector.ResultListener() {
                             @Override
                             public void onProtectionResultSuccess() {
                                 // ignored

@@ -4,24 +4,24 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentManager;
 
 public interface Protector {
-    interface OnProtectionResultListener{
+    interface ResultListener {
         void onProtectionResultSuccess();
         void onProtectionResultFailure();
     }
 
-    boolean isProtectionConfigured();
+    boolean isProtectionNotConfigured();
     boolean isProtectionEnabled();
 
     /**
      * Tryes to enable protection (possible technical problems or user refusal)
      */
     void enableProtection(@NonNull FragmentManager fragmentManager,
-                          @NonNull OnProtectionResultListener resultListener);
+                          @NonNull ResultListener resultListener);
     void disableProtection();
 
     /**
      * Technical problems and user refusal are need considered as authorization denied
      */
     void checkAuthorization(@NonNull FragmentManager fragmentManager,
-                            @NonNull OnProtectionResultListener resultListener);
+                            @NonNull ResultListener resultListener);
 }
