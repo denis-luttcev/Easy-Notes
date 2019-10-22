@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -18,14 +17,12 @@ import com.google.android.flexbox.FlexboxLayout;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
-import ru.z8.louttsev.easynotes.R;
 import ru.z8.louttsev.easynotes.datamodel.Note;
 import ru.z8.louttsev.easynotes.datamodel.Tag;
 
@@ -56,40 +53,40 @@ class NotesAdapter extends BaseAdapter {
     }
 
     @Override
-    public View getView(int position, View notePreView, ViewGroup viewGroup) {
-        if (notePreView == null) {
-            notePreView = mInflater.inflate(R.layout.note_list_item, viewGroup, false);
+    public View getView(int position, View noteItemListView, ViewGroup viewGroup) {
+        if (noteItemListView == null) {
+            noteItemListView = mInflater.inflate(R.layout.note_list_item, viewGroup, false);
         }
 
         Note note = mNotes.get(position);
 
         if (note.isColored()) {
-            applyNoteViewColor(notePreView, note);
+            applyNoteViewColor(noteItemListView, note);
         }
 
-        TextView titleView = notePreView.findViewById(R.id.note_title);
+        TextView titleView = noteItemListView.findViewById(R.id.note_title);
         if (note.isTitled()) {
             titleView.setText(note.getTitle());
         } else titleView.setVisibility(View.GONE);
 
-        note.fillContentPreView((FrameLayout) notePreView.findViewById(R.id.content_preview), mContext);
+        note.fillContentPreView((FrameLayout) noteItemListView.findViewById(R.id.content_preview), mContext);
 
-        TextView categoryView = notePreView.findViewById(R.id.note_category);
+        TextView categoryView = noteItemListView.findViewById(R.id.note_category);
         if (note.isCategorized()) {
             categoryView.setText(Objects.requireNonNull(note.getCategory()).getTitle());
         } else {
             categoryView.setVisibility(View.GONE);
         }
 
-        FlexboxLayout tagsLineView = notePreView.findViewById(R.id.note_tags);
+        FlexboxLayout tagsLineView = noteItemListView.findViewById(R.id.note_tags);
         if (note.isTagged()) {
             showTags(note, tagsLineView);
         } else {
             tagsLineView.setVisibility(View.GONE);
         }
 
-        ImageView deadlineIcon = notePreView.findViewById(R.id.deadline_icon);
-        TextView deadlineView = notePreView.findViewById(R.id.note_deadline);
+        ImageView deadlineIcon = noteItemListView.findViewById(R.id.deadline_icon);
+        TextView deadlineView = noteItemListView.findViewById(R.id.note_deadline);
         if (note.isDeadlined()) {
             showDeadline(note, deadlineView);
             deadlineIcon.setColorFilter(R.color.colorAccent);
@@ -98,7 +95,7 @@ class NotesAdapter extends BaseAdapter {
             deadlineView.setVisibility(View.GONE);
         }
 
-        return notePreView;
+        return noteItemListView;
     }
 
     private void applyNoteViewColor(@NonNull View noteView, @NonNull Note note) {
