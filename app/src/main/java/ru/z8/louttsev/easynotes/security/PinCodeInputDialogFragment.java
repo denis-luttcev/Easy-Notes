@@ -12,7 +12,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.EditText;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -35,6 +35,7 @@ public class PinCodeInputDialogFragment extends DialogFragment {
         void onDismiss(String enteredPinCode);
         void onCancel();
     }
+
     private ResultListener mResultListener;
 
     void setResultListener(@NonNull ResultListener resultListener) {
@@ -55,7 +56,7 @@ public class PinCodeInputDialogFragment extends DialogFragment {
         @SuppressLint("InflateParams") View pinCodeInputView = LayoutInflater.from(getActivity())
                 .inflate(R.layout.pin_code_input, null);
 
-        final EditText mPinCodeField = pinCodeInputView.findViewById(R.id.pin_code_field);
+        final TextView mPinCodeField = pinCodeInputView.findViewById(R.id.pin_code_field);
         mPinCodeField.setInputType(InputType.TYPE_CLASS_TEXT
                 | InputType.TYPE_TEXT_VARIATION_PASSWORD);
         mPinCodeField.addTextChangedListener(new TextWatcher() {

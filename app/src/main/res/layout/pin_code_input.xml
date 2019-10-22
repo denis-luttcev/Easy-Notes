@@ -2,7 +2,6 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/pin_code_input"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingStart="8dp"
@@ -19,7 +18,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/pin_code_field" />
 
-    <EditText
+    <TextView
         android:id="@+id/pin_code_field"
         style="@style/roundedField"
         android:layout_width="0dp"
@@ -28,11 +27,11 @@
         android:ems="10"
         android:focusable="false"
         android:gravity="center"
+        android:importantForAutofill="no"
         android:textSize="24sp"
         app:layout_constraintEnd_toStartOf="@+id/visibility_checkbox"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:importantForAutofill="no"
         tools:ignore="TextFields" />
 
     <Button
