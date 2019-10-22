@@ -1,4 +1,4 @@
-package ru.z8.louttsev.easynotes.datamodel;
+package ru.z8.louttsev.easynotes;
 
 import android.content.Context;
 import android.graphics.Typeface;
@@ -8,13 +8,17 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 
+import com.google.android.flexbox.FlexboxLayout;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
@@ -22,6 +26,8 @@ import java.util.Objects;
 import java.util.Set;
 
 import ru.z8.louttsev.easynotes.R;
+import ru.z8.louttsev.easynotes.datamodel.Note;
+import ru.z8.louttsev.easynotes.datamodel.Tag;
 
 class NotesAdapter extends BaseAdapter {
     private List<Note> mNotes;
@@ -68,22 +74,18 @@ class NotesAdapter extends BaseAdapter {
 
         note.fillContentPreView((FrameLayout) notePreView.findViewById(R.id.content_preview), mContext);
 
-        ImageView categoryIcon = notePreView.findViewById(R.id.category_icon);
         TextView categoryView = notePreView.findViewById(R.id.note_category);
         if (note.isCategorized()) {
             categoryView.setText(Objects.requireNonNull(note.getCategory()).getTitle());
         } else {
-            categoryIcon.setVisibility(View.GONE);
             categoryView.setVisibility(View.GONE);
         }
 
-        ImageView tagsIcon = notePreView.findViewById(R.id.tags_icon);
-        TextView tagsView = notePreView.findViewById(R.id.note_tags);
+        FlexboxLayout tagsLineView = notePreView.findViewById(R.id.note_tags);
         if (note.isTagged()) {
-            showTags(note, tagsView);
+            showTags(note, tagsLineView);
         } else {
-            tagsIcon.setVisibility(View.GONE);
-            tagsView.setVisibility(View.GONE);
+            tagsLineView.setVisibility(View.GONE);
         }
 
         ImageView deadlineIcon = notePreView.findViewById(R.id.deadline_icon);
@@ -122,24 +124,63 @@ class NotesAdapter extends BaseAdapter {
         noteView.setBackgroundColor(color);
     }
 
-    private void showTags(@NonNull Note note, @NonNull TextView tagsView) {
+    private void showTags(@NonNull Note note, @NonNull FlexboxLayout tagsLineView) {
         Set<Tag> noteTags = note.getTags();
-        StringBuilder tagsLine = new StringBuilder();
         Iterator<Tag> tags = Objects.requireNonNull(noteTags).iterator();
         while (tags.hasNext()){
-            tagsLine.append(tags.next().getTitle());
-            if (tags.hasNext()) {
-                tagsLine.append(" ");
+            TextView tagView = (TextView) mInflater.inflate(R.layout.tag_list_item, tagsLineView, false);
+            tagView.setText(tags.next().getTitle());
+            if (!tags.hasNext()) {
+                FlexboxLayout.LayoutParams layoutParams = (FlexboxLayout.LayoutParams) tagView.getLayoutParams();
+                layoutParams.setMarginEnd(0);
+                tagView.setLayoutParams(layoutParams);
             }
+            tagsLineView.addView(tagView);
         }
-        tagsView.setText(tagsLine.toString());
     }
 
     private void showDeadline(@NonNull Note note, @NonNull TextView deadlineView) {
         Calendar deadline = note.getDeadline();
-        DateFormat dateFormat = SimpleDateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
-        deadlineView.setText(dateFormat.format(Objects.requireNonNull(deadline).getTime()));
+        deadlineView.setText(formatDeadline(Objects.requireNonNull(deadline)));
         applyDeadlineColor(note, deadlineView);
+    }
+
+    @NonNull
+    private String formatDeadline(@NonNull Calendar deadline) {
+        StringBuilder dateRepresent = new StringBuilder();
+        if (isYesterday(deadline)) {
+            dateRepresent.append(mContext.getString(R.string.yesterday));
+        } else if (isToday(deadline)) {
+            dateRepresent.append(mContext.getString(R.string.today));
+        } else if (isTomorrow(deadline)) {
+            dateRepresent.append(mContext.getString(R.string.tomorrow));
+        } else {
+            DateFormat dateFormat = SimpleDateFormat.getDateInstance(DateFormat.SHORT);
+            dateRepresent.append(dateFormat.format(deadline.getTime()));
+            dateRepresent.append(" ");
+        }
+        DateFormat timeFormat = SimpleDateFormat.getTimeInstance(DateFormat.SHORT);
+        dateRepresent.append(timeFormat.format(deadline.getTime()));
+        return dateRepresent.toString();
+    }
+
+    private boolean isToday(@NonNull Calendar date) {
+        final Calendar today = Calendar.getInstance();
+        return date.get(Calendar.DATE) == today.get(Calendar.DATE)
+                && date.get(Calendar.MONTH) == today.get(Calendar.MONTH)
+                && date.get(Calendar.YEAR) == today.get(Calendar.YEAR);
+    }
+
+    private boolean isYesterday(@NonNull Calendar date) {
+        Calendar nextDay = (Calendar) date.clone();
+        nextDay.add(Calendar.DATE, 1);
+        return isToday(nextDay);
+    }
+
+    private boolean isTomorrow(@NonNull Calendar date) {
+        Calendar prevDay = (Calendar) date.clone();
+        prevDay.add(Calendar.DATE, -1);
+        return isToday(prevDay);
     }
 
     private void applyDeadlineColor(@NonNull Note note, @NonNull TextView deadlineView) {

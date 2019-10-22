@@ -52,11 +52,10 @@ public class NotesRepository implements NotesKeeper {
         note.setContent("note2 content");
         note.setCategory(category2);
         note.markTag(tag1);
-        note.setDeadline(Calendar.getInstance());
         addNote(note);
 
         note = new TextNote();
-        note.setTitle("note3");
+        //note.setTitle("note3");
         //noinspection SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection
         note.setContent("note3 long content: Lorem ipsum dolor sit amet, consectetur adipiscing elit. In varius malesuada neque sed pellentesque. Aenean sit amet luctus justo. Maecenas venenatis lorem sit amet orci ultricies maximus. Morbi sagittis neque vitae risus tristique tincidunt. Ut tellus lectus, tempor vitae iaculis quis, tempor non ex. Maecenas imperdiet pretium ligula ac rutrum. Mauris massa felis, vulputate eget sem et, ullamcorper convallis augue.");
         note.setColor(Note.Color.ACCESSORY);
@@ -70,6 +69,9 @@ public class NotesRepository implements NotesKeeper {
         note.markTag(tag8);
         note.markTag(tag9);
         note.markTag(tag10);
+        Calendar date = Calendar.getInstance();
+        date.add(Calendar.DATE, 1);
+        note.setDeadline(date);
         addNote(note);
     }
 

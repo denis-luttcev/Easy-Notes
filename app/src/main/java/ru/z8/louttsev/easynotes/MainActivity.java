@@ -11,7 +11,6 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
-import ru.z8.louttsev.easynotes.datamodel.NotesListFragment;
 import ru.z8.louttsev.easynotes.security.Protector;
 
 public class MainActivity extends AppCompatActivity {

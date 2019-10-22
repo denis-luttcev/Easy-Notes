@@ -1,4 +1,4 @@
-package ru.z8.louttsev.easynotes.datamodel;
+package ru.z8.louttsev.easynotes;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -17,8 +17,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.Objects;
 
-import ru.z8.louttsev.easynotes.App;
-import ru.z8.louttsev.easynotes.R;
+import ru.z8.louttsev.easynotes.datamodel.NotesKeeper;
 
 @SuppressWarnings("WeakerAccess")
 public class NotesListFragment extends Fragment {

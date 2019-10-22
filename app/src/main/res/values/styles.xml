@@ -17,14 +17,27 @@
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
-    <style name="roundedField" parent="TextAppearance.MaterialComponents.Headline1">
+    <style name="CategoryPreview" parent="@style/TextAppearance.MaterialComponents.Subtitle1">
         <item name="android:background">@drawable/rounded_block</item>
-        <item name="android:textSize">24sp</item>
+        <item name="android:paddingStart">4dp</item>
+        <item name="android:paddingTop">2dp</item>
+        <item name="android:paddingEnd">4dp</item>
+        <item name="android:paddingBottom">2dp</item>
         <item name="android:textColor">@color/colorPrimaryText</item>
-        <item name="android:padding">4dp</item>
     </style>
 
-    <style name="roundedTextField" parent="TextAppearance.MaterialComponents.Body1">
+    <style name="TagPreview" parent="@style/TextAppearance.MaterialComponents.Subtitle2">
+        <item name="android:background">@drawable/rounded_label</item>
+        <item name="android:paddingStart">4dp</item>
+        <item name="android:paddingTop">2dp</item>
+        <item name="android:paddingEnd">4dp</item>
+        <item name="android:paddingBottom">2dp</item>
+        <item name="android:layout_marginEnd">4dp</item>
+        <item name="android:layout_marginTop">4dp</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+
+    <style name="roundedField" parent="TextAppearance.MaterialComponents.Body1">
         <item name="android:background">@drawable/rounded_field</item>
         <item name="android:textSize">24sp</item>
         <item name="android:textColor">@color/colorPrimaryText</item>

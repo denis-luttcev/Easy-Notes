@@ -1,4 +1,4 @@
-package ru.z8.louttsev.easynotes.datamodel;
+package ru.z8.louttsev.easynotes;
 
 import android.content.Context;
 import android.os.Bundle;

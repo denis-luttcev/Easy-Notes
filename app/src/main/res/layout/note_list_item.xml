@@ -6,30 +6,12 @@
     android:layout_height="match_parent"
     android:padding="4dp">
 
-    <ImageView
-        android:id="@+id/category_icon"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:background="@drawable/ic_bookmark_border_black_24dp"
-        app:layout_constraintBottom_toBottomOf="@+id/note_category"
-        app:layout_constraintDimensionRatio="1"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/note_category" />
-
     <TextView
         android:id="@+id/note_category"
-        style="@style/TextAppearance.MaterialComponents.Subtitle2"
+        style="@style/CategoryPreview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="2dp"
-        android:background="@drawable/rounded_block"
-        android:paddingStart="4dp"
-        android:paddingTop="2dp"
-        android:paddingEnd="4dp"
-        android:paddingBottom="2dp"
-        android:textColor="@android:color/primary_text_light"
-        app:layout_constraintHorizontal_chainStyle="spread_inside"
-        app:layout_constraintStart_toEndOf="@+id/category_icon"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
@@ -62,37 +44,38 @@
         android:textColor="@android:color/primary_text_light"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/note_category" />
+        app:layout_constraintTop_toBottomOf="@id/barrier" />
 
     <FrameLayout
         android:id="@+id/content_preview"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/note_title">
+        app:layout_constraintTop_toBottomOf="@id/note_title">
 
     </FrameLayout>
 
-    <ImageView
-        android:id="@+id/tags_icon"
-        android:layout_width="0dp"
-        android:layout_height="20dp"
-        android:background="@drawable/ic_label_outline_black_24dp"
-        app:layout_constraintBottom_toBottomOf="@id/note_tags"
-        app:layout_constraintDimensionRatio="1"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/note_tags" />
-
-    <TextView
+    <com.google.android.flexbox.FlexboxLayout
         android:id="@+id/note_tags"
-        style="@style/TextAppearance.MaterialComponents.Subtitle2"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="2dp"
-        android:textColor="@android:color/primary_text_light"
+        android:layout_marginTop="4dp"
+        app:flexDirection="row"
+        app:flexWrap="wrap"
+        app:justifyContent="flex_start"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/tags_icon"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/content_preview" />
+
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/barrier"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:barrierDirection="bottom"
+        app:constraint_referenced_ids="note_deadline,note_category"
+        tools:layout_editor_absoluteX="4dp"
+        tools:layout_editor_absoluteY="727dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
