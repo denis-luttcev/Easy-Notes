@@ -19,33 +19,38 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 import ru.z8.louttsev.easynotes.R;
 
 @SuppressWarnings("WeakerAccess")
 public class PinCodeInputDialogFragment extends DialogFragment {
-
-    interface ResultListener {
-        void onDismiss(String enteredPinCode);
-        void onCancel();
-    }
-
     @NonNull
     static PinCodeInputDialogFragment newInstance() {
         return new PinCodeInputDialogFragment();
     }
-    
+
+    interface ResultListener extends Serializable {
+        void onDismiss(String enteredPinCode);
+        void onCancel();
+    }
     private ResultListener mResultListener;
 
     void setResultListener(@NonNull ResultListener resultListener) {
         mResultListener = resultListener;
     }
 
+    private final String LISTENER = "listener";
+
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
         super.onCreateDialog(savedInstanceState);
+
+        if (savedInstanceState != null && savedInstanceState.containsKey(LISTENER)) {
+            mResultListener = (ResultListener) savedInstanceState.getSerializable(LISTENER);
+        }
 
         @SuppressLint("InflateParams") View pinCodeInputView = LayoutInflater.from(getActivity())
                 .inflate(R.layout.pin_code_input, null);
@@ -135,5 +140,11 @@ public class PinCodeInputDialogFragment extends DialogFragment {
     public void onCancel(@NonNull DialogInterface dialog) {
         super.onCancel(dialog);
         mResultListener.onCancel();
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putSerializable(LISTENER, mResultListener);
     }
 }

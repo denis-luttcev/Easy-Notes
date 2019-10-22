@@ -70,6 +70,7 @@ public class PinCodeProtector implements Protector {
             public void onDismiss(String enteredPinCode) {
                 if (savePinCode(enteredPinCode)) { // technical problems will cause false
                     resultListener.onProtectionResultSuccess();
+                    isLogged = true;
                 } else resultListener.onProtectionResultFailure();
             }
 
