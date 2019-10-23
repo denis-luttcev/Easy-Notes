@@ -1,17 +1,12 @@
 package ru.z8.louttsev.easynotes.datamodel;
 
 import android.content.Context;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
-
-import java.util.zip.Inflater;
 
 import ru.z8.louttsev.easynotes.R;
 
@@ -37,8 +32,8 @@ public class TextNote extends Note {
 
     @Override
     public void fillContentPreView(@NonNull FrameLayout contentPreView, Context context) {
-        LayoutInflater.from(context).inflate(R.layout.text_note_content_preview, contentPreView, true);
-        ((TextView) contentPreView.findViewById(R.id.text_note_preview)).setText(content);
+        LayoutInflater.from(context).inflate(R.layout.text_note_content_pre_view, contentPreView, true);
+        ((TextView) contentPreView.findViewById(R.id.text_note_pre_view)).setText(content);
     }
 
     @Override

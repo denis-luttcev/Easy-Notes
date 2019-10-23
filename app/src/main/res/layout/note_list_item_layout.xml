@@ -58,7 +58,7 @@
             app:layout_constraintTop_toBottomOf="@id/barrier" />
 
         <FrameLayout
-            android:id="@+id/content_preview"
+            android:id="@+id/content_pre_view"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
@@ -78,7 +78,7 @@
             app:justifyContent="flex_start"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/content_preview" />
+            app:layout_constraintTop_toBottomOf="@id/content_pre_view" />
 
         <androidx.constraintlayout.widget.Barrier
             android:id="@+id/barrier"

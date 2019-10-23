@@ -24,23 +24,23 @@ import java.util.Objects;
 import ru.z8.louttsev.easynotes.R;
 
 public class PinCodeInputDialogFragment extends DialogFragment {
-    @NonNull
-    static PinCodeInputDialogFragment newInstance() {
-        return new PinCodeInputDialogFragment();
-    }
-
     interface ResultListener extends Serializable {
         void onDismiss(String enteredPinCode);
         void onCancel();
     }
 
+    private final String LISTENER = "listener";
+
     private ResultListener mResultListener;
+
+    @NonNull
+    static PinCodeInputDialogFragment newInstance() {
+        return new PinCodeInputDialogFragment();
+    }
 
     void setResultListener(@NonNull ResultListener resultListener) {
         mResultListener = resultListener;
     }
-
-    private final String LISTENER = "listener";
 
     @NonNull
     @Override
@@ -52,7 +52,7 @@ public class PinCodeInputDialogFragment extends DialogFragment {
         }
 
         View pinCodeInputView = LayoutInflater.from(getActivity())
-                .inflate(R.layout.pin_code_input, null);
+                .inflate(R.layout.pin_code_input_dialog, null);
 
         final TextView mPinCodeField = pinCodeInputView.findViewById(R.id.pin_code_field);
         mPinCodeField.setInputType(InputType.TYPE_CLASS_TEXT

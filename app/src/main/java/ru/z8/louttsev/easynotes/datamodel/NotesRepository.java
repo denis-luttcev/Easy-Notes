@@ -23,6 +23,17 @@ public class NotesRepository implements NotesKeeper {
         readData();
     }
 
+    @NonNull
+    @Override
+    public Note newInstance(NoteType noteType) {
+        switch (noteType) {
+            case TEXT_NOTE:
+                return new TextNote();
+            default:
+                return null; // unreachable
+        }
+    }
+
     private void readData() {
         //TODO: change to read from db
 
@@ -186,6 +197,17 @@ public class NotesRepository implements NotesKeeper {
             }
         }
         return false;
+    }
+
+    @Nullable
+    @Override
+    public Note getNote(@NonNull UUID uuid) {
+        for (Note note : notes) {
+            if (note.getId().equals(uuid)) {
+                return note;
+            }
+        }
+        return null;
     }
 
     @Nullable

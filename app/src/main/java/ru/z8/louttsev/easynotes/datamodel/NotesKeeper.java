@@ -8,6 +8,7 @@ import java.util.Set;
 import java.util.UUID;
 
 public interface NotesKeeper {
+    @NonNull Note newInstance(NoteType noteType);
     @NonNull Set<Category> getCategories();
     void addCategory(@NonNull String title);
     void removeCategory(@NonNull String title);
@@ -22,5 +23,6 @@ public interface NotesKeeper {
     void addNote(@NonNull Note note);
     void removeNote(int position);
     boolean containNote(@NonNull UUID uuid);
+    @Nullable Note getNote(@NonNull UUID uuid);
     @Nullable Note getNote(int position);
 }

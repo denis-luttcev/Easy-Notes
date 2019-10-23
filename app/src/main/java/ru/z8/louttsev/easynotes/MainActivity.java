@@ -50,20 +50,11 @@ public class MainActivity extends AppCompatActivity {
         FragmentManager fragmentManager = getSupportFragmentManager();
         Fragment fragment = fragmentManager.findFragmentById(R.id.fragment_container);
         if (fragment == null) {
-            //TODO newInstance()
-            fragment = new NotesListFragment();
+            fragment = NotesListFragment.newInstance();
             fragmentManager.beginTransaction()
                     .add(R.id.fragment_container, fragment)
                     .commit();
         }
-
-        /*Fragment fragment = fragmentManager.findFragmentById(R.id.fragment_container);
-        if (fragment == null) {
-            fragment = new NoteFragment();
-            fragmentManager.beginTransaction()
-                    .add(R.id.fragment_container, fragment)
-                    .commit();
-        }*/
     }
 
     @Override
