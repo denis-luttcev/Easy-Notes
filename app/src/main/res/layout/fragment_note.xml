@@ -28,29 +28,111 @@
         style="@style/RoundedField"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
+        android:layout_marginStart="4dp"
         android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
+        android:layout_marginEnd="4dp"
+        android:background="@android:color/transparent"
         android:ems="10"
         android:hint="@string/note_title_hint"
         android:inputType="text"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/note_toolbar_layout" />
+        app:layout_constraintTop_toBottomOf="@+id/icon_category" />
 
     <FrameLayout
         android:id="@+id/content_view"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginStart="8dp"
+        android:layout_marginStart="4dp"
         android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
+        android:layout_marginEnd="4dp"
         android:layout_marginBottom="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/tags_note"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/title_note">
+        app:layout_constraintTop_toBottomOf="@+id/title_note" />
 
-    </FrameLayout>
+    <ImageView
+        android:id="@+id/icon_category"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@drawable/ic_bookmark_border_black_24dp"
+        app:layout_constraintBottom_toBottomOf="@+id/category_note"
+        app:layout_constraintDimensionRatio="1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/category_note" />
+
+    <ImageView
+        android:id="@+id/icon_deadline"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginEnd="4dp"
+        android:background="@drawable/ic_alarm_on_black_24dp"
+        app:layout_constraintBottom_toBottomOf="@+id/deadline_date"
+        app:layout_constraintDimensionRatio="1"
+        app:layout_constraintEnd_toStartOf="@+id/deadline_date"
+        app:layout_constraintTop_toTopOf="@+id/deadline_date" />
+
+    <com.google.android.flexbox.FlexboxLayout
+        android:id="@+id/tags_note"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:paddingBottom="16dp"
+        app:flexDirection="row"
+        app:flexWrap="wrap"
+        app:justifyContent="flex_start"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <TextView
+            android:id="@+id/tags_label"
+            style="@style/TagPreview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:text="@string/note_tags_label"
+            android:textSize="18sp"
+            tools:layout_editor_absoluteY="4dp" />
+
+    </com.google.android.flexbox.FlexboxLayout>
+
+    <TextView
+        android:id="@+id/category_note"
+        style="@style/RoundedField"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:hint="@string/note_category_hint"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toStartOf="@+id/icon_deadline"
+        app:layout_constraintStart_toEndOf="@+id/icon_category"
+        app:layout_constraintTop_toBottomOf="@+id/note_toolbar_layout" />
+
+    <TextView
+        android:id="@+id/deadline_time"
+        style="@style/RoundedField"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="4dp"
+        android:hint="@string/deadline_time_hint"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/note_toolbar_layout" />
+
+    <TextView
+        android:id="@+id/deadline_date"
+        style="@style/RoundedField"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="4dp"
+        android:hint="@string/deadline_date_hint"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toStartOf="@+id/deadline_time"
+        app:layout_constraintTop_toBottomOf="@+id/note_toolbar_layout" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

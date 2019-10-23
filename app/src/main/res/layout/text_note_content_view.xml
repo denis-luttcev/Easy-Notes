@@ -4,9 +4,10 @@
     style="@style/RoundedField"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@android:color/transparent"
     android:gravity="start|top"
-    android:inputType="textMultiLine"
     android:hint="@string/note_text_hint"
-    android:importantForAutofill="no">
+    android:importantForAutofill="no"
+    android:inputType="textMultiLine">
 
 </EditText>
