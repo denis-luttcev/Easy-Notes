@@ -1,6 +1,5 @@
 package ru.z8.louttsev.easynotes.security;
 
-import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -24,7 +23,6 @@ import java.util.Objects;
 
 import ru.z8.louttsev.easynotes.R;
 
-@SuppressWarnings("WeakerAccess")
 public class PinCodeInputDialogFragment extends DialogFragment {
     @NonNull
     static PinCodeInputDialogFragment newInstance() {
@@ -53,7 +51,7 @@ public class PinCodeInputDialogFragment extends DialogFragment {
             mResultListener = (ResultListener) savedInstanceState.getSerializable(LISTENER);
         }
 
-        @SuppressLint("InflateParams") View pinCodeInputView = LayoutInflater.from(getActivity())
+        View pinCodeInputView = LayoutInflater.from(getActivity())
                 .inflate(R.layout.pin_code_input, null);
 
         final TextView mPinCodeField = pinCodeInputView.findViewById(R.id.pin_code_field);

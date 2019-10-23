@@ -1,32 +1,40 @@
 package ru.z8.louttsev.easynotes;
 
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
-import android.widget.ListView;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.flexbox.FlexboxLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.util.Calendar;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 import ru.z8.louttsev.easynotes.datamodel.Note;
 import ru.z8.louttsev.easynotes.datamodel.NotesKeeper;
+import ru.z8.louttsev.easynotes.datamodel.Tag;
 
-@SuppressWarnings("WeakerAccess")
 public class NotesListFragment extends Fragment {
     private NotesKeeper mNotesKeeper;
-    //private BaseAdapter mNotesAdapter;
+    private RecyclerView mNotesList;
+    private NotesAdapter mNotesAdapter;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -36,77 +44,140 @@ public class NotesListFragment extends Fragment {
     }
 
     private class NoteHolder extends RecyclerView.ViewHolder {
+        private LayoutInflater mInflater;
+
+        private TextView mNoteTitleView;
+        private TextView mNoteCategoryView;
+        private FrameLayout mNoteContentPreView;
+        private FlexboxLayout mNoteTagsLineView;
+        private ImageView mNoteDeadlineIcon;
+        private TextView mNoteDeadlineView;
+
         public NoteHolder(@NonNull LayoutInflater inflater, @NonNull ViewGroup parent) {
             super(inflater.inflate(R.layout.note_list_item, parent, false));
+
+            mInflater = inflater;
+
+            mNoteTitleView = itemView.findViewById(R.id.note_title);
+            mNoteCategoryView = itemView.findViewById(R.id.note_category);
+            mNoteContentPreView = itemView.findViewById(R.id.content_preview);
+            mNoteTagsLineView = itemView.findViewById(R.id.note_tags);
+            mNoteDeadlineIcon = itemView.findViewById(R.id.deadline_icon);
+            mNoteDeadlineView = itemView.findViewById(R.id.note_deadline);
+        }
+
+        public void bindNote(@NonNull Note note) {
+            if (note.isColored()) {
+                applyNoteViewColor(itemView, note);
+            }
+
+            if (note.isTitled()) {
+                mNoteTitleView.setText(note.getTitle());
+            } else mNoteTitleView.setVisibility(View.GONE);
+
+            if (note.isCategorized()) {
+                mNoteCategoryView.setText(Objects.requireNonNull(note.getCategory()).getTitle());
+            } else {
+                mNoteCategoryView.setVisibility(View.GONE);
+            }
+
+            note.fillContentPreView(mNoteContentPreView, getActivity());
+
+            if (note.isTagged()) {
+                showTags(note, mNoteTagsLineView);
+            } else {
+                mNoteTagsLineView.setVisibility(View.GONE);
+            }
+
+            if (note.isDeadlined()) {
+                mNoteDeadlineView.setText(note.getDeadlineRepresent(getActivity()));
+                applyDeadlineColor(note, mNoteDeadlineView);
+            } else {
+                mNoteDeadlineIcon.setVisibility(View.GONE);
+                mNoteDeadlineView.setVisibility(View.GONE);
+            }
+        }
+
+        private void applyNoteViewColor(@NonNull View noteView, @NonNull Note note) {
+            int color = R.color.colorNoneNote;
+            switch (note.getColor()) {
+                case URGENT:
+                    color = R.color.colorUrgentNote;
+                    break;
+                case ATTENTION:
+                    color = R.color.colorAttentionNote;
+                    break;
+                case NORMAL:
+                    color = R.color.colorNormalNote;
+                    break;
+                case QUIET:
+                    color = R.color.colorQuietNote;
+                    break;
+                case ACCESSORY:
+                    color = R.color.colorAccessoryNote;
+                    break;
+                default: // ignored
+            }
+            ((CardView) noteView).setCardBackgroundColor(getResources().getColor(color));
+            //noteView.setBackgroundColor(getResources().getColor(color));
+        }
+
+        private void showTags(@NonNull Note note, @NonNull FlexboxLayout tagsLineView) {
+            Set<Tag> noteTags = note.getTags();
+            Iterator<Tag> tags = Objects.requireNonNull(noteTags).iterator();
+            while (tags.hasNext()){
+                TextView tagView = (TextView) mInflater
+                        .inflate(R.layout.tag_list_item, tagsLineView, false);
+                tagView.setText(tags.next().getTitle());
+                if (!tags.hasNext()) {
+                    FlexboxLayout.LayoutParams layoutParams = (FlexboxLayout.LayoutParams) tagView.getLayoutParams();
+                    layoutParams.setMarginEnd(0);
+                    tagView.setLayoutParams(layoutParams);
+                }
+                tagsLineView.addView(tagView);
+            }
+        }
+
+        private void applyDeadlineColor(@NonNull Note note, @NonNull TextView deadlineView) {
+            int color = R.color.colorDeadlineAhead;
+            switch (note.getDeadlineStatus(Calendar.getInstance())) {
+                case OVERDUE:
+                    color = R.color.colorDeadlineOverdue;
+                    deadlineView.setTypeface(Typeface.DEFAULT_BOLD);
+                    break;
+                case IMMEDIATE:
+                    color = R.color.colorDeadlineImmediate;
+                    deadlineView.setTypeface(Typeface.DEFAULT_BOLD);
+                    break;
+                default:
+                    deadlineView.setTypeface(Typeface.DEFAULT);
+            }
+            deadlineView.setTextColor(getResources().getColor(color));
         }
     }
 
-    private class NoteAdapter extends RecyclerView.Adapter<NoteHolder> {
+    private class NotesAdapter extends RecyclerView.Adapter<NoteHolder> {
         private List<Note> mNotes;
 
-        public NoteAdapter(List<Note> mNotes) {
+        public NotesAdapter(List<Note> mNotes) {
             this.mNotes = mNotes;
         }
 
-        /**
-         * Called when RecyclerView needs a new {@link ViewHolder} of the given type to represent
-         * an item.
-         * <p>
-         * This new ViewHolder should be constructed with a new View that can represent the items
-         * of the given type. You can either create a new View manually or inflate it from an XML
-         * layout file.
-         * <p>
-         * The new ViewHolder will be used to display items of the adapter using
-         * {@link #onBindViewHolder(ViewHolder, int, List)}. Since it will be re-used to display
-         * different items in the data set, it is a good idea to cache references to sub views of
-         * the View to avoid unnecessary {@link View#findViewById(int)} calls.
-         *
-         * @param parent   The ViewGroup into which the new View will be added after it is bound to
-         *                 an adapter position.
-         * @param viewType The view type of the new View.
-         * @return A new ViewHolder that holds a View of the given view type.
-         * @see #getItemViewType(int)
-         * @see #onBindViewHolder(ViewHolder, int)
-         */
         @NonNull
         @Override
         public NoteHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            return null;
+            LayoutInflater inflater = LayoutInflater.from(getActivity());
+            return new NoteHolder(inflater, parent);
         }
 
-        /**
-         * Called by RecyclerView to display the data at the specified position. This method should
-         * update the contents of the {@link ViewHolder#itemView} to reflect the item at the given
-         * position.
-         * <p>
-         * Note that unlike {@link ListView}, RecyclerView will not call this method
-         * again if the position of the item changes in the data set unless the item itself is
-         * invalidated or the new position cannot be determined. For this reason, you should only
-         * use the <code>position</code> parameter while acquiring the related data item inside
-         * this method and should not keep a copy of it. If you need the position of an item later
-         * on (e.g. in a click listener), use {@link ViewHolder#getAdapterPosition()} which will
-         * have the updated adapter position.
-         * <p>
-         * Override {@link #onBindViewHolder(ViewHolder, int, List)} instead if Adapter can
-         * handle efficient partial bind.
-         *
-         * @param holder   The ViewHolder which should be updated to represent the contents of the
-         *                 item at the given position in the data set.
-         * @param position The position of the item within the adapter's data set.
-         */
         @Override
         public void onBindViewHolder(@NonNull NoteHolder holder, int position) {
-
+            holder.bindNote(mNotes.get(position));
         }
 
-        /**
-         * Returns the total number of items in the data set held by the adapter.
-         *
-         * @return The total number of items in this adapter.
-         */
         @Override
         public int getItemCount() {
-            return 0;
+            return mNotes.size();
         }
     }
 
@@ -118,8 +189,8 @@ public class NotesListFragment extends Fragment {
         Toolbar mToolBar = notesListView.findViewById(R.id.toolbar);
         ((AppCompatActivity) Objects.requireNonNull(getActivity())).setSupportActionBar(mToolBar);
 
-        FloatingActionButton mAddButton = notesListView.findViewById(R.id.fab);
-        mAddButton.setOnClickListener(new View.OnClickListener() {
+        FloatingActionButton mAddNoteButton = notesListView.findViewById(R.id.fab);
+        mAddNoteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 //TODO: change implementation to add note
@@ -134,13 +205,16 @@ public class NotesListFragment extends Fragment {
             }
         });
 
-        //TODO: change implementation to RecyclerView
-        RecyclerView mListView = notesListView.findViewById(R.id.notes_list);
-        mListView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        mNotesList = notesListView.findViewById(R.id.notes_list);
+        mNotesList.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-        //mNotesAdapter = new NotesAdapter(mNotesKeeper.getNotes(), getActivity());
-        //mListView.setAdapter(mNotesAdapter);
+        updateNotesList();
 
         return notesListView;
+    }
+
+    private void updateNotesList() {
+        mNotesAdapter = new NotesAdapter(mNotesKeeper.getNotes());
+        mNotesList.setAdapter(mNotesAdapter);
     }
 }

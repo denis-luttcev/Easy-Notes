@@ -45,6 +45,8 @@ public class NotesRepository implements NotesKeeper {
         note.setContent("note1 content");
         note.setColor(Note.Color.ATTENTION);
         note.setCategory(category1);
+        Calendar date = Calendar.getInstance();
+        note.setDeadline(date);
         addNote(note);
 
         note = new TextNote();
@@ -52,6 +54,9 @@ public class NotesRepository implements NotesKeeper {
         note.setContent("note2 content");
         note.setCategory(category2);
         note.markTag(tag1);
+        date = Calendar.getInstance();
+        date.add(Calendar.DATE, -1);
+        note.setDeadline(date);
         addNote(note);
 
         note = new TextNote();
@@ -69,7 +74,7 @@ public class NotesRepository implements NotesKeeper {
         note.markTag(tag8);
         note.markTag(tag9);
         note.markTag(tag10);
-        Calendar date = Calendar.getInstance();
+        date = Calendar.getInstance();
         date.add(Calendar.DATE, 1);
         note.setDeadline(date);
         addNote(note);

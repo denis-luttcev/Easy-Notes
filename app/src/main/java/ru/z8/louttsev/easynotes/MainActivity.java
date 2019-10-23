@@ -47,12 +47,10 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        Toolbar mToolBar = findViewById(R.id.toolbar);
-        setSupportActionBar(mToolBar);
-
         FragmentManager fragmentManager = getSupportFragmentManager();
         Fragment fragment = fragmentManager.findFragmentById(R.id.fragment_container);
         if (fragment == null) {
+            //TODO newInstance()
             fragment = new NotesListFragment();
             fragmentManager.beginTransaction()
                     .add(R.id.fragment_container, fragment)
@@ -70,24 +68,18 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
         if (id == R.id.action_settings) {
             Intent settingIntent = new Intent(MainActivity.this, SettingActivity.class);
             startActivity(settingIntent);
             return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 }

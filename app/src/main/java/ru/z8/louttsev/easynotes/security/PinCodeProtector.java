@@ -193,7 +193,6 @@ public class PinCodeProtector implements Protector {
     private byte[] readSalt() throws IOException {
         byte[] salt = new byte[KEY_LENGTH];
         FileInputStream saltFile = context.openFileInput(SALT_FILE_NAME);
-        //noinspection ResultOfMethodCallIgnored
         saltFile.read(salt, 0, KEY_LENGTH); // read in byte array, result ignored
         saltFile.close();
         return salt;

@@ -6,11 +6,15 @@ import android.widget.FrameLayout;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
+
+import ru.z8.louttsev.easynotes.R;
 
 public abstract class Note implements Comparable<Note> {
 
@@ -207,6 +211,44 @@ public abstract class Note implements Comparable<Note> {
 
     public boolean isDeadlined() {
         return deadline != null;
+    }
+
+    @NonNull
+    public String getDeadlineRepresent(@NonNull Context context) {
+        StringBuilder dateRepresent = new StringBuilder();
+        if (isYesterday(deadline)) {
+            dateRepresent.append(context.getString(R.string.yesterday));
+        } else if (isToday(deadline)) {
+            dateRepresent.append(context.getString(R.string.today));
+        } else if (isTomorrow(deadline)) {
+            dateRepresent.append(context.getString(R.string.tomorrow));
+        } else {
+            DateFormat dateFormat = SimpleDateFormat.getDateInstance(DateFormat.SHORT);
+            dateRepresent.append(dateFormat.format(deadline.getTime()));
+            dateRepresent.append(" ");
+        }
+        DateFormat timeFormat = SimpleDateFormat.getTimeInstance(DateFormat.SHORT);
+        dateRepresent.append(timeFormat.format(deadline.getTime()));
+        return dateRepresent.toString();
+    }
+
+    private boolean isToday(@NonNull Calendar date) {
+        Calendar today = Calendar.getInstance();
+        return date.get(Calendar.DATE) == today.get(Calendar.DATE)
+                && date.get(Calendar.MONTH) == today.get(Calendar.MONTH)
+                && date.get(Calendar.YEAR) == today.get(Calendar.YEAR);
+    }
+
+    private boolean isYesterday(@NonNull Calendar date) {
+        Calendar nextDay = (Calendar) date.clone();
+        nextDay.add(Calendar.DATE, 1);
+        return isToday(nextDay);
+    }
+
+    private boolean isTomorrow(@NonNull Calendar date) {
+        Calendar prevDay = (Calendar) date.clone();
+        prevDay.add(Calendar.DATE, -1);
+        return isToday(prevDay);
     }
 
     @NonNull
