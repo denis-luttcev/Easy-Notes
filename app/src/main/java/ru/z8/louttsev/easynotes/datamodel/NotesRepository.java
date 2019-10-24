@@ -6,26 +6,41 @@ import androidx.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
 public class NotesRepository implements NotesKeeper {
     private Set<Category> categories;
     private Set<Tag> tags;
+    /**
+     * Sorted storage for selection by position
+     */
     private List<Note> notes;
+    /**
+     * Storage index for selection by ID
+      */
+    private Map<UUID, Note> notesIndex;
 
     public NotesRepository() {
         this.categories = new HashSet<>();
         this.tags = new HashSet<>();
         this.notes = new ArrayList<>();
+        notesIndex = new HashMap<>();
         readData();
     }
 
+    /**
+     * Creates new note match NoteType
+     * Concrete class constructors are placed here
+     * New type need declare in NoteType enum
+     */
     @NonNull
     @Override
-    public Note newInstance(NoteType noteType) {
+    public Note createNote(NoteType noteType) {
         switch (noteType) {
             case TEXT_NOTE:
                 return new TextNote();
@@ -181,33 +196,30 @@ public class NotesRepository implements NotesKeeper {
         if (position < 0) {
             position = -position - 1;
         }
+        notesIndex.put(note.getId(), note);
         notes.add(position, note);
     }
 
     @Override
     public void removeNote(int position) {
+        notesIndex.remove(notes.get(position).getId());
         notes.remove(position);
     }
 
     @Override
+    public void removeNote(@NonNull UUID uuid) {
+        notes.remove(notesIndex.get(uuid));
+    }
+
+    @Override
     public boolean containNote(@NonNull UUID uuid) {
-        for (Note note : notes) {
-            if (note.getId().equals(uuid)) {
-                return true;
-            }
-        }
-        return false;
+        return notesIndex.containsKey(uuid);
     }
 
     @Nullable
     @Override
     public Note getNote(@NonNull UUID uuid) {
-        for (Note note : notes) {
-            if (note.getId().equals(uuid)) {
-                return note;
-            }
-        }
-        return null;
+        return notesIndex.get(uuid);
     }
 
     @Nullable

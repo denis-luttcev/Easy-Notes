@@ -1,9 +1,6 @@
 package ru.z8.louttsev.easynotes;
 
-import android.content.Context;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,7 +19,6 @@ import java.util.UUID;
 import ru.z8.louttsev.easynotes.datamodel.Note;
 import ru.z8.louttsev.easynotes.datamodel.NoteType;
 import ru.z8.louttsev.easynotes.datamodel.NotesKeeper;
-import ru.z8.louttsev.easynotes.datamodel.TextNote;
 
 public class NoteFragment extends Fragment {
     private static final String ARG_NOTE_ID = "note_id";
@@ -64,7 +60,7 @@ public class NoteFragment extends Fragment {
                 mNote = mNotesKeeper.getNote((UUID) Objects.requireNonNull(args.getSerializable(ARG_NOTE_ID)));
             }
             if (args.containsKey(ARG_NOTE_TYPE)) { // create new
-                mNote = mNotesKeeper.newInstance((NoteType) args.getSerializable(ARG_NOTE_TYPE));
+                mNote = mNotesKeeper.createNote((NoteType) args.getSerializable(ARG_NOTE_TYPE));
             }
         }
     }
