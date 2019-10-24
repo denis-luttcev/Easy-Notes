@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -102,7 +103,7 @@ public class NotesRepository implements NotesKeeper {
     @NonNull
     @Override
     public Set<Category> getCategories() {
-        return (Set<Category>) categories.values();
+        return new HashSet<>(categories.values());
     }
 
     @Override
@@ -136,7 +137,7 @@ public class NotesRepository implements NotesKeeper {
     @NonNull
     @Override
     public Set<Tag> getTags() {
-        return (Set<Tag>) tags.values();
+        return new HashSet<>(tags.values());
     }
 
     @Override

@@ -2,6 +2,7 @@ package ru.z8.louttsev.easynotes;
 
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -98,26 +99,36 @@ public class NoteFragment extends Fragment {
         }
 
         mTitle = mNoteLayout.findViewById(R.id.title_note);
-        if (mNote.isTitled()) {
-            mTitle.setText(mNote.getTitle());
-        }
+        mTitle.setText(mNote.getTitle());
 
         mContentView = mNoteLayout.findViewById(R.id.content_view);
         mNote.fillContentView(mContentView, getActivity());
 
         mTags = mNoteLayout.findViewById(R.id.tags_note);
-        if (mNote.isTagged()) {
-            showTags(mNote, mTags);
-        }
-        TextView addTag = (TextView) Objects.requireNonNull(getActivity()).getLayoutInflater()
-                .inflate(R.layout.tag_view, mTags, false);
-        addTag.setText(getString(R.string.add_tag));
-        addTag.setBackground(getResources().getDrawable(R.drawable.rounded_not_fill_label));
-        addTag.setTextColor(getResources().getColor(R.color.colorPrimaryText));
-        FlexboxLayout.LayoutParams layoutParams = (FlexboxLayout.LayoutParams) addTag.getLayoutParams();
-        layoutParams.setMarginEnd(0);
-        addTag.setLayoutParams(layoutParams);
-        mTags.addView(addTag);
+        showTags(mNote, mTags);
+
+        EditText newTag = (EditText) Objects.requireNonNull(getActivity()).getLayoutInflater()
+                .inflate(R.layout.add_new_view, mTags, false);
+        newTag.setHint(getString(R.string.add_new_tag_hint));
+        newTag.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
+                if (keyEvent != null && keyEvent.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
+                    addNewTag(textView);
+                    return true;
+                }
+                return false;
+            }
+        });
+        newTag.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean isFocused) {
+                if (!isFocused) {
+                    addNewTag(view);
+                }
+            }
+        });
+        mTags.addView(newTag);
 
         /*mNoteLayout.findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -173,14 +184,15 @@ public class NoteFragment extends Fragment {
     }
 
     private void showTags(@NonNull Note note, @NonNull FlexboxLayout tagsLineView) {
-        Set<Tag> noteTags = note.getTags();
-        for (Tag tag : Objects.requireNonNull(noteTags)) {
+        Set<Tag> allTags = mNotesKeeper.getTags();
+        for (Tag tag : allTags) {
             CheckBox tagView = (CheckBox) Objects.requireNonNull(getActivity()).getLayoutInflater()
                     .inflate(R.layout.tag_view, tagsLineView, false);
             tagView.setText(tag.getTitle());
-            tagView.setTextColor(getResources().getColor(R.color.colorWhiteText));
-            tagView.setChecked(true);
-
+            if (mNote.hasTag(tag)) {
+                tagView.setTextColor(getResources().getColor(R.color.colorWhiteText));
+                tagView.setChecked(true);
+            }
             tagView.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton tagCheckbox, boolean isChecked) {
@@ -197,8 +209,16 @@ public class NoteFragment extends Fragment {
                     }
                 }
             });
-
             tagsLineView.addView(tagView);
         }
+    }
+
+    private void addNewTag(@NonNull View view) {
+        EditText field = (EditText) view;
+        String newTag = field.getText().toString();
+        mNotesKeeper.addTag(newTag);
+        CheckBox tagView = (CheckBox) Objects.requireNonNull(getActivity()).getLayoutInflater()
+                .inflate(R.layout.tag_view, tagsLineView, false);
+        tagView.setText(tag.getTitle());
     }
 }

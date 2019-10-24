@@ -9,7 +9,9 @@ import androidx.annotation.Nullable;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
@@ -35,7 +37,7 @@ public abstract class Note implements Comparable<Note> {
      */
     private String title;
     private Category category;
-    private final Set<Tag> tags;
+    private Map<String, Tag> tags;
     private Color color;
     private Calendar deadline;
     private Calendar lastModification;
@@ -45,7 +47,7 @@ public abstract class Note implements Comparable<Note> {
         title = null;
         category = null;
         color = Color.NONE;
-        tags = new HashSet<>();
+        tags = new HashMap<>();
         deadline = null;
         modificationUpdate();
     }
@@ -149,28 +151,25 @@ public abstract class Note implements Comparable<Note> {
         return color != Color.NONE;
     }
 
-    @Nullable
+    @NonNull
     public Set<Tag> getTags() {
-        if (isTagged()) {
-            return tags;
-        }
-        return null;
+        return new HashSet<>(tags.values());
     }
 
     public void markTag(@NonNull Tag tag) {
-        tags.add(tag);
+        tags.put(tag.getTitle(), tag);
         modificationUpdate();
     }
 
     public void unmarkTag(@NonNull Tag tag) {
         if (hasTag(tag)) {
-            tags.remove(tag);
+            tags.remove(tag.getTitle());
             modificationUpdate();
         }
     }
 
     public boolean hasTag(@NonNull Tag tag) {
-        return tags.contains(tag);
+        return tags.containsKey(tag.getTitle());
     }
 
     public boolean isTagged() {

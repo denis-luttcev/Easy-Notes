@@ -23,5 +23,5 @@
     <string name="note_text_hint">Text</string>
     <string name="note_category_hint">Category</string>
     <string name="deadline_hint">Deadline</string>
-    <string name="add_tag">+ tag</string>
+    <string name="add_new_tag_hint">+ tag</string>
 </resources>
