@@ -5,23 +5,73 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/note_toolbar_layout"
+    <ImageView
+        android:id="@+id/icon_color"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="4dp"
+        android:background="@drawable/ic_color_lens_black_24dp"
+        app:layout_constraintBottom_toBottomOf="@+id/color_note"
+        app:layout_constraintDimensionRatio="1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/color_note" />
+
+    <TextView
+        android:id="@+id/color_note"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@drawable/circular_block"
+        app:layout_constraintBottom_toBottomOf="@+id/icon_category"
+        app:layout_constraintDimensionRatio="1"
+        app:layout_constraintStart_toEndOf="@id/icon_color"
+        app:layout_constraintTop_toTopOf="@+id/icon_category" />
+
+    <ImageView
+        android:id="@+id/icon_category"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="4dp"
+        android:background="@drawable/ic_bookmark_border_black_24dp"
+        app:layout_constraintBottom_toBottomOf="@+id/category_note"
+        app:layout_constraintDimensionRatio="1"
+        app:layout_constraintStart_toEndOf="@id/color_note"
+        app:layout_constraintTop_toTopOf="@+id/category_note" />
+
+    <TextView
+        android:id="@+id/category_note"
+        style="@style/RoundedField"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:theme="@style/AppTheme.AppBarOverlay"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:hint="@string/note_category_hint"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toStartOf="@+id/icon_deadline"
+        app:layout_constraintStart_toEndOf="@+id/icon_category"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/icon_deadline"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginEnd="4dp"
+        android:background="@drawable/ic_alarm_on_black_24dp"
+        app:layout_constraintBottom_toBottomOf="@+id/deadline_note"
+        app:layout_constraintDimensionRatio="1"
+        app:layout_constraintEnd_toStartOf="@+id/deadline_note"
+        app:layout_constraintTop_toTopOf="@+id/deadline_note" />
+
+    <TextView
+        android:id="@+id/deadline_note"
+        style="@style/RoundedField"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="4dp"
+        android:hint="@string/deadline_hint"
+        android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/note_toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="?attr/colorPrimary"
-            app:popupTheme="@style/AppTheme.PopupOverlay" />
-
-    </com.google.android.material.appbar.AppBarLayout>
+        app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
         android:id="@+id/title_note"
@@ -35,6 +85,7 @@
         android:ems="10"
         android:hint="@string/note_title_hint"
         android:inputType="text"
+        android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -51,88 +102,22 @@
         app:layout_constraintBottom_toTopOf="@+id/tags_note"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/title_note" />
+        app:layout_constraintTop_toBottomOf="@+id/title_note" >
 
-    <ImageView
-        android:id="@+id/icon_category"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:background="@drawable/ic_bookmark_border_black_24dp"
-        app:layout_constraintBottom_toBottomOf="@+id/category_note"
-        app:layout_constraintDimensionRatio="1"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/category_note" />
-
-    <ImageView
-        android:id="@+id/icon_deadline"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginEnd="4dp"
-        android:background="@drawable/ic_alarm_on_black_24dp"
-        app:layout_constraintBottom_toBottomOf="@+id/deadline_date"
-        app:layout_constraintDimensionRatio="1"
-        app:layout_constraintEnd_toStartOf="@+id/deadline_date"
-        app:layout_constraintTop_toTopOf="@+id/deadline_date" />
+    </FrameLayout>
 
     <com.google.android.flexbox.FlexboxLayout
         android:id="@+id/tags_note"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:paddingBottom="16dp"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        android:paddingBottom="8dp"
         app:flexDirection="row"
         app:flexWrap="wrap"
         app:justifyContent="flex_start"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
-
-        <TextView
-            android:id="@+id/tags_label"
-            style="@style/TagPreview"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@android:color/transparent"
-            android:text="@string/note_tags_label"
-            android:textSize="18sp"
-            tools:layout_editor_absoluteY="4dp" />
-
-    </com.google.android.flexbox.FlexboxLayout>
-
-    <TextView
-        android:id="@+id/category_note"
-        style="@style/RoundedField"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:hint="@string/note_category_hint"
-        android:textSize="18sp"
-        app:layout_constraintEnd_toStartOf="@+id/icon_deadline"
-        app:layout_constraintStart_toEndOf="@+id/icon_category"
-        app:layout_constraintTop_toBottomOf="@+id/note_toolbar_layout" />
-
-    <TextView
-        android:id="@+id/deadline_time"
-        style="@style/RoundedField"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="4dp"
-        android:hint="@string/deadline_time_hint"
-        android:textSize="18sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/note_toolbar_layout" />
-
-    <TextView
-        android:id="@+id/deadline_date"
-        style="@style/RoundedField"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="4dp"
-        android:hint="@string/deadline_date_hint"
-        android:textSize="18sp"
-        app:layout_constraintEnd_toStartOf="@+id/deadline_time"
-        app:layout_constraintTop_toBottomOf="@+id/note_toolbar_layout" />
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -37,9 +37,14 @@
         <item name="android:textSize">12sp</item>
     </style>
 
+    <style name="TagView" parent="@style/TagPreview">
+        <item name="android:background">@drawable/tag_checkbox_selector</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+
     <style name="RoundedField" parent="TextAppearance.MaterialComponents.Body1">
         <item name="android:background">@drawable/rounded_field</item>
-        <item name="android:textSize">24sp</item>
+        <item name="android:textSize">18sp</item>
         <item name="android:textColor">@color/colorPrimaryText</item>
         <item name="android:padding">4dp</item>
     </style>

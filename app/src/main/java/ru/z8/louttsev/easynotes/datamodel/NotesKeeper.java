@@ -3,6 +3,7 @@ package ru.z8.louttsev.easynotes.datamodel;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -13,17 +14,16 @@ public interface NotesKeeper {
     void addCategory(@NonNull String title);
     void removeCategory(@NonNull String title);
     boolean containCategory(@NonNull String title);
-    @Nullable Category getCategory(@NonNull String title);
+    @NonNull Category getCategory(@NonNull String title) throws IllegalAccessException;
     @NonNull Set<Tag> getTags();
     void addTag(@NonNull String title);
     void removeTag(@NonNull String title);
     boolean containTag(@NonNull String title);
-    @Nullable Tag getTag(@NonNull String title);
-    @NonNull List<Note> getNotes();
+    @NonNull Tag getTag(@NonNull String title) throws IllegalAccessException;
     void addNote(@NonNull Note note);
-    void removeNote(int position);
     void removeNote(@NonNull UUID uuid);
     boolean containNote(@NonNull UUID uuid);
-    @Nullable Note getNote(@NonNull UUID uuid);
-    @Nullable Note getNote(int position);
+    @NonNull Note getNote(@NonNull UUID uuid) throws IllegalAccessException;
+    @NonNull Note getNote(int position);
+    int getNotesCount();
 }

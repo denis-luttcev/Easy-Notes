@@ -138,7 +138,7 @@ public class NotesListFragment extends Fragment {
             Iterator<Tag> tags = Objects.requireNonNull(noteTags).iterator();
             while (tags.hasNext()){
                 TextView tagView = (TextView) mInflater
-                        .inflate(R.layout.tag_view, tagsLineView, false);
+                        .inflate(R.layout.tag__pre_view, tagsLineView, false);
                 tagView.setText(tags.next().getTitle());
                 if (!tags.hasNext()) {
                     FlexboxLayout.LayoutParams layoutParams = (FlexboxLayout.LayoutParams) tagView.getLayoutParams();
@@ -188,12 +188,12 @@ public class NotesListFragment extends Fragment {
 
         @Override
         public void onBindViewHolder(@NonNull NoteHolder holder, int position) {
-            holder.bindNote(Objects.requireNonNull(mNotesKeeper.getNote(position)));
+            holder.bindNote(mNotesKeeper.getNote(position));
         }
 
         @Override
         public int getItemCount() {
-            return mNotesKeeper.getNotes().size();
+            return mNotesKeeper.getNotesCount();
         }
     }
 
