@@ -55,7 +55,7 @@ public abstract class Note implements Comparable<Note> {
     /**
      * Comparison for base sorting implementation:
      * (1) any deadlined note before any not deadlined
-     * (2) among deadlined notes: by deadline ascending order
+     * (2) among deadlined notes: by deadline ascending order, for equals rule (3)
      * (3) among not deadlined notes: by last modification descending order
      */
     @Override
@@ -78,7 +78,7 @@ public abstract class Note implements Comparable<Note> {
 
     private void modificationUpdate() {
         lastModification = Calendar.getInstance();
-        //TODO: point to write new or edited note to DB
+        //TODO: ? point to write new or edited note to DB
     }
 
     @NonNull

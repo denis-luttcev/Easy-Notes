@@ -6,6 +6,7 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
@@ -40,6 +41,8 @@ public class NoteFragment extends Fragment {
     private EditText mTitle;
     private FrameLayout mContentView;
     private FlexboxLayout mTags;
+
+    private EditText mPlusTagView;
 
     @NonNull
     static NoteFragment getInstance(@NonNull UUID noteId) {
@@ -83,9 +86,7 @@ public class NoteFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View mNoteLayout = inflater.inflate(R.layout.fragment_note, container, false);
 
-        if (mNote.isColored()) {
-            applyNoteLayoutColor(mNoteLayout, mNote);
-        }
+        applyNoteLayoutColor(mNoteLayout, mNote);
 
         mCategory = mNoteLayout.findViewById(R.id.category_note);
         if (mNote.isCategorized()) {
@@ -106,39 +107,6 @@ public class NoteFragment extends Fragment {
 
         mTags = mNoteLayout.findViewById(R.id.tags_note);
         showTags(mNote, mTags);
-
-        EditText newTag = (EditText) Objects.requireNonNull(getActivity()).getLayoutInflater()
-                .inflate(R.layout.add_new_view, mTags, false);
-        newTag.setHint(getString(R.string.add_new_tag_hint));
-        newTag.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
-                if (keyEvent != null && keyEvent.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
-                    addNewTag(textView);
-                    return true;
-                }
-                return false;
-            }
-        });
-        newTag.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View view, boolean isFocused) {
-                if (!isFocused) {
-                    addNewTag(view);
-                }
-            }
-        });
-        mTags.addView(newTag);
-
-        /*mNoteLayout.findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mNote.setTitle(mTitle.getText().toString());
-                mNote.setContent((FrameLayout) mNoteLayout.findViewById(R.id.content_view));
-                mNotesKeeper.addNote(mNote);
-                Objects.requireNonNull(getActivity()).getSupportFragmentManager().popBackStack();
-            }
-        });*/
 
         return mNoteLayout;
     }
@@ -186,39 +154,77 @@ public class NoteFragment extends Fragment {
     private void showTags(@NonNull Note note, @NonNull FlexboxLayout tagsLineView) {
         Set<Tag> allTags = mNotesKeeper.getTags();
         for (Tag tag : allTags) {
-            CheckBox tagView = (CheckBox) Objects.requireNonNull(getActivity()).getLayoutInflater()
-                    .inflate(R.layout.tag_view, tagsLineView, false);
-            tagView.setText(tag.getTitle());
+            CheckBox tagView = createTagCheckbox(tagsLineView, tag.getTitle());
             if (mNote.hasTag(tag)) {
                 tagView.setTextColor(getResources().getColor(R.color.colorWhiteText));
                 tagView.setChecked(true);
             }
-            tagView.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                @Override
-                public void onCheckedChanged(CompoundButton tagCheckbox, boolean isChecked) {
-                    if (isChecked) {
-                        tagCheckbox.setTextColor(getResources().getColor(R.color.colorWhiteText));
-                        try {
-                            mNote.markTag(mNotesKeeper.getTag(tagCheckbox.getText().toString()));
-                        } catch (IllegalAccessException ignored) {} // impossible
-                    } else {
-                        tagCheckbox.setTextColor(getResources().getColor(R.color.colorPrimaryText));
-                        try {
-                            mNote.unmarkTag(mNotesKeeper.getTag(tagCheckbox.getText().toString()));
-                        } catch (IllegalAccessException ignored) {}
-                    }
-                }
-            });
             tagsLineView.addView(tagView);
         }
+        createPlusTagView();
+        mTags.addView(mPlusTagView);
+    }
+
+    private CheckBox createTagCheckbox(@NonNull FlexboxLayout tagsLineView, @NonNull String title) {
+        CheckBox tagView = (CheckBox) Objects.requireNonNull(getActivity()).getLayoutInflater()
+                .inflate(R.layout.tag_view, tagsLineView, false);
+        tagView.setText(title);
+        tagView.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton tagCheckbox, boolean isChecked) {
+                if (isChecked) {
+                    tagCheckbox.setTextColor(getResources().getColor(R.color.colorWhiteText));
+                    try {
+                        mNote.markTag(mNotesKeeper.getTag(tagCheckbox.getText().toString()));
+                    } catch (IllegalAccessException ignored) {} // impossible
+                } else {
+                    tagCheckbox.setTextColor(getResources().getColor(R.color.colorPrimaryText));
+                    try {
+                        mNote.unmarkTag(mNotesKeeper.getTag(tagCheckbox.getText().toString()));
+                    } catch (IllegalAccessException ignored) {} // impossible
+                }
+            }
+        });
+        return tagView;
+    }
+
+    private void createPlusTagView() {
+        mPlusTagView = (EditText) Objects.requireNonNull(getActivity()).getLayoutInflater()
+                .inflate(R.layout.add_new_view, mTags, false);
+        mPlusTagView.setImeOptions(EditorInfo.IME_ACTION_DONE);
+        mPlusTagView.setHint(getString(R.string.add_new_tag_hint));
+        mPlusTagView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    textView.clearFocus();
+                    return true;
+                }
+                return false;
+            }
+        });
+        mPlusTagView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean isFocused) {
+                if (!isFocused) {
+                    addNewTag(view);
+                }
+            }
+        });
     }
 
     private void addNewTag(@NonNull View view) {
-        EditText field = (EditText) view;
-        String newTag = field.getText().toString();
-        mNotesKeeper.addTag(newTag);
-        CheckBox tagView = (CheckBox) Objects.requireNonNull(getActivity()).getLayoutInflater()
-                .inflate(R.layout.tag_view, tagsLineView, false);
-        tagView.setText(tag.getTitle());
+        mTags.removeView(mPlusTagView);
+        String newTagTitle = ((EditText) view).getText().toString();
+        mNotesKeeper.addTag(newTagTitle);
+        try {
+            mNote.markTag(mNotesKeeper.getTag(newTagTitle));
+        } catch (IllegalAccessException ignored) {} // impossible
+        CheckBox tagView = createTagCheckbox(mTags, newTagTitle);
+        tagView.setTextColor(getResources().getColor(R.color.colorWhiteText));
+        tagView.setChecked(true);
+        mTags.addView(tagView);
+        mPlusTagView.setText("");
+        mTags.addView(mPlusTagView);
     }
 }
