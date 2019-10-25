@@ -115,9 +115,7 @@ public class NotesRepository implements NotesKeeper {
 
     @Override
     public void removeCategory(@NonNull String title) {
-        try {
-            categories.remove(title);
-        } catch (IllegalArgumentException ignored) {}
+        categories.remove(title);
     }
 
     @Override
@@ -149,9 +147,7 @@ public class NotesRepository implements NotesKeeper {
 
     @Override
     public void removeTag(@NonNull String title) {
-        try {
-            tags.remove(title);
-        } catch (IllegalArgumentException ignored) {}
+        tags.remove(title);
     }
 
     @Override
@@ -195,6 +191,8 @@ public class NotesRepository implements NotesKeeper {
     @NonNull
     @Override
     public Note getNote(int position) {
+        //TODO: after release eliminate this performance bottleneck
+        // (need collection that is auto sortable after changing item)
         Note[] notesArray = notes.values().toArray(new Note[getNotesCount()]);
         Arrays.sort(notesArray);
         return notesArray[position];
