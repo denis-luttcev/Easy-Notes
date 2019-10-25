@@ -36,13 +36,14 @@ public class NoteFragment extends Fragment {
     private static final String ARG_NOTE_TYPE = "note_type";
 
     private Context mContext;
-    private LayoutInflater mInflater;
 
     private NotesKeeper mNotesKeeper;
     private Note mNote;
 
     private EditText mTitleView;
     private FrameLayout mContentView;
+
+    private EditText plusTagView;
 
     @NonNull
     static NoteFragment getInstance(@NonNull UUID noteId) {
@@ -71,7 +72,6 @@ public class NoteFragment extends Fragment {
         super.onAttach(context);
 
         mContext = context;
-        mInflater = ((Activity) context).getLayoutInflater();
     }
 
     @Override
@@ -173,7 +173,7 @@ public class NoteFragment extends Fragment {
 
     private void showTags(@NonNull FlexboxLayout tagsLayout) {
         Set<Tag> allTags = mNotesKeeper.getTags();
-        EditText mPlusTagView = createPlusTagView(tagsLayout);
+        plusTagView = createPlusTagView(tagsLayout);
 
         for (Tag tag : allTags) {
             CheckBox tagView = createTagView(tagsLayout, tag.getTitle());
@@ -183,12 +183,12 @@ public class NoteFragment extends Fragment {
             }
             tagsLayout.addView(tagView);
         }
-        tagsLayout.addView(mPlusTagView);
+        tagsLayout.addView(plusTagView);
     }
 
     @NonNull
     private EditText createPlusTagView(@NonNull FlexboxLayout tagsLayout) {
-        EditText plusTagView = (EditText) mInflater
+        EditText plusTagView = (EditText) getLayoutInflater()
                 .inflate(R.layout.add_new_view, tagsLayout, false);
 
         plusTagView.setImeOptions(EditorInfo.IME_ACTION_DONE);
@@ -209,7 +209,7 @@ public class NoteFragment extends Fragment {
             @Override
             public void onFocusChange(View plusTagView, boolean isFocused) {
                 if (!isFocused) {
-                    addNewTag(plusTagView);
+                    addNewTag();
                 }
             }
         });
@@ -217,12 +217,12 @@ public class NoteFragment extends Fragment {
         return plusTagView;
     }
 
-    private void addNewTag(@NonNull View plusTagView) {
+    private void addNewTag() {
         FlexboxLayout tagsLayout = (FlexboxLayout) plusTagView.getParent();
 
         tagsLayout.removeView(plusTagView);
 
-        String newTagTitle = ((EditText) plusTagView).getText().toString().trim();
+        String newTagTitle = plusTagView.getText().toString().trim();
         StringBuilder title = new StringBuilder();
         title.append(newTagTitle.substring(0, 1).toUpperCase());
         title.append(newTagTitle.substring(1));
@@ -237,15 +237,15 @@ public class NoteFragment extends Fragment {
         tagView.setTextColor(getResources().getColor(R.color.colorLightText));
         tagView.setChecked(true);
         tagsLayout.addView(tagView);
-        ((EditText) plusTagView).setText("");
+        plusTagView.setText("");
 
         tagsLayout.addView(plusTagView);
     }
 
     @NonNull
-    private CheckBox createTagView(@NonNull FlexboxLayout tagsLayoit, @NonNull String title) {
-        CheckBox tagView = (CheckBox) mInflater
-                .inflate(R.layout.tag_view, tagsLayoit, false);
+    private CheckBox createTagView(@NonNull FlexboxLayout tagsLayout, @NonNull String title) {
+        CheckBox tagView = (CheckBox) getLayoutInflater()
+                .inflate(R.layout.tag_view, tagsLayout, false);
 
         tagView.setText(title);
         tagView.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -267,5 +267,12 @@ public class NoteFragment extends Fragment {
         //TODO: delete
 
         return tagView;
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        plusTagView.setOnFocusChangeListener(null);
     }
 }
