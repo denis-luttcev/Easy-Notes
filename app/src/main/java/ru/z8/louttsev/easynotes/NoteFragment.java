@@ -1,6 +1,5 @@
 package ru.z8.louttsev.easynotes;
 
-import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Typeface;
@@ -15,11 +14,13 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import com.google.android.flexbox.FlexboxLayout;
 
@@ -107,15 +108,33 @@ public class NoteFragment extends Fragment {
         TextView mCategoryView = mNoteLayout.findViewById(R.id.category_note);
         if (mNote.isCategorized()) {
             mCategoryView.setText(Objects.requireNonNull(mNote.getCategory()).getTitle());
-            //TODO: add OnClick
         }
+        //TODO add OnClick
 
         TextView mDeadlineView = mNoteLayout.findViewById(R.id.deadline_note);
         if (mNote.isDeadlined()) {
             mDeadlineView.setText(mNote.getDeadlineRepresent(mContext));
             applyDeadlineStyle(mDeadlineView);
-            //TODO: add OnClick
         }
+        //TODO: NOW add OnClick
+        mDeadlineView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View deadlineView) {
+                if (mNote.isDeadlined()) {
+                    // init args
+                }
+                FragmentManager fragmentManager = getFragmentManager();
+                // call date picker
+                final String DIALOG_DATE_PICKER = "date_picker";
+                DatePickerDialogFragment datePicker = DatePickerDialogFragment.newInstance();
+                datePicker.show(Objects.requireNonNull(fragmentManager), DIALOG_DATE_PICKER);
+                // call time picker
+                final String DIALOG_TIME_PICKER = "time_picker";
+                TimePickerDialogFragment timePicker = TimePickerDialogFragment.newInstance();
+                timePicker.show(fragmentManager, DIALOG_TIME_PICKER);
+                // update view
+            }
+        });
 
         mTitleView = mNoteLayout.findViewById(R.id.title_note);
         if (mNote.isTitled()) {
@@ -283,6 +302,10 @@ public class NoteFragment extends Fragment {
                                 }
                                 tagsLayout.removeView(tagCheckbox);
                                 mNotesKeeper.removeTag(tagTitle);
+                                Toast.makeText(mContext,
+                                        getString(R.string.delete_tag_toast_message),
+                                        Toast.LENGTH_SHORT)
+                                        .show();
                             }
                         })
                         .create()
