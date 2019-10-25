@@ -1,7 +1,8 @@
 package ru.z8.louttsev.easynotes;
 
-import android.app.Activity;
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.KeyEvent;
@@ -17,6 +18,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.flexbox.FlexboxLayout;
@@ -102,21 +104,23 @@ public class NoteFragment extends Fragment {
         //TODO: color view add + onClick
         applyNoteLayoutColor(mNoteLayout);
 
+        TextView mCategoryView = mNoteLayout.findViewById(R.id.category_note);
         if (mNote.isCategorized()) {
-            TextView mCategoryView = mNoteLayout.findViewById(R.id.category_note);
             mCategoryView.setText(Objects.requireNonNull(mNote.getCategory()).getTitle());
             //TODO: add OnClick
         }
 
+        TextView mDeadlineView = mNoteLayout.findViewById(R.id.deadline_note);
         if (mNote.isDeadlined()) {
-            TextView mDeadlineView = mNoteLayout.findViewById(R.id.deadline_note);
             mDeadlineView.setText(mNote.getDeadlineRepresent(mContext));
             applyDeadlineStyle(mDeadlineView);
             //TODO: add OnClick
         }
 
         mTitleView = mNoteLayout.findViewById(R.id.title_note);
-        mTitleView.setText(mNote.getTitle());
+        if (mNote.isTitled()) {
+            mTitleView.setText(mNote.getTitle());
+        }
 
         mContentView = mNoteLayout.findViewById(R.id.content_view);
         mNote.fillContentView(mContentView, mContext);
@@ -177,7 +181,7 @@ public class NoteFragment extends Fragment {
 
         for (Tag tag : allTags) {
             CheckBox tagView = createTagView(tagsLayout, tag.getTitle());
-            if (mNote.hasTag(tag)) {
+            if (mNote.hasTag(tag.getTitle())) {
                 tagView.setTextColor(getResources().getColor(R.color.colorLightText));
                 tagView.setChecked(true);
             }
@@ -243,7 +247,7 @@ public class NoteFragment extends Fragment {
     }
 
     @NonNull
-    private CheckBox createTagView(@NonNull FlexboxLayout tagsLayout, @NonNull String title) {
+    private CheckBox createTagView(@NonNull final FlexboxLayout tagsLayout, @NonNull String title) {
         CheckBox tagView = (CheckBox) getLayoutInflater()
                 .inflate(R.layout.tag_view, tagsLayout, false);
 
@@ -258,13 +262,34 @@ public class NoteFragment extends Fragment {
                     } catch (IllegalAccessException ignored) {} // impossible
                 } else {
                     tagCheckbox.setTextColor(getResources().getColor(R.color.colorPrimaryText));
-                    try {
-                        mNote.unmarkTag(mNotesKeeper.getTag(tagCheckbox.getText().toString()));
-                    } catch (IllegalAccessException ignored) {} // impossible
+                    mNote.unmarkTag(tagCheckbox.getText().toString());
                 }
             }
         });
-        //TODO: delete
+        tagView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(final View tagCheckbox) {
+                new AlertDialog.Builder(mContext)
+                        .setTitle(getString(R.string.delete_tag_dialog_title))
+                        .setMessage(getString(R.string.delete_tag_dialog_message))
+                        .setNegativeButton(android.R.string.cancel, null)
+                        .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                CompoundButton tagView = (CompoundButton) tagCheckbox;
+                                String tagTitle = tagView.getText().toString();
+                                if (tagView.isChecked()) {
+                                    mNote.unmarkTag(tagTitle);
+                                }
+                                tagsLayout.removeView(tagCheckbox);
+                                mNotesKeeper.removeTag(tagTitle);
+                            }
+                        })
+                        .create()
+                        .show();
+                return true;
+            }
+        });
 
         return tagView;
     }
@@ -273,6 +298,6 @@ public class NoteFragment extends Fragment {
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        plusTagView.setOnFocusChangeListener(null);
+        plusTagView.setOnFocusChangeListener(null); // prevents adding new tag while rotate
     }
 }

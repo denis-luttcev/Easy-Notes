@@ -147,6 +147,11 @@ public class NotesRepository implements NotesKeeper {
 
     @Override
     public void removeTag(@NonNull String title) {
+        for (Note note : notes.values()) {
+            if (note.hasTag(title)) {
+                note.unmarkTag(title);
+            }
+        }
         tags.remove(title);
     }
 

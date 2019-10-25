@@ -161,15 +161,15 @@ public abstract class Note implements Comparable<Note> {
         modificationUpdate();
     }
 
-    public void unmarkTag(@NonNull Tag tag) {
-        if (hasTag(tag)) {
-            tags.remove(tag.getTitle());
+    public void unmarkTag(@NonNull String title) {
+        if (hasTag(title)) {
+            tags.remove(title);
             modificationUpdate();
         }
     }
 
-    public boolean hasTag(@NonNull Tag tag) {
-        return tags.containsKey(tag.getTitle());
+    public boolean hasTag(@NonNull String title) {
+        return tags.containsKey(title);
     }
 
     public boolean isTagged() {

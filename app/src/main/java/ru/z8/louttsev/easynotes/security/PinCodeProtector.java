@@ -31,11 +31,10 @@ public class PinCodeProtector implements Protector {
      */
     private final int KEY_LENGTH = 128;
     private final SecureRandom RANDOMIZER = new SecureRandom();
-    @SuppressWarnings("FieldCanBeLocal")
     private final int ITERATIONS = 16384;
 
-    private final SharedPreferences preferences;
-    private final Context context;
+    private SharedPreferences preferences;
+    private Context context;
 
     private boolean isLogged = false;
 
