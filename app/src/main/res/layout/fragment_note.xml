@@ -6,25 +6,37 @@
     android:layout_height="match_parent">
 
     <ImageView
-        android:id="@+id/icon_color"
+        android:id="@+id/icon_back"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginStart="4dp"
-        android:background="@drawable/ic_color_lens_black_24dp"
+        android:background="@drawable/ic_arrow_back_black_24dp"
         app:layout_constraintBottom_toBottomOf="@+id/color_note"
         app:layout_constraintDimensionRatio="1"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/color_note" />
+
+    <ImageView
+        android:id="@+id/icon_color"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginEnd="4dp"
+        android:background="@drawable/ic_color_lens_black_24dp"
+        app:layout_constraintBottom_toBottomOf="@+id/color_note"
+        app:layout_constraintDimensionRatio="1"
+        app:layout_constraintEnd_toStartOf="@+id/color_note"
         app:layout_constraintTop_toTopOf="@id/color_note" />
 
     <TextView
         android:id="@+id/color_note"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:layout_marginEnd="16dp"
         android:background="@drawable/circular_block"
-        app:layout_constraintBottom_toBottomOf="@+id/icon_category"
+        app:layout_constraintBottom_toBottomOf="@id/icon_deadline"
         app:layout_constraintDimensionRatio="1"
-        app:layout_constraintStart_toEndOf="@id/icon_color"
-        app:layout_constraintTop_toTopOf="@+id/icon_category" />
+        app:layout_constraintEnd_toStartOf="@+id/icon_deadline"
+        app:layout_constraintTop_toTopOf="@id/icon_deadline" />
 
     <ImageView
         android:id="@+id/icon_category"
@@ -34,21 +46,19 @@
         android:background="@drawable/ic_bookmark_border_black_24dp"
         app:layout_constraintBottom_toBottomOf="@+id/category_note"
         app:layout_constraintDimensionRatio="1"
-        app:layout_constraintStart_toEndOf="@id/color_note"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/category_note" />
 
     <TextView
         android:id="@+id/category_note"
         style="@style/RoundedField"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
+        android:layout_marginTop="24dp"
         android:hint="@string/note_category_hint"
-        android:textSize="14sp"
-        app:layout_constraintEnd_toStartOf="@+id/icon_deadline"
+        android:textSize="18sp"
         app:layout_constraintStart_toEndOf="@+id/icon_category"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/deadline_note" />
 
     <ImageView
         android:id="@+id/icon_deadline"
@@ -69,7 +79,7 @@
         android:layout_marginTop="8dp"
         android:layout_marginEnd="4dp"
         android:hint="@string/deadline_hint"
-        android:textSize="14sp"
+        android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -79,7 +89,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="4dp"
         android:layout_marginEnd="4dp"
         android:background="@android:color/transparent"
         android:ems="10"
