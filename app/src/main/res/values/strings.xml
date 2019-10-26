@@ -27,4 +27,5 @@
     <string name="tags_line_help_text">Press and hold on tag to remove it</string>
     <string name="delete_tag_dialog_title">Delete tag</string>
     <string name="delete_tag_dialog_message">You delete the tag, which other notes could be marked. After this all such marks will be cleared.\n\nAre you sure?</string>
+    <string name="delete_tag_toast_message">Tag deleted successfully</string>
 </resources>

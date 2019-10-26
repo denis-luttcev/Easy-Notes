@@ -2,13 +2,9 @@ package ru.z8.louttsev.easynotes.datamodel;
 
 import androidx.annotation.NonNull;
 
-import java.sql.Array;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -27,7 +23,6 @@ public class NotesRepository implements NotesKeeper {
 
     /**
      * Creates new note match NoteType
-     * Concrete class constructors are placed here
      * New type need declare in NoteType enum
      */
     @NonNull
@@ -36,6 +31,7 @@ public class NotesRepository implements NotesKeeper {
         switch (noteType) {
             case TEXT_NOTE:
                 return new TextNote();
+            //TODO: New concrete class constructors are placed here
             default:
                 return null; // unreachable
         }
