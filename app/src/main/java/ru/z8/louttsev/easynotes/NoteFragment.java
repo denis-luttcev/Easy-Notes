@@ -30,6 +30,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
+import ru.z8.louttsev.easynotes.datamodel.Category;
 import ru.z8.louttsev.easynotes.datamodel.Note;
 import ru.z8.louttsev.easynotes.datamodel.NoteType;
 import ru.z8.louttsev.easynotes.datamodel.NotesKeeper;
@@ -49,11 +50,14 @@ public class NoteFragment extends Fragment {
     private NotesKeeper mNotesKeeper;
     private Note mNote;
 
+    private TextView mCategoryView;
+    private TextView mDeadlineView;
     private EditText mTitleView;
     private FrameLayout mContentView;
 
-    private EditText plusTagView;
-    private TextView mDeadlineView;
+    private EditText mPlusTagView;
+    private EditText mPlusCategoryView;
+    private FlexboxLayout mCategoriesLayout;
 
     @NonNull
     static NoteFragment getInstance(@NonNull UUID noteId) {
@@ -104,7 +108,6 @@ public class NoteFragment extends Fragment {
         }
     }
 
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent resultIntent) {
         if (resultCode == Activity.RESULT_OK && resultIntent != null) {
@@ -143,20 +146,26 @@ public class NoteFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View mNoteLayout = inflater.inflate(R.layout.fragment_note, container, false);
+        final View mNoteLayout = inflater.inflate(R.layout.fragment_note, container, false);
 
         //TODO: color view add + onClick
         applyNoteLayoutColor(mNoteLayout);
 
-        TextView mCategoryView = mNoteLayout.findViewById(R.id.category_note);
+        mCategoriesLayout = mNoteLayout.findViewById(R.id.categories_choice);
+
+        mCategoryView = mNoteLayout.findViewById(R.id.category_note);
         if (mNote.isCategorized()) {
             mCategoryView.setText(Objects.requireNonNull(mNote.getCategory()).getTitle());
         }
-        //TODO add OnClick
+        mCategoryView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showCategories(mCategoriesLayout);
+            }
+        });
 
         mDeadlineView = mNoteLayout.findViewById(R.id.deadline_note);
         updateDeadlineView();
-        //TODO: NOW add OnClick
         mDeadlineView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View deadlineView) {
@@ -242,7 +251,15 @@ public class NoteFragment extends Fragment {
 
     private void showTags(@NonNull FlexboxLayout tagsLayout) {
         Set<Tag> allTags = mNotesKeeper.getTags();
-        plusTagView = createPlusTagView(tagsLayout);
+        mPlusTagView = createPlusView(tagsLayout, getString(R.string.add_new_tag_hint));
+        mPlusTagView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View plusTagView, boolean isFocused) {
+                if (!isFocused) {
+                    addNewTag();
+                }
+            }
+        });
 
         for (Tag tag : allTags) {
             CheckBox tagView = createTagView(tagsLayout, tag.getTitle());
@@ -252,48 +269,41 @@ public class NoteFragment extends Fragment {
             }
             tagsLayout.addView(tagView);
         }
-        tagsLayout.addView(plusTagView);
+        tagsLayout.addView(mPlusTagView);
     }
 
     @NonNull
-    private EditText createPlusTagView(@NonNull FlexboxLayout tagsLayout) {
-        EditText plusTagView = (EditText) getLayoutInflater()
-                .inflate(R.layout.add_new_view, tagsLayout, false);
+    private EditText createPlusView(@NonNull FlexboxLayout layout, @NonNull String hint) {
+        EditText plusView = (EditText) getLayoutInflater()
+                .inflate(R.layout.add_new_view, layout, false);
 
-        plusTagView.setImeOptions(EditorInfo.IME_ACTION_DONE);
-        plusTagView.setHint(getString(R.string.add_new_tag_hint));
+        plusView.setImeOptions(EditorInfo.IME_ACTION_DONE);
+        plusView.setHint(hint);
 
-        plusTagView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+        plusView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
-            public boolean onEditorAction(TextView plusTagView, int actionId, KeyEvent keyEvent) {
+            public boolean onEditorAction(TextView plusView, int actionId, KeyEvent keyEvent) {
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    plusTagView.clearFocus();
+                    plusView.clearFocus();
                     return true;
                 }
                 return false;
             }
         });
 
-        plusTagView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View plusTagView, boolean isFocused) {
-                if (!isFocused) {
-                    addNewTag();
-                }
-            }
-        });
-
-        return plusTagView;
+        return plusView;
     }
 
     private void addNewTag() {
-        FlexboxLayout tagsLayout = (FlexboxLayout) plusTagView.getParent();
+        FlexboxLayout tagsLayout = (FlexboxLayout) mPlusTagView.getParent();
 
-        tagsLayout.removeView(plusTagView);
+        tagsLayout.removeView(mPlusTagView);
 
-        String newTagTitle = plusTagView.getText().toString().trim();
-        // up first letter
-        newTagTitle = newTagTitle.substring(0, 1).toUpperCase() + newTagTitle.substring(1);
+        String newTagTitle = mPlusTagView.getText().toString().trim();
+        if (!newTagTitle.isEmpty()) {
+            // up first letter
+            newTagTitle = newTagTitle.substring(0, 1).toUpperCase() + newTagTitle.substring(1);
+        }
 
         mNotesKeeper.addTag(newTagTitle);
         try {
@@ -304,15 +314,15 @@ public class NoteFragment extends Fragment {
         tagView.setTextColor(getResources().getColor(R.color.colorLightText));
         tagView.setChecked(true);
         tagsLayout.addView(tagView);
-        plusTagView.setText("");
+        mPlusTagView.setText("");
 
-        tagsLayout.addView(plusTagView);
+        tagsLayout.addView(mPlusTagView);
     }
 
     @NonNull
     private CheckBox createTagView(@NonNull final FlexboxLayout tagsLayout, @NonNull String title) {
         CheckBox tagView = (CheckBox) getLayoutInflater()
-                .inflate(R.layout.tag_view, tagsLayout, false);
+                .inflate(R.layout.field_view, tagsLayout, false);
 
         tagView.setText(title);
         tagView.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -361,10 +371,102 @@ public class NoteFragment extends Fragment {
         return tagView;
     }
 
+    private void showCategories(@NonNull FlexboxLayout categoriesLayout) {
+        Set<Category> allCategories = mNotesKeeper.getCategories();
+        mPlusCategoryView = createPlusView(categoriesLayout, getString(R.string.add_new_category_hint));
+        mPlusCategoryView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView plusView, int actionId, KeyEvent keyEvent) {
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    addNewCategory();
+                    return true;
+                }
+                return false;
+            }
+        });
+
+        for (Category category : allCategories) {
+            CheckBox categoryView = createCategoryView(categoriesLayout, category.getTitle());
+            if (mNote.hasCategory(category.getTitle())) {
+                categoryView.setTextColor(getResources().getColor(R.color.colorLightText));
+                categoryView.setChecked(true);
+            }
+            categoriesLayout.addView(categoryView);
+        }
+        categoriesLayout.addView(mPlusCategoryView);
+    }
+
+    @NonNull
+    private CheckBox createCategoryView(@NonNull final FlexboxLayout categoriesLayout, @NonNull String title) {
+        CheckBox categoryView = (CheckBox) getLayoutInflater()
+                .inflate(R.layout.field_view, categoriesLayout, false);
+
+        categoryView.setText(title);
+        categoryView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View categoryCheckbox) {
+                try {
+                    mNote.setCategory(mNotesKeeper.getCategory(((CompoundButton) categoryCheckbox).getText().toString()));
+                    mCategoryView.setText(Objects.requireNonNull(mNote.getCategory()).getTitle());
+                    mCategoriesLayout.removeAllViews();
+                    mPlusCategoryView = null;
+                } catch (IllegalAccessException ignored) {} // impossible
+            }
+        });
+        categoryView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(final View categoryCheckbox) {
+                //TODO
+                new AlertDialog.Builder(mContext)
+                        .setTitle(getString(R.string.delete_tag_dialog_title))
+                        .setMessage(getString(R.string.delete_tag_dialog_message))
+                        .setNegativeButton(android.R.string.cancel, null)
+                        .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                CompoundButton tagView = (CompoundButton) categoryCheckbox;
+                                String tagTitle = tagView.getText().toString();
+                                if (tagView.isChecked()) {
+                                    mNote.unmarkTag(tagTitle);
+                                }
+                                categoriesLayout.removeView(categoryCheckbox);
+                                mNotesKeeper.removeTag(tagTitle);
+                                Toast.makeText(mContext,
+                                        getString(R.string.delete_tag_toast_message),
+                                        Toast.LENGTH_SHORT)
+                                        .show();
+                            }
+                        })
+                        .create()
+                        .show();
+                return true;
+            }
+        });
+
+        return categoryView;
+    }
+
+    private void addNewCategory() {
+        String newCategoryTitle = mPlusCategoryView.getText().toString().trim();
+        if (!newCategoryTitle.isEmpty()) {
+            // up first letter
+            newCategoryTitle = newCategoryTitle.substring(0, 1).toUpperCase() + newCategoryTitle.substring(1);
+        }
+
+        mNotesKeeper.addCategory(newCategoryTitle);
+        try {
+            mNote.setCategory(mNotesKeeper.getCategory(newCategoryTitle));
+        } catch (IllegalAccessException ignored) {} // impossible
+        mCategoryView.setText(newCategoryTitle);
+        mCategoriesLayout.removeAllViews();
+        mPlusCategoryView = null;
+    }
+
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        plusTagView.setOnFocusChangeListener(null); // prevents adding new tag while rotate
+        // prevents adding new tag while rotate
+        mPlusTagView.setOnFocusChangeListener(null);
     }
 }

@@ -60,6 +60,20 @@
         app:layout_constraintStart_toEndOf="@+id/icon_category"
         app:layout_constraintTop_toBottomOf="@id/deadline_note" />
 
+    <com.google.android.flexbox.FlexboxLayout
+        android:id="@+id/categories_choice"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        android:paddingBottom="8dp"
+        app:flexDirection="row"
+        app:flexWrap="wrap"
+        app:justifyContent="flex_start"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/category_note" />
+
     <ImageView
         android:id="@+id/icon_deadline"
         android:layout_width="0dp"
@@ -99,7 +113,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/icon_category" />
+        app:layout_constraintTop_toBottomOf="@id/categories_choice" />
 
     <FrameLayout
         android:id="@+id/content_view"

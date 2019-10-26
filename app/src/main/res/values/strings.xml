@@ -24,6 +24,7 @@
     <string name="note_category_hint">Category</string>
     <string name="deadline_hint">Deadline</string>
     <string name="add_new_tag_hint">+ tag</string>
+    <string name="add_new_category_hint">+ category</string>
     <string name="tags_line_help_text">Press and hold on tag to remove it</string>
 
     <string name="delete_tag_dialog_title">Delete tag</string>

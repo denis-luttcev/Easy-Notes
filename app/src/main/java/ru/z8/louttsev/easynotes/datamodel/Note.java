@@ -122,9 +122,9 @@ public abstract class Note implements Comparable<Note> {
         modificationUpdate();
     }
 
-    public boolean hasCategory(@NonNull Category category) {
+    public boolean hasCategory(@NonNull String title) {
         if (isCategorized()) {
-            return this.category.equals(category);
+            return category.getTitle().equals(title);
         }
         return false;
     }
