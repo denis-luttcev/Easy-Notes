@@ -127,7 +127,7 @@ public class NoteFragment extends Fragment {
                 default: // ignored
             }
         }
-        if (requestCode == Activity.RESULT_CANCELED && requestCode == REQUEST_DATE && mNote.isDeadlined()) {
+        if (resultCode == Activity.RESULT_CANCELED && requestCode == REQUEST_DATE && mNote.isDeadlined()) {
             requestTime();
         }
     }
