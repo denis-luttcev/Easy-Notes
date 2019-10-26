@@ -1,7 +1,9 @@
 package ru.z8.louttsev.easynotes;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.KeyEvent;
@@ -20,7 +22,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 
 import com.google.android.flexbox.FlexboxLayout;
 
@@ -38,6 +39,11 @@ public class NoteFragment extends Fragment {
     private static final String ARG_NOTE_ID = "note_id";
     private static final String ARG_NOTE_TYPE = "note_type";
 
+    private static final String DIALOG_DATE_PICKER = "date_picker";
+    private static final int REQUEST_DATE = 1;
+    private static final String DIALOG_TIME_PICKER = "time_picker";
+    private static final int REQUEST_TIME = 2;
+
     private Context mContext;
 
     private NotesKeeper mNotesKeeper;
@@ -47,6 +53,7 @@ public class NoteFragment extends Fragment {
     private FrameLayout mContentView;
 
     private EditText plusTagView;
+    private TextView mDeadlineView;
 
     @NonNull
     static NoteFragment getInstance(@NonNull UUID noteId) {
@@ -97,6 +104,42 @@ public class NoteFragment extends Fragment {
         }
     }
 
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent resultIntent) {
+        if (resultCode == Activity.RESULT_OK && resultIntent != null) {
+            switch (requestCode) {
+                case REQUEST_DATE:
+                    Calendar date = (Calendar) resultIntent
+                            .getSerializableExtra(DatePickerDialogFragment.RESULT_DATE);
+                    mNote.setDeadline(date);
+                    updateDeadlineView();
+                    if (mNote.isDeadlined()) { // date was choice
+                        requestTime();
+                    }
+                    break;
+                case REQUEST_TIME:
+                    Calendar time = (Calendar) resultIntent
+                            .getSerializableExtra(TimePickerDialogFragment.RESULT_TIME);
+                    mNote.setDeadline(time);
+                    updateDeadlineView();
+                    break;
+                default: // ignored
+            }
+        }
+        if (requestCode == Activity.RESULT_CANCELED && requestCode == REQUEST_DATE && mNote.isDeadlined()) {
+            requestTime();
+        }
+    }
+
+    private void requestTime() {
+        Calendar deadline = mNote.getDeadline();
+        TimePickerDialogFragment timePicker = TimePickerDialogFragment
+                .getInstance(Objects.requireNonNull(deadline));
+        timePicker.setTargetFragment(NoteFragment.this, REQUEST_TIME);
+        timePicker.show(Objects.requireNonNull(getFragmentManager()), DIALOG_TIME_PICKER);
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -111,28 +154,24 @@ public class NoteFragment extends Fragment {
         }
         //TODO add OnClick
 
-        TextView mDeadlineView = mNoteLayout.findViewById(R.id.deadline_note);
-        if (mNote.isDeadlined()) {
-            mDeadlineView.setText(mNote.getDeadlineRepresent(mContext));
-            applyDeadlineStyle(mDeadlineView);
-        }
+        mDeadlineView = mNoteLayout.findViewById(R.id.deadline_note);
+        updateDeadlineView();
         //TODO: NOW add OnClick
         mDeadlineView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View deadlineView) {
+                DatePickerDialogFragment datePicker;
+
                 if (mNote.isDeadlined()) {
-                    // init args
+                    Calendar deadline = mNote.getDeadline();
+                    datePicker = DatePickerDialogFragment
+                            .getInstance(Objects.requireNonNull(deadline));
+                } else {
+                    datePicker = DatePickerDialogFragment.newInstance();
                 }
-                FragmentManager fragmentManager = getFragmentManager();
-                // call date picker
-                final String DIALOG_DATE_PICKER = "date_picker";
-                DatePickerDialogFragment datePicker = DatePickerDialogFragment.newInstance();
-                datePicker.show(Objects.requireNonNull(fragmentManager), DIALOG_DATE_PICKER);
-                // call time picker
-                final String DIALOG_TIME_PICKER = "time_picker";
-                TimePickerDialogFragment timePicker = TimePickerDialogFragment.newInstance();
-                timePicker.show(fragmentManager, DIALOG_TIME_PICKER);
-                // update view
+
+                datePicker.setTargetFragment(NoteFragment.this, REQUEST_DATE);
+                datePicker.show(Objects.requireNonNull(getFragmentManager()), DIALOG_DATE_PICKER);
             }
         });
 
@@ -148,6 +187,13 @@ public class NoteFragment extends Fragment {
         showTags(mTagsLayout);
 
         return mNoteLayout;
+    }
+
+    private void updateDeadlineView() {
+        if (mNote.isDeadlined()) {
+            mDeadlineView.setText(mNote.getDeadlineRepresent(mContext));
+        } else mDeadlineView.setText("");
+        applyDeadlineStyle();
     }
 
     private void applyNoteLayoutColor(@NonNull View noteLayout) {
@@ -175,23 +221,23 @@ public class NoteFragment extends Fragment {
         noteLayout.setBackgroundColor(getResources().getColor(color));
     }
 
-    private void applyDeadlineStyle(@NonNull TextView deadlineView) {
+    private void applyDeadlineStyle() {
         int color = R.color.colorDeadlineAhead;
 
         switch (mNote.getDeadlineStatus(Calendar.getInstance())) {
             case OVERDUE:
                 color = R.color.colorDeadlineOverdue;
-                deadlineView.setTypeface(Typeface.DEFAULT_BOLD);
+                mDeadlineView.setTypeface(Typeface.DEFAULT_BOLD);
                 break;
             case IMMEDIATE:
                 color = R.color.colorDeadlineImmediate;
-                deadlineView.setTypeface(Typeface.DEFAULT_BOLD);
+                mDeadlineView.setTypeface(Typeface.DEFAULT_BOLD);
                 break;
             default:
-                deadlineView.setTypeface(Typeface.DEFAULT);
+                mDeadlineView.setTypeface(Typeface.DEFAULT);
         }
 
-        deadlineView.setTextColor(getResources().getColor(color));
+        mDeadlineView.setTextColor(getResources().getColor(color));
     }
 
     private void showTags(@NonNull FlexboxLayout tagsLayout) {
@@ -246,10 +292,8 @@ public class NoteFragment extends Fragment {
         tagsLayout.removeView(plusTagView);
 
         String newTagTitle = plusTagView.getText().toString().trim();
-        StringBuilder title = new StringBuilder();
-        title.append(newTagTitle.substring(0, 1).toUpperCase());
-        title.append(newTagTitle.substring(1));
-        newTagTitle = title.toString();
+        // up first letter
+        newTagTitle = newTagTitle.substring(0, 1).toUpperCase() + newTagTitle.substring(1);
 
         mNotesKeeper.addTag(newTagTitle);
         try {

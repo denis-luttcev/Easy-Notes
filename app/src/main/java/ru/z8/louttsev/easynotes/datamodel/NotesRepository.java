@@ -3,6 +3,7 @@ package ru.z8.louttsev.easynotes.datamodel;
 import androidx.annotation.NonNull;
 
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -60,8 +61,9 @@ public class NotesRepository implements NotesKeeper {
             note.setContent("note1 content");
             note.setColor(Note.Color.ATTENTION);
             note.setCategory(getCategory("Holiday"));
-            //Calendar date = Calendar.getInstance();
-            //note.setDeadline(date);
+            Calendar date = Calendar.getInstance();
+            date.add(Calendar.DATE, 1);
+            note.setDeadline(date);
             addNote(note);
 
             note = new TextNote();

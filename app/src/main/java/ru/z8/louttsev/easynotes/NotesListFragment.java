@@ -209,6 +209,7 @@ public class NotesListFragment extends Fragment {
         mAddNoteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                //TODO: After adding new note types implement choice and another fragments call
                 FragmentManager fragmentManager = Objects.requireNonNull(getActivity()).getSupportFragmentManager();
                 Fragment fragment = NoteFragment.newInstance(NoteType.TEXT_NOTE);
                 fragmentManager.beginTransaction()
