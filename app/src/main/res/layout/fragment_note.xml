@@ -38,6 +38,73 @@
         app:layout_constraintEnd_toStartOf="@+id/icon_deadline"
         app:layout_constraintTop_toTopOf="@id/icon_deadline" />
 
+    <LinearLayout
+        android:id="@+id/color_palette"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="16dp"
+        android:orientation="horizontal"
+        android:visibility="gone"
+        app:layout_constraintDimensionRatio="6.67"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@id/icon_color"
+        app:layout_constraintTop_toBottomOf="@id/color_note">
+
+        <TextView
+            android:id="@+id/color_none"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="4dp"
+            android:layout_weight="1"
+            android:background="@drawable/palette_color_none"
+            app:layout_constraintDimensionRatio="1" />
+
+        <TextView
+            android:id="@+id/color_accessory"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="4dp"
+            android:layout_weight="1"
+            android:background="@drawable/palette_color_accessory"
+            app:layout_constraintDimensionRatio="1" />
+
+        <TextView
+            android:id="@+id/color_quiet"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="4dp"
+            android:layout_weight="1"
+            android:background="@drawable/palette_color_quiet"
+            app:layout_constraintDimensionRatio="1" />
+
+        <TextView
+            android:id="@+id/color_normal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="4dp"
+            android:layout_weight="1"
+            android:background="@drawable/palette_color_normal"
+            app:layout_constraintDimensionRatio="1" />
+
+        <TextView
+            android:id="@+id/color_attention"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="4dp"
+            android:layout_weight="1"
+            android:background="@drawable/palette_color_attention"
+            app:layout_constraintDimensionRatio="1" />
+
+        <TextView
+            android:id="@+id/color_urgent"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="4dp"
+            android:layout_weight="1"
+            android:background="@drawable/palette_color_urgent"
+            app:layout_constraintDimensionRatio="1" />
+    </LinearLayout>
+
     <ImageView
         android:id="@+id/icon_category"
         android:layout_width="0dp"
@@ -54,12 +121,12 @@
         style="@style/RoundedField"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="16dp"
         android:gravity="center"
         android:hint="@string/note_category_hint"
         android:textSize="18sp"
         app:layout_constraintStart_toEndOf="@+id/icon_category"
-        app:layout_constraintTop_toBottomOf="@id/deadline_note" />
+        app:layout_constraintTop_toBottomOf="@id/color_palette" />
 
     <com.google.android.flexbox.FlexboxLayout
         android:id="@+id/categories_line"

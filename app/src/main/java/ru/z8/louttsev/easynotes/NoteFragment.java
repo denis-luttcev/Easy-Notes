@@ -16,6 +16,7 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -145,8 +146,56 @@ public class NoteFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         final View mNoteLayout = inflater.inflate(R.layout.fragment_note, container, false);
 
-        //TODO: color view add + onClick
         applyNoteLayoutColor(mNoteLayout);
+
+        final LinearLayout mColorPalette = mNoteLayout.findViewById(R.id.color_palette);
+        final TextView mNoteColor = mNoteLayout.findViewById(R.id.color_note);
+        mNoteColor.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (mColorPalette.getVisibility() == View.GONE) {
+                    mColorPalette.setVisibility(View.VISIBLE);
+                } else {
+                    mColorPalette.setVisibility(View.GONE);
+                }
+            }
+        });
+
+        View.OnClickListener onColorChangeListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View palette) {
+                switch (palette.getId()) {
+                    case R.id.color_none:
+                        mNote.setColor(Note.Color.NONE);
+                        break;
+                    case R.id.color_accessory:
+                        mNote.setColor(Note.Color.ACCESSORY);
+                        break;
+                    case R.id.color_quiet:
+                        mNote.setColor(Note.Color.QUIET);
+                        break;
+                    case R.id.color_normal:
+                        mNote.setColor(Note.Color.NORMAL);
+                        break;
+                    case R.id.color_attention:
+                        mNote.setColor(Note.Color.ATTENTION);
+                        break;
+                    case R.id.color_urgent:
+                        mNote.setColor(Note.Color.URGENT);
+                        break;
+                    default: // ignored
+                }
+                applyNoteLayoutColor(mNoteLayout);
+                mColorPalette.setVisibility(View.GONE);
+            }
+        };
+
+        mNoteLayout.findViewById(R.id.color_none).setOnClickListener(onColorChangeListener);
+        mNoteLayout.findViewById(R.id.color_accessory).setOnClickListener(onColorChangeListener);
+        mNoteLayout.findViewById(R.id.color_quiet).setOnClickListener(onColorChangeListener);
+        mNoteLayout.findViewById(R.id.color_normal).setOnClickListener(onColorChangeListener);
+        mNoteLayout.findViewById(R.id.color_attention).setOnClickListener(onColorChangeListener);
+        mNoteLayout.findViewById(R.id.color_urgent).setOnClickListener(onColorChangeListener);
 
         final FlexboxLayout mCategoriesLayout = mNoteLayout.findViewById(R.id.categories_line);
         final TextView mCategoryView = mNoteLayout.findViewById(R.id.category_note);
@@ -207,6 +256,7 @@ public class NoteFragment extends Fragment {
     }
 
     private void applyNoteLayoutColor(@NonNull View noteLayout) {
+
         int color = R.color.colorNoneNote;
         int palette = R.drawable.palette_color_none;
 
