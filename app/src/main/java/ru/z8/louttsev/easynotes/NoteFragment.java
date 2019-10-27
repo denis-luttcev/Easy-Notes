@@ -208,27 +208,35 @@ public class NoteFragment extends Fragment {
 
     private void applyNoteLayoutColor(@NonNull View noteLayout) {
         int color = R.color.colorNoneNote;
+        int palette = R.drawable.palette_color_none;
 
         switch (mNote.getColor()) {
             case URGENT:
                 color = R.color.colorUrgentNote;
+                palette = R.drawable.palette_color_urgent;
                 break;
             case ATTENTION:
                 color = R.color.colorAttentionNote;
+                palette = R.drawable.palette_color_attention;
                 break;
             case NORMAL:
                 color = R.color.colorNormalNote;
+                palette = R.drawable.palette_color_normal;
                 break;
             case QUIET:
                 color = R.color.colorQuietNote;
+                palette = R.drawable.palette_color_quiet;
                 break;
             case ACCESSORY:
                 color = R.color.colorAccessoryNote;
+                palette = R.drawable.palette_color_accessory;
                 break;
             default: // ignored
         }
 
         noteLayout.setBackgroundColor(getResources().getColor(color));
+        noteLayout.findViewById(R.id.color_note)
+                .setBackground(getResources().getDrawable(palette));
     }
 
     private void applyCategoryViewStyle(TextView categoryView) {
