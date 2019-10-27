@@ -38,7 +38,7 @@
         android:id="@+id/backspace_button"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="@drawable/ic_backspace_black_24dp"
+        android:background="@drawable/ic_backspace"
         app:layout_constraintBottom_toBottomOf="@+id/btn0"
         app:layout_constraintDimensionRatio="1"
         app:layout_constraintEnd_toEndOf="@+id/btn9"

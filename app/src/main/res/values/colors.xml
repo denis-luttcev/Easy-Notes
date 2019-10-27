@@ -14,7 +14,7 @@
     <color name="colorNormalNote">#33FFEB3B</color>
     <color name="colorQuietNote">#332196F3</color>
     <color name="colorAccessoryNote">#334CAF50</color>
-    <color name="colorNoneNote">@color/cardview_light_background</color>
+    <color name="colorNoneNote">@color/colorBackground</color>
 
     <color name="colorDeadlineOverdue">#E53935</color>
     <color name="colorDeadlineImmediate">#880E4F</color>

@@ -161,7 +161,7 @@ public class NoteFragment extends Fragment {
                 applyCategoryViewStyle(mCategoryView);
             }
         });
-        
+
         applyCategoryViewStyle(mCategoryView);
         mCategoryView.setOnClickListener(new View.OnClickListener() {
             @Override
