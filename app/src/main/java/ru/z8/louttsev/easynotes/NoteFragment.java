@@ -367,11 +367,19 @@ public class NoteFragment extends Fragment {
         if (mNote.isDeadlined()) {
             mDeadlineView.setText(mNote.getDeadlineRepresent(mContext));
         } else mDeadlineView.setText("");
-        applyDeadlineStyle();
+        applyDeadlineViewStyle();
     }
 
-    private void applyDeadlineStyle() {
-        int color = R.color.colorDeadlineAhead;
+    private void applyDeadlineViewStyle() {
+        int color;
+
+        if (mNote.isDeadlined()) {
+            color = R.color.colorDeadlineLightAhead;
+            mDeadlineView.setBackground(getResources().getDrawable(R.drawable.rounded_fill_field));
+        } else {
+            color = R.color.colorDeadlineAhead;
+            mDeadlineView.setBackground(getResources().getDrawable(R.drawable.rounded_not_fill_field));
+        }
 
         switch (mNote.getDeadlineStatus(Calendar.getInstance())) {
             case OVERDUE:

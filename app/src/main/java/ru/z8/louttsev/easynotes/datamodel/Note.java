@@ -186,24 +186,24 @@ public abstract class Note implements Comparable<Note> {
         modificationUpdate();
     }
 
-    public boolean isOverdue(@NonNull Calendar toDate) throws NullPointerException {
+    private boolean isOverdue(@NonNull Calendar toDate) throws NullPointerException {
         return deadline.before(toDate);
     }
 
-    public boolean isImmediate(@NonNull Calendar toDate) throws NullPointerException {
-        return deadline.equals(toDate);
+    private boolean isImmediate(@NonNull Calendar toDate) throws NullPointerException {
+        return isToday(deadline);
     }
 
-    public boolean isAhead(@NonNull Calendar toDate) throws NullPointerException {
+    private boolean isAhead(@NonNull Calendar toDate) throws NullPointerException {
         return deadline.after(toDate);
     }
 
     @NonNull
     public DeadlineStatus getDeadlineStatus(@NonNull Calendar toDate) {
         try {
-            if (isAhead(toDate)) return DeadlineStatus.AHEAD;
-            if (isImmediate(toDate)) return DeadlineStatus.IMMEDIATE;
             if (isOverdue(toDate)) return DeadlineStatus.OVERDUE;
+            if (isImmediate(toDate)) return DeadlineStatus.IMMEDIATE;
+            if (isAhead(toDate)) return DeadlineStatus.AHEAD;
         } catch (NullPointerException ignored) {}
         return DeadlineStatus.NONE;
     }
