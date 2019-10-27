@@ -146,14 +146,16 @@ public class NoteFragment extends Fragment {
         //TODO: color view add + onClick
         applyNoteLayoutColor(mNoteLayout);
 
-        final FlexboxLayout mCategoriesLayout = mNoteLayout.findViewById(R.id.categories_choice);
+        final FlexboxLayout mCategoriesLayout = mNoteLayout.findViewById(R.id.categories_line);
         final TextView mCategoryView = mNoteLayout.findViewById(R.id.category_note);
+        final TextView mCategoriesHelp = mNoteLayout.findViewById(R.id.categories_line_help);
         applyCategoryViewStyle(mCategoryView);
         mCategoryView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 mCategoriesLayout.removeAllViews(); // prevents refilling
-                showCategories(mCategoriesLayout, mCategoryView);
+                mCategoriesHelp.setVisibility(View.VISIBLE);
+                showCategories(mCategoriesLayout, mCategoryView, mCategoriesHelp);
             }
         });
 
@@ -229,7 +231,8 @@ public class NoteFragment extends Fragment {
     }
 
     private void showCategories(@NonNull final FlexboxLayout categoriesLayout,
-                                @NonNull final TextView categoryView) {
+                                @NonNull final TextView categoryView,
+                                @NonNull final TextView categoriesHelp) {
 
         Set<Category> allCategories = mNotesKeeper.getCategories();
 
@@ -243,6 +246,7 @@ public class NoteFragment extends Fragment {
                             categoryView.setText(title);
                             applyCategoryViewStyle(categoryView);
                             categoriesLayout.removeAllViews();
+                            categoriesHelp.setVisibility(View.GONE);
                             return true;
                         }
                         return false;
@@ -250,8 +254,8 @@ public class NoteFragment extends Fragment {
                 });
 
         for (Category category : allCategories) {
-            CheckBox categoryItemView =
-                    createCategoryView(categoriesLayout, category.getTitle(), categoryView);
+            CheckBox categoryItemView = createCategoryView(categoriesLayout, category.getTitle(),
+                    categoryView, categoriesHelp);
 
             if (mNote.hasCategory(category.getTitle())) {
                 categoryItemView.setTextColor(getResources().getColor(R.color.colorLightText));
@@ -293,58 +297,57 @@ public class NoteFragment extends Fragment {
     @NonNull
     private CheckBox createCategoryView(@NonNull final FlexboxLayout categoriesLayout,
                                         @NonNull final String title,
-                                        @NonNull final TextView categoryView) {
+                                        @NonNull final TextView categoryView,
+                                        @NonNull final TextView categoriesHelp) {
 
         return createPanelItemView(categoriesLayout, title,
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View categoryItemView) {
                         CompoundButton category = (CompoundButton) categoryItemView;
-                        try {
-                            mNote.setCategory(mNotesKeeper.getCategory((category.getText().toString())));
-                            categoryView.setText(title);
-                            applyCategoryViewStyle(categoryView);
-                            categoriesLayout.removeAllViews();
-                        } catch (IllegalAccessException ignored) {} // impossible
+                        if (!mNote.hasCategory(category.getText().toString())) {
+                            try {
+                                mNote.setCategory(mNotesKeeper.getCategory((category.getText().toString())));
+                                categoryView.setText(title);
+                                applyCategoryViewStyle(categoryView);
+                            } catch (IllegalAccessException ignored) {} // impossible
+                        }
+                        categoriesLayout.removeAllViews();
+                        categoriesHelp.setVisibility(View.GONE);
                     }
                 },
                 new View.OnLongClickListener() {
                     @Override
                     public boolean onLongClick(View view) {
-                        return false;
+                        final CompoundButton category = (CompoundButton) view;
+                        new AlertDialog.Builder(mContext)
+                                .setTitle(getString(R.string.delete_category_dialog_title))
+                                .setMessage(getString(R.string.delete_category_dialog_message))
+                                .setNegativeButton(android.R.string.cancel, null)
+                                .setPositiveButton(android.R.string.ok,
+                                        new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialogInterface, int i) {
+                                                String title = category.getText().toString();
+                                                if (mNote.hasCategory(title)) {
+                                                    mNote.setCategory(null);
+                                                    categoryView.setText("");
+                                                    applyCategoryViewStyle(categoryView);
+                                                }
+                                                categoriesLayout.removeAllViews();
+                                                categoriesHelp.setVisibility(View.GONE);
+                                                mNotesKeeper.removeCategory(title);
+                                                Toast.makeText(mContext,
+                                                        getString(R.string.delete_category_toast_message),
+                                                        Toast.LENGTH_SHORT)
+                                                        .show();
+                                            }
+                                        })
+                                .create()
+                                .show();
+                        return true;
                     }
                 });
-
-        /*categoryView.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(final View categoryCheckbox) {
-                //TODO
-                new AlertDialog.Builder(mContext)
-                        .setTitle(getString(R.string.delete_tag_dialog_title))
-                        .setMessage(getString(R.string.delete_tag_dialog_message))
-                        .setNegativeButton(android.R.string.cancel, null)
-                        .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                CompoundButton tagView = (CompoundButton) categoryCheckbox;
-                                String tagTitle = tagView.getText().toString();
-                                if (tagView.isChecked()) {
-                                    mNote.unmarkTag(tagTitle);
-                                }
-                                categoriesLayout.removeView(categoryCheckbox);
-                                mNotesKeeper.removeTag(tagTitle);
-                                Toast.makeText(mContext,
-                                        getString(R.string.delete_tag_toast_message),
-                                        Toast.LENGTH_SHORT)
-                                        .show();
-                            }
-                        })
-                        .create()
-                        .show();
-                return true;
-            }
-        });*/
-
     }
 
     @NonNull

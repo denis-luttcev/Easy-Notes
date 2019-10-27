@@ -113,6 +113,11 @@ public class NotesRepository implements NotesKeeper {
 
     @Override
     public void removeCategory(@NonNull String title) {
+        for (Note note : notes.values()) {
+            if (note.hasCategory(title)) {
+                note.setCategory(null);
+            }
+        }
         categories.remove(title);
     }
 

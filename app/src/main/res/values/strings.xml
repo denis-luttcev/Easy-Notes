@@ -26,10 +26,14 @@
     <string name="add_new_tag_hint">+ tag</string>
     <string name="add_new_category_hint">+ category</string>
     <string name="tags_line_help_text">Press and hold on tag to remove it</string>
+    <string name="categories_line_help_text">Press and hold on category to remove it</string>
 
     <string name="delete_tag_dialog_title">Delete tag</string>
     <string name="delete_tag_dialog_message">You delete the tag, which other notes could be marked. After this all such marks will be cleared.\n\nAre you sure?</string>
     <string name="delete_tag_toast_message">Tag deleted successfully</string>
+    <string name="delete_category_dialog_title">Delete category</string>
+    <string name="delete_category_dialog_message">You delete the category, which other notes could be placed. After this all such notes will be without category.\n\nAre you sure?</string>
+    <string name="delete_category_toast_message">Category deleted successfully</string>
 
     <string name="clear_button_text">Clear</string>
 </resources>
