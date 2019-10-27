@@ -50,14 +50,9 @@ public class NoteFragment extends Fragment {
     private NotesKeeper mNotesKeeper;
     private Note mNote;
 
-    private TextView mCategoryView;
     private TextView mDeadlineView;
     private EditText mTitleView;
     private FrameLayout mContentView;
-
-    private EditText mPlusTagView;
-    private EditText mPlusCategoryView;
-    private FlexboxLayout mCategoriesLayout;
 
     @NonNull
     static NoteFragment getInstance(@NonNull UUID noteId) {
@@ -151,16 +146,14 @@ public class NoteFragment extends Fragment {
         //TODO: color view add + onClick
         applyNoteLayoutColor(mNoteLayout);
 
-        mCategoriesLayout = mNoteLayout.findViewById(R.id.categories_choice);
-
-        mCategoryView = mNoteLayout.findViewById(R.id.category_note);
-        if (mNote.isCategorized()) {
-            mCategoryView.setText(Objects.requireNonNull(mNote.getCategory()).getTitle());
-        }
+        final FlexboxLayout mCategoriesLayout = mNoteLayout.findViewById(R.id.categories_choice);
+        final TextView mCategoryView = mNoteLayout.findViewById(R.id.category_note);
+        applyCategoryViewStyle(mCategoryView);
         mCategoryView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showCategories(mCategoriesLayout);
+                mCategoriesLayout.removeAllViews(); // prevents refilling
+                showCategories(mCategoriesLayout, mCategoryView);
             }
         });
 
@@ -198,13 +191,6 @@ public class NoteFragment extends Fragment {
         return mNoteLayout;
     }
 
-    private void updateDeadlineView() {
-        if (mNote.isDeadlined()) {
-            mDeadlineView.setText(mNote.getDeadlineRepresent(mContext));
-        } else mDeadlineView.setText("");
-        applyDeadlineStyle();
-    }
-
     private void applyNoteLayoutColor(@NonNull View noteLayout) {
         int color = R.color.colorNoneNote;
 
@@ -230,190 +216,106 @@ public class NoteFragment extends Fragment {
         noteLayout.setBackgroundColor(getResources().getColor(color));
     }
 
-    private void applyDeadlineStyle() {
-        int color = R.color.colorDeadlineAhead;
-
-        switch (mNote.getDeadlineStatus(Calendar.getInstance())) {
-            case OVERDUE:
-                color = R.color.colorDeadlineOverdue;
-                mDeadlineView.setTypeface(Typeface.DEFAULT_BOLD);
-                break;
-            case IMMEDIATE:
-                color = R.color.colorDeadlineImmediate;
-                mDeadlineView.setTypeface(Typeface.DEFAULT_BOLD);
-                break;
-            default:
-                mDeadlineView.setTypeface(Typeface.DEFAULT);
+    private void applyCategoryViewStyle(TextView categoryView) {
+        if (mNote.isCategorized()) {
+            categoryView.setText(Objects.requireNonNull(mNote.getCategory()).getTitle());
+            categoryView.setBackground(getResources().getDrawable(R.drawable.rounded_fill_field));
+            categoryView.setTextColor(getResources().getColor(R.color.colorLightText));
+        } else {
+            categoryView.setText("");
+            categoryView.setBackground(getResources().getDrawable(R.drawable.rounded_not_fill_field));
+            categoryView.setTextColor(getResources().getColor(R.color.colorPrimaryText));
         }
-
-        mDeadlineView.setTextColor(getResources().getColor(color));
     }
 
-    private void showTags(@NonNull FlexboxLayout tagsLayout) {
-        Set<Tag> allTags = mNotesKeeper.getTags();
-        mPlusTagView = createPlusView(tagsLayout, getString(R.string.add_new_tag_hint));
-        mPlusTagView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View plusTagView, boolean isFocused) {
-                if (!isFocused) {
-                    addNewTag();
-                }
-            }
-        });
+    private void showCategories(@NonNull final FlexboxLayout categoriesLayout,
+                                @NonNull final TextView categoryView) {
 
-        for (Tag tag : allTags) {
-            CheckBox tagView = createTagView(tagsLayout, tag.getTitle());
-            if (mNote.hasTag(tag.getTitle())) {
-                tagView.setTextColor(getResources().getColor(R.color.colorLightText));
-                tagView.setChecked(true);
-            }
-            tagsLayout.addView(tagView);
-        }
-        tagsLayout.addView(mPlusTagView);
-    }
-
-    @NonNull
-    private EditText createPlusView(@NonNull FlexboxLayout layout, @NonNull String hint) {
-        EditText plusView = (EditText) getLayoutInflater()
-                .inflate(R.layout.add_new_view, layout, false);
-
-        plusView.setImeOptions(EditorInfo.IME_ACTION_DONE);
-        plusView.setHint(hint);
-
-        plusView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView plusView, int actionId, KeyEvent keyEvent) {
-                if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    plusView.clearFocus();
-                    return true;
-                }
-                return false;
-            }
-        });
-
-        return plusView;
-    }
-
-    private void addNewTag() {
-        FlexboxLayout tagsLayout = (FlexboxLayout) mPlusTagView.getParent();
-
-        tagsLayout.removeView(mPlusTagView);
-
-        String newTagTitle = mPlusTagView.getText().toString().trim();
-        if (!newTagTitle.isEmpty()) {
-            // up first letter
-            newTagTitle = newTagTitle.substring(0, 1).toUpperCase() + newTagTitle.substring(1);
-        }
-
-        mNotesKeeper.addTag(newTagTitle);
-        try {
-            mNote.markTag(mNotesKeeper.getTag(newTagTitle));
-        } catch (IllegalAccessException ignored) {} // impossible
-
-        CheckBox tagView = createTagView(tagsLayout, newTagTitle);
-        tagView.setTextColor(getResources().getColor(R.color.colorLightText));
-        tagView.setChecked(true);
-        tagsLayout.addView(tagView);
-        mPlusTagView.setText("");
-
-        tagsLayout.addView(mPlusTagView);
-    }
-
-    @NonNull
-    private CheckBox createTagView(@NonNull final FlexboxLayout tagsLayout, @NonNull String title) {
-        CheckBox tagView = (CheckBox) getLayoutInflater()
-                .inflate(R.layout.field_view, tagsLayout, false);
-
-        tagView.setText(title);
-        tagView.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton tagCheckbox, boolean isChecked) {
-                if (isChecked) {
-                    tagCheckbox.setTextColor(getResources().getColor(R.color.colorLightText));
-                    try {
-                        mNote.markTag(mNotesKeeper.getTag(tagCheckbox.getText().toString()));
-                    } catch (IllegalAccessException ignored) {} // impossible
-                } else {
-                    tagCheckbox.setTextColor(getResources().getColor(R.color.colorPrimaryText));
-                    mNote.unmarkTag(tagCheckbox.getText().toString());
-                }
-            }
-        });
-        tagView.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(final View tagCheckbox) {
-                new AlertDialog.Builder(mContext)
-                        .setTitle(getString(R.string.delete_tag_dialog_title))
-                        .setMessage(getString(R.string.delete_tag_dialog_message))
-                        .setNegativeButton(android.R.string.cancel, null)
-                        .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                CompoundButton tagView = (CompoundButton) tagCheckbox;
-                                String tagTitle = tagView.getText().toString();
-                                if (tagView.isChecked()) {
-                                    mNote.unmarkTag(tagTitle);
-                                }
-                                tagsLayout.removeView(tagCheckbox);
-                                mNotesKeeper.removeTag(tagTitle);
-                                Toast.makeText(mContext,
-                                        getString(R.string.delete_tag_toast_message),
-                                        Toast.LENGTH_SHORT)
-                                        .show();
-                            }
-                        })
-                        .create()
-                        .show();
-                return true;
-            }
-        });
-
-        return tagView;
-    }
-
-    private void showCategories(@NonNull FlexboxLayout categoriesLayout) {
         Set<Category> allCategories = mNotesKeeper.getCategories();
-        mPlusCategoryView = createPlusView(categoriesLayout, getString(R.string.add_new_category_hint));
-        mPlusCategoryView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView plusView, int actionId, KeyEvent keyEvent) {
-                if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    addNewCategory();
-                    return true;
-                }
-                return false;
-            }
-        });
+
+        final EditText plusCategoryView = createPlusItemView(categoriesLayout,
+                getString(R.string.add_new_category_hint),
+                new TextView.OnEditorActionListener() {
+                    @Override
+                    public boolean onEditorAction(TextView plusView, int actionId, KeyEvent keyEvent) {
+                        if (actionId == EditorInfo.IME_ACTION_DONE) {
+                            String title = addNewCategory((EditText) plusView);
+                            categoryView.setText(title);
+                            applyCategoryViewStyle(categoryView);
+                            categoriesLayout.removeAllViews();
+                            return true;
+                        }
+                        return false;
+                    }
+                });
 
         for (Category category : allCategories) {
-            CheckBox categoryView = createCategoryView(categoriesLayout, category.getTitle());
+            CheckBox categoryItemView =
+                    createCategoryView(categoriesLayout, category.getTitle(), categoryView);
+
             if (mNote.hasCategory(category.getTitle())) {
-                categoryView.setTextColor(getResources().getColor(R.color.colorLightText));
-                categoryView.setChecked(true);
+                categoryItemView.setTextColor(getResources().getColor(R.color.colorLightText));
+                categoryItemView.setChecked(true);
             }
-            categoriesLayout.addView(categoryView);
+            categoriesLayout.addView(categoryItemView);
         }
-        categoriesLayout.addView(mPlusCategoryView);
+        categoriesLayout.addView(plusCategoryView);
     }
 
     @NonNull
-    private CheckBox createCategoryView(@NonNull final FlexboxLayout categoriesLayout, @NonNull String title) {
-        CheckBox categoryView = (CheckBox) getLayoutInflater()
-                .inflate(R.layout.field_view, categoriesLayout, false);
+    private EditText createPlusItemView(@NonNull FlexboxLayout panelLayout,
+                                        @NonNull String itemHint,
+                                        @NonNull TextView.OnEditorActionListener onActionDoneListener) {
 
-        categoryView.setText(title);
-        categoryView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View categoryCheckbox) {
-                try {
-                    mNote.setCategory(mNotesKeeper.getCategory(((CompoundButton) categoryCheckbox).getText().toString()));
-                    mCategoryView.setText(Objects.requireNonNull(mNote.getCategory()).getTitle());
-                    mCategoriesLayout.removeAllViews();
-                    mPlusCategoryView = null;
-                } catch (IllegalAccessException ignored) {} // impossible
-            }
-        });
-        categoryView.setOnLongClickListener(new View.OnLongClickListener() {
+        EditText plusItemView = (EditText) getLayoutInflater()
+                .inflate(R.layout.plus_item_view, panelLayout, false);
+
+        plusItemView.setHint(itemHint);
+        plusItemView.setImeOptions(EditorInfo.IME_ACTION_DONE);
+        plusItemView.setOnEditorActionListener(onActionDoneListener);
+
+        return plusItemView;
+    }
+
+    @NonNull
+    private String addNewCategory(@NonNull EditText plusItemView) {
+        String title = plusItemView.getText().toString().trim();
+        title = upFirstLetter(title);
+
+        mNotesKeeper.addCategory(title);
+        try {
+            mNote.setCategory(mNotesKeeper.getCategory(title));
+        } catch (IllegalAccessException ignored) {} // impossible
+
+        return title;
+    }
+
+    @NonNull
+    private CheckBox createCategoryView(@NonNull final FlexboxLayout categoriesLayout,
+                                        @NonNull final String title,
+                                        @NonNull final TextView categoryView) {
+
+        return createPanelItemView(categoriesLayout, title,
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View categoryItemView) {
+                        CompoundButton category = (CompoundButton) categoryItemView;
+                        try {
+                            mNote.setCategory(mNotesKeeper.getCategory((category.getText().toString())));
+                            categoryView.setText(title);
+                            applyCategoryViewStyle(categoryView);
+                            categoriesLayout.removeAllViews();
+                        } catch (IllegalAccessException ignored) {} // impossible
+                    }
+                },
+                new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View view) {
+                        return false;
+                    }
+                });
+
+        /*categoryView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(final View categoryCheckbox) {
                 //TODO
@@ -441,32 +343,156 @@ public class NoteFragment extends Fragment {
                         .show();
                 return true;
             }
-        });
+        });*/
 
-        return categoryView;
     }
 
-    private void addNewCategory() {
-        String newCategoryTitle = mPlusCategoryView.getText().toString().trim();
-        if (!newCategoryTitle.isEmpty()) {
-            // up first letter
-            newCategoryTitle = newCategoryTitle.substring(0, 1).toUpperCase() + newCategoryTitle.substring(1);
+    @NonNull
+    private CheckBox createPanelItemView(@NonNull FlexboxLayout panelLayout,
+                                         @NonNull String title,
+                                         @NonNull View.OnClickListener onClickListener,
+                                         @NonNull View.OnLongClickListener onLongClickListener) {
+
+        CheckBox itemView = (CheckBox) getLayoutInflater()
+                .inflate(R.layout.panel_item_view, panelLayout, false);
+
+        itemView.setText(title);
+        itemView.setOnClickListener(onClickListener);
+        itemView.setOnLongClickListener(onLongClickListener);
+
+        return itemView;
+    }
+
+    private void updateDeadlineView() {
+        if (mNote.isDeadlined()) {
+            mDeadlineView.setText(mNote.getDeadlineRepresent(mContext));
+        } else mDeadlineView.setText("");
+        applyDeadlineStyle();
+    }
+
+    private void applyDeadlineStyle() {
+        int color = R.color.colorDeadlineAhead;
+
+        switch (mNote.getDeadlineStatus(Calendar.getInstance())) {
+            case OVERDUE:
+                color = R.color.colorDeadlineOverdue;
+                mDeadlineView.setTypeface(Typeface.DEFAULT_BOLD);
+                break;
+            case IMMEDIATE:
+                color = R.color.colorDeadlineImmediate;
+                mDeadlineView.setTypeface(Typeface.DEFAULT_BOLD);
+                break;
+            default:
+                mDeadlineView.setTypeface(Typeface.DEFAULT);
         }
 
-        mNotesKeeper.addCategory(newCategoryTitle);
-        try {
-            mNote.setCategory(mNotesKeeper.getCategory(newCategoryTitle));
-        } catch (IllegalAccessException ignored) {} // impossible
-        mCategoryView.setText(newCategoryTitle);
-        mCategoriesLayout.removeAllViews();
-        mPlusCategoryView = null;
+        mDeadlineView.setTextColor(getResources().getColor(color));
     }
 
-    @Override
-    public void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
+    private void showTags(@NonNull final FlexboxLayout tagsLayout) {
+        Set<Tag> allTags = mNotesKeeper.getTags();
 
-        // prevents adding new tag while rotate
-        mPlusTagView.setOnFocusChangeListener(null);
+        final EditText plusTagView = createPlusItemView(tagsLayout,
+                getString(R.string.add_new_tag_hint),
+                new TextView.OnEditorActionListener() {
+                    @Override
+                    public boolean onEditorAction(TextView plusView, int actionId, KeyEvent keyEvent) {
+                        if (actionId == EditorInfo.IME_ACTION_DONE) {
+                            tagsLayout.removeView(plusView);
+                            String title = addNewTag((EditText) plusView);
+
+                            CheckBox tagView = createTagView(tagsLayout, title);
+                            tagView.setTextColor(getResources().getColor(R.color.colorLightText));
+                            tagView.setChecked(true);
+                            tagsLayout.addView(tagView);
+                            plusView.setText("");
+
+                            tagsLayout.addView(plusView);
+                            return true;
+                        }
+                        return false;
+                    }
+                });
+
+        for (Tag tag : allTags) {
+            CheckBox tagItemView = createTagView(tagsLayout, tag.getTitle());
+            if (mNote.hasTag(tag.getTitle())) {
+                tagItemView.setTextColor(getResources().getColor(R.color.colorLightText));
+                tagItemView.setChecked(true);
+            }
+            tagsLayout.addView(tagItemView);
+        }
+
+        tagsLayout.addView(plusTagView);
+    }
+
+    @NonNull
+    private String addNewTag(@NonNull EditText plusItemView) {
+        String title = plusItemView.getText().toString().trim();
+        title = upFirstLetter(title);
+
+        mNotesKeeper.addTag(title);
+        try {
+            mNote.markTag(mNotesKeeper.getTag(title));
+        } catch (IllegalAccessException ignored) {} // impossible
+
+        return title;
+    }
+
+    @NonNull
+    private CheckBox createTagView(@NonNull final FlexboxLayout tagsLayout, @NonNull String title) {
+        return createPanelItemView(tagsLayout, title,
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View tagView) {
+                        CheckBox tag = (CheckBox) tagView;
+                        if (tag.isChecked()) { // while click check was toggle
+                            tag.setTextColor(getResources().getColor(R.color.colorLightText));
+                            try {
+                                mNote.markTag(mNotesKeeper.getTag(tag.getText().toString()));
+                            } catch (IllegalAccessException ignored) {} // impossible
+                        } else {
+                            tag.setTextColor(getResources().getColor(R.color.colorPrimaryText));
+                            mNote.unmarkTag(tag.getText().toString());
+                        }
+                    }
+                },
+                new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View view) {
+                        final CompoundButton tag = (CompoundButton) view;
+                        new AlertDialog.Builder(mContext)
+                                .setTitle(getString(R.string.delete_tag_dialog_title))
+                                .setMessage(getString(R.string.delete_tag_dialog_message))
+                                .setNegativeButton(android.R.string.cancel, null)
+                                .setPositiveButton(android.R.string.ok,
+                                        new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialogInterface, int i) {
+                                                String title = tag.getText().toString();
+                                                if (tag.isChecked()) {
+                                                    mNote.unmarkTag(title);
+                                                }
+                                                tagsLayout.removeView(tag);
+                                                mNotesKeeper.removeTag(title);
+                                                Toast.makeText(mContext,
+                                                        getString(R.string.delete_tag_toast_message),
+                                                        Toast.LENGTH_SHORT)
+                                                        .show();
+                                            }
+                                        })
+                                .create()
+                                .show();
+                        return true;
+                    }
+                });
+    }
+
+    @NonNull
+    private String upFirstLetter(@NonNull String string) {
+        if (!string.isEmpty()) {
+            string = string.substring(0, 1).toUpperCase() + string.substring(1);
+        }
+        return string;
     }
 }
