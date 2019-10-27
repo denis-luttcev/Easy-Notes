@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
@@ -50,6 +51,7 @@ public class NoteFragment extends Fragment {
     private NotesKeeper mNotesKeeper;
     private Note mNote;
 
+    private Button mClearCategoryButton;
     private TextView mDeadlineView;
     private EditText mTitleView;
     private FrameLayout mContentView;
@@ -149,6 +151,17 @@ public class NoteFragment extends Fragment {
         final FlexboxLayout mCategoriesLayout = mNoteLayout.findViewById(R.id.categories_line);
         final TextView mCategoryView = mNoteLayout.findViewById(R.id.category_note);
         final TextView mCategoriesHelp = mNoteLayout.findViewById(R.id.categories_line_help);
+
+        mClearCategoryButton = mNoteLayout.findViewById(R.id.clear_category_button);
+        mClearCategoryButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mNote.setCategory(null);
+                mCategoryView.setText("");
+                applyCategoryViewStyle(mCategoryView);
+            }
+        });
+        
         applyCategoryViewStyle(mCategoryView);
         mCategoryView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -223,10 +236,12 @@ public class NoteFragment extends Fragment {
             categoryView.setText(Objects.requireNonNull(mNote.getCategory()).getTitle());
             categoryView.setBackground(getResources().getDrawable(R.drawable.rounded_fill_field));
             categoryView.setTextColor(getResources().getColor(R.color.colorLightText));
+            mClearCategoryButton.setVisibility(View.VISIBLE);
         } else {
             categoryView.setText("");
             categoryView.setBackground(getResources().getDrawable(R.drawable.rounded_not_fill_field));
             categoryView.setTextColor(getResources().getColor(R.color.colorPrimaryText));
+            mClearCategoryButton.setVisibility(View.GONE);
         }
     }
 
