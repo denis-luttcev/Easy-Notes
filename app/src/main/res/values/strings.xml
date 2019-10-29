@@ -25,8 +25,8 @@
     <string name="deadline_hint">Deadline</string>
     <string name="add_new_tag_hint">+ tag</string>
     <string name="add_new_category_hint">+ category</string>
-    <string name="tags_line_help_text">Press and hold on tag to remove it</string>
-    <string name="categories_line_help_text">Press and hold on category to remove it</string>
+    <string name="tags_line_help_text">Press and hold on tag to delete it</string>
+    <string name="categories_line_help_text">Press and hold on category to delete it</string>
 
     <string name="delete_tag_dialog_title">Delete tag</string>
     <string name="delete_tag_dialog_message">You delete the tag, which other notes could be marked. After this all such marks will be cleared.\n\nAre you sure?</string>

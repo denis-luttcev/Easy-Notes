@@ -20,7 +20,9 @@
         android:id="@+id/icon_color"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:layout_marginTop="4dp"
         android:layout_marginEnd="4dp"
+        android:layout_marginBottom="4dp"
         android:background="@drawable/ic_color_palette"
         app:layout_constraintBottom_toBottomOf="@+id/color_note"
         app:layout_constraintDimensionRatio="1"
@@ -33,10 +35,10 @@
         android:layout_height="0dp"
         android:layout_marginEnd="16dp"
         android:background="@drawable/palette_color_none"
-        app:layout_constraintBottom_toBottomOf="@id/icon_deadline"
+        app:layout_constraintBottom_toBottomOf="@id/deadline_note"
         app:layout_constraintDimensionRatio="1"
         app:layout_constraintEnd_toStartOf="@+id/icon_deadline"
-        app:layout_constraintTop_toTopOf="@id/icon_deadline" />
+        app:layout_constraintTop_toTopOf="@id/deadline_note" />
 
     <androidx.constraintlayout.widget.Group
         android:id="@+id/color_palette"
@@ -142,6 +144,8 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginStart="4dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
         android:background="@drawable/ic_bookmark"
         app:layout_constraintBottom_toBottomOf="@+id/category_note"
         app:layout_constraintDimensionRatio="1"
@@ -193,7 +197,9 @@
         android:id="@+id/icon_deadline"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:layout_marginTop="5dp"
         android:layout_marginEnd="4dp"
+        android:layout_marginBottom="5dp"
         android:background="@drawable/ic_alarm"
         app:layout_constraintBottom_toBottomOf="@+id/deadline_note"
         app:layout_constraintDimensionRatio="1"
