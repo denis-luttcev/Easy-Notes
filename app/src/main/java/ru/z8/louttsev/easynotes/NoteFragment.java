@@ -215,10 +215,14 @@ public class NoteFragment extends Fragment {
         mCategoryView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mCategoriesLayout.removeAllViews(); // prevents refilling
-                mCategoriesLayout.setVisibility(View.VISIBLE);
-                mCategoriesHelp.setVisibility(View.VISIBLE);
-                showCategories(mCategoriesLayout, mCategoryView, mCategoriesHelp);
+                if (mCategoriesLayout.getVisibility() == View.GONE) {
+                    mCategoriesLayout.setVisibility(View.VISIBLE);
+                    mCategoriesHelp.setVisibility(View.VISIBLE);
+                    showCategories(mCategoriesLayout, mCategoryView, mCategoriesHelp);
+                } else {
+                    mCategoriesLayout.setVisibility(View.GONE);
+                    mCategoriesHelp.setVisibility(View.GONE);
+                }
             }
         });
 
