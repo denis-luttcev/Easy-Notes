@@ -11,7 +11,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
@@ -52,8 +51,12 @@ public class NoteFragment extends Fragment {
     private NotesKeeper mNotesKeeper;
     private Note mNote;
 
-    private Button mClearCategoryButton;
+    private View mNoteLayout;
+
+    private TextView mNoteColorView;
     private TextView mDeadlineView;
+    private TextView mCategoryView;
+
     private EditText mTitleView;
     private FrameLayout mContentView;
 
@@ -108,26 +111,33 @@ public class NoteFragment extends Fragment {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent resultIntent) {
+        // processes deadline date and time query results
         if (resultCode == Activity.RESULT_OK && resultIntent != null) {
             switch (requestCode) {
                 case REQUEST_DATE:
                     Calendar date = (Calendar) resultIntent
                             .getSerializableExtra(DatePickerDialogFragment.RESULT_DATE);
+
                     mNote.setDeadline(date);
                     updateDeadlineView();
-                    if (mNote.isDeadlined()) { // date was choice
+
+                    if (mNote.isDeadlined()) { // date selected
                         requestTime();
                     }
+
                     break;
                 case REQUEST_TIME:
                     Calendar time = (Calendar) resultIntent
                             .getSerializableExtra(TimePickerDialogFragment.RESULT_TIME);
+
                     mNote.setDeadline(time);
                     updateDeadlineView();
+
                     break;
                 default: // ignored
             }
         }
+
         if (resultCode == Activity.RESULT_CANCELED && requestCode == REQUEST_DATE && mNote.isDeadlined()) {
             requestTime();
         }
@@ -135,31 +145,32 @@ public class NoteFragment extends Fragment {
 
     private void requestTime() {
         Calendar deadline = mNote.getDeadline();
+
         TimePickerDialogFragment timePicker = TimePickerDialogFragment
                 .getInstance(Objects.requireNonNull(deadline));
+
         timePicker.setTargetFragment(NoteFragment.this, REQUEST_TIME);
+
         timePicker.show(Objects.requireNonNull(getFragmentManager()), DIALOG_TIME_PICKER);
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        final View mNoteLayout = inflater.inflate(R.layout.fragment_note, container, false);
+        mNoteLayout = inflater.inflate(R.layout.fragment_note, container, false);
 
-        applyNoteLayoutColor(mNoteLayout);
+        colorInstallation();
+        deadlineInstallation();
+        categoryInstallation();
+        titleInstallation();
+        contentInstallation();
+        tagsInstallation();
 
-        final Group mColorPalette = mNoteLayout.findViewById(R.id.color_palette);
-        final TextView mNoteColor = mNoteLayout.findViewById(R.id.color_note);
-        mNoteColor.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (mColorPalette.getVisibility() == View.GONE) {
-                    mColorPalette.setVisibility(View.VISIBLE);
-                } else {
-                    mColorPalette.setVisibility(View.GONE);
-                }
-            }
-        });
+        return mNoteLayout;
+    }
+
+    private void colorInstallation() {
+        final Group mColorPalette = mNoteLayout.findViewById(R.id.palette_color);
 
         View.OnClickListener onColorChangeListener = new View.OnClickListener() {
             @Override
@@ -185,7 +196,7 @@ public class NoteFragment extends Fragment {
                         break;
                     default: // ignored
                 }
-                applyNoteLayoutColor(mNoteLayout);
+                applyNoteColor();
                 mColorPalette.setVisibility(View.GONE);
             }
         };
@@ -197,73 +208,28 @@ public class NoteFragment extends Fragment {
         mNoteLayout.findViewById(R.id.color_attention).setOnClickListener(onColorChangeListener);
         mNoteLayout.findViewById(R.id.color_urgent).setOnClickListener(onColorChangeListener);
 
-        final FlexboxLayout mCategoriesLayout = mNoteLayout.findViewById(R.id.categories_line);
-        final TextView mCategoryView = mNoteLayout.findViewById(R.id.category_note);
-        final TextView mCategoriesHelp = mNoteLayout.findViewById(R.id.categories_line_help);
-
-        mClearCategoryButton = mNoteLayout.findViewById(R.id.clear_category_button);
-        mClearCategoryButton.setOnClickListener(new View.OnClickListener() {
+        mNoteColorView = mNoteLayout.findViewById(R.id.color_note);
+        mNoteColorView.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                mNote.setCategory(null);
-                mCategoryView.setText("");
-                applyCategoryViewStyle(mCategoryView);
+            public void onClick(View noteColorView) {
+                toggleVisibility(mColorPalette);
             }
         });
 
-        applyCategoryViewStyle(mCategoryView);
-        mCategoryView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (mCategoriesLayout.getVisibility() == View.GONE) {
-                    mCategoriesLayout.setVisibility(View.VISIBLE);
-                    mCategoriesHelp.setVisibility(View.VISIBLE);
-                    showCategories(mCategoriesLayout, mCategoryView, mCategoriesHelp);
-                } else {
-                    mCategoriesLayout.setVisibility(View.GONE);
-                    mCategoriesHelp.setVisibility(View.GONE);
-                }
-            }
-        });
-
-        mDeadlineView = mNoteLayout.findViewById(R.id.deadline_note);
-        updateDeadlineView();
-        mDeadlineView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View deadlineView) {
-                DatePickerDialogFragment datePicker;
-
-                if (mNote.isDeadlined()) {
-                    Calendar deadline = mNote.getDeadline();
-                    datePicker = DatePickerDialogFragment
-                            .getInstance(Objects.requireNonNull(deadline));
-                } else {
-                    datePicker = DatePickerDialogFragment.newInstance();
-                }
-
-                datePicker.setTargetFragment(NoteFragment.this, REQUEST_DATE);
-                datePicker.show(Objects.requireNonNull(getFragmentManager()), DIALOG_DATE_PICKER);
-            }
-        });
-
-        mTitleView = mNoteLayout.findViewById(R.id.title_note);
-        if (mNote.isTitled()) {
-            mTitleView.setText(mNote.getTitle());
-        }
-
-        mContentView = mNoteLayout.findViewById(R.id.content_view);
-        mNote.fillContentView(mContentView, mContext);
-
-        FlexboxLayout mTagsLayout = mNoteLayout.findViewById(R.id.tags_note);
-        showTags(mTagsLayout);
-
-        return mNoteLayout;
+        applyNoteColor();
     }
 
-    private void applyNoteLayoutColor(@NonNull View noteLayout) {
+    private void toggleVisibility(@NonNull Group hiddenGroup) {
+        if (hiddenGroup.getVisibility() == View.GONE) {
+            hiddenGroup.setVisibility(View.VISIBLE);
+        } else {
+            hiddenGroup.setVisibility(View.GONE);
+        }
+    }
 
-        int color = R.color.colorNoneNote;
-        int palette = R.drawable.palette_color_none;
+    private void applyNoteColor() {
+        int color;
+        int palette;
 
         switch (mNote.getColor()) {
             case URGENT:
@@ -286,31 +252,94 @@ public class NoteFragment extends Fragment {
                 color = R.color.colorAccessoryNote;
                 palette = R.drawable.palette_color_accessory;
                 break;
-            default: // ignored
+            default:
+                color = R.color.colorNoneNote;
+                palette = R.drawable.palette_color_none;
         }
 
-        noteLayout.setBackgroundColor(getResources().getColor(color));
-        noteLayout.findViewById(R.id.color_note)
-                .setBackground(getResources().getDrawable(palette));
+        mNoteLayout.setBackgroundColor(getResources().getColor(color));
+        mNoteColorView.setBackground(getResources().getDrawable(palette));
     }
 
-    private void applyCategoryViewStyle(TextView categoryView) {
-        if (mNote.isCategorized()) {
-            categoryView.setText(Objects.requireNonNull(mNote.getCategory()).getTitle());
-            categoryView.setBackground(getResources().getDrawable(R.drawable.rounded_fill_field));
-            categoryView.setTextColor(getResources().getColor(R.color.colorLightText));
-            mClearCategoryButton.setVisibility(View.VISIBLE);
+    private void deadlineInstallation() {
+        mDeadlineView = mNoteLayout.findViewById(R.id.deadline_note);
+
+        mDeadlineView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View deadlineView) {
+                DatePickerDialogFragment datePicker;
+
+                if (mNote.isDeadlined()) {
+                    Calendar deadline = mNote.getDeadline();
+                    datePicker = DatePickerDialogFragment
+                            .getInstance(Objects.requireNonNull(deadline));
+                } else {
+                    datePicker = DatePickerDialogFragment.newInstance();
+                }
+
+                datePicker.setTargetFragment(NoteFragment.this, REQUEST_DATE);
+                datePicker.show(Objects.requireNonNull(getFragmentManager()), DIALOG_DATE_PICKER);
+            }
+        });
+
+        updateDeadlineView();
+    }
+
+    private void updateDeadlineView() {
+        if (mNote.isDeadlined()) {
+            mDeadlineView.setText(mNote.getDeadlineRepresent(mContext));
+        } else mDeadlineView.setText("");
+
+        applyDeadlineViewStyles();
+    }
+
+    private void applyDeadlineViewStyles() {
+        int color;
+
+        if (mNote.isDeadlined()) {
+            color = R.color.colorDeadlineLightAhead;
+            mDeadlineView.setBackground(getResources().getDrawable(R.drawable.rounded_fill_field));
         } else {
-            categoryView.setText("");
-            categoryView.setBackground(getResources().getDrawable(R.drawable.rounded_not_fill_field));
-            categoryView.setTextColor(getResources().getColor(R.color.colorPrimaryText));
-            mClearCategoryButton.setVisibility(View.GONE);
+            color = R.color.colorDeadlineAhead;
+            mDeadlineView.setBackground(getResources().getDrawable(R.drawable.rounded_not_fill_field));
         }
+
+        switch (mNote.getDeadlineStatus(Calendar.getInstance())) {
+            case OVERDUE:
+                color = R.color.colorDeadlineOverdue;
+                mDeadlineView.setTypeface(Typeface.DEFAULT_BOLD);
+                break;
+            case IMMEDIATE:
+                mDeadlineView.setTypeface(Typeface.DEFAULT_BOLD);
+                break;
+            default:
+                mDeadlineView.setTypeface(Typeface.DEFAULT);
+        }
+
+        mDeadlineView.setTextColor(getResources().getColor(color));
     }
 
-    private void showCategories(@NonNull final FlexboxLayout categoriesLayout,
-                                @NonNull final TextView categoryView,
-                                @NonNull final TextView categoriesHelp) {
+    private void categoryInstallation() {
+        final Group mCategoriesPanel = mNoteLayout.findViewById(R.id.categories_panel);
+
+        final FlexboxLayout mCategoriesLayout = mNoteLayout.findViewById(R.id.categories_note);
+        showCategories(mCategoriesPanel, mCategoriesLayout);
+
+        mCategoryView = mNoteLayout.findViewById(R.id.category_note);
+        mCategoryView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                toggleVisibility(mCategoriesPanel);
+                mCategoriesLayout.removeAllViews();
+                showCategories(mCategoriesPanel, mCategoriesLayout);
+            }
+        });
+
+        updateCategoryView();
+    }
+
+    private void showCategories(@NonNull final Group categoriesPanel,
+                                @NonNull final FlexboxLayout categoriesLayout) {
 
         Set<Category> allCategories = mNotesKeeper.getCategories();
 
@@ -318,14 +347,17 @@ public class NoteFragment extends Fragment {
                 getString(R.string.add_new_category_hint),
                 new TextView.OnEditorActionListener() {
                     @Override
-                    public boolean onEditorAction(TextView plusView, int actionId, KeyEvent keyEvent) {
+                    public boolean onEditorAction(TextView plusItemView,
+                                                  int actionId,
+                                                  KeyEvent keyEvent) {
+
                         if (actionId == EditorInfo.IME_ACTION_DONE) {
-                            String title = addNewCategory((EditText) plusView);
-                            categoryView.setText(title);
-                            applyCategoryViewStyle(categoryView);
+                            addNewCategory((EditText) plusItemView);
+                            updateCategoryView();
+
                             categoriesLayout.removeAllViews();
-                            categoriesLayout.setVisibility(View.GONE);
-                            categoriesHelp.setVisibility(View.GONE);
+                            categoriesPanel.setVisibility(View.GONE);
+
                             return true;
                         }
                         return false;
@@ -333,35 +365,36 @@ public class NoteFragment extends Fragment {
                 });
 
         for (Category category : allCategories) {
-            CheckBox categoryItemView = createCategoryView(categoriesLayout, category.getTitle(),
-                    categoryView, categoriesHelp);
+            CheckBox categoryItemView =
+                    createCategoryView(categoriesPanel, categoriesLayout, category.getTitle());
 
             if (mNote.hasCategory(category.getTitle())) {
                 categoryItemView.setTextColor(getResources().getColor(R.color.colorLightText));
                 categoryItemView.setChecked(true);
             }
+
             categoriesLayout.addView(categoryItemView);
         }
+
         categoriesLayout.addView(plusCategoryView);
     }
 
     @NonNull
     private EditText createPlusItemView(@NonNull FlexboxLayout panelLayout,
-                                        @NonNull String itemHint,
+                                        @NonNull String plusItemHint,
                                         @NonNull TextView.OnEditorActionListener onActionDoneListener) {
 
         EditText plusItemView = (EditText) getLayoutInflater()
                 .inflate(R.layout.plus_item_view, panelLayout, false);
 
-        plusItemView.setHint(itemHint);
+        plusItemView.setHint(plusItemHint);
         plusItemView.setImeOptions(EditorInfo.IME_ACTION_DONE);
         plusItemView.setOnEditorActionListener(onActionDoneListener);
 
         return plusItemView;
     }
 
-    @NonNull
-    private String addNewCategory(@NonNull EditText plusItemView) {
+    private void addNewCategory(@NonNull EditText plusItemView) {
         String title = plusItemView.getText().toString().trim();
         title = upFirstLetter(title);
 
@@ -369,15 +402,32 @@ public class NoteFragment extends Fragment {
         try {
             mNote.setCategory(mNotesKeeper.getCategory(title));
         } catch (IllegalAccessException ignored) {} // impossible
+    }
 
-        return title;
+    private void updateCategoryView() {
+        if (mNote.isCategorized()) {
+            mCategoryView.setText(Objects.requireNonNull(mNote.getCategory()).getTitle());
+        } else {
+            mCategoryView.setText("");
+        }
+
+        applyCategoryViewStyles();
+    }
+
+    private void applyCategoryViewStyles() {
+        if (mNote.isCategorized()) {
+            mCategoryView.setBackground(getResources().getDrawable(R.drawable.rounded_fill_field));
+            mCategoryView.setTextColor(getResources().getColor(R.color.colorLightText));
+        } else {
+            mCategoryView.setBackground(getResources().getDrawable(R.drawable.rounded_not_fill_field));
+            mCategoryView.setTextColor(getResources().getColor(R.color.colorPrimaryText));
+        }
     }
 
     @NonNull
-    private CheckBox createCategoryView(@NonNull final FlexboxLayout categoriesLayout,
-                                        @NonNull final String title,
-                                        @NonNull final TextView categoryView,
-                                        @NonNull final TextView categoriesHelp) {
+    private CheckBox createCategoryView(@NonNull final Group categoriesPanel,
+                                        @NonNull final FlexboxLayout categoriesLayout,
+                                        @NonNull final String title) {
 
         return createPanelItemView(categoriesLayout, title,
                 new View.OnClickListener() {
@@ -387,19 +437,20 @@ public class NoteFragment extends Fragment {
                         if (!mNote.hasCategory(category.getText().toString())) {
                             try {
                                 mNote.setCategory(mNotesKeeper.getCategory((category.getText().toString())));
-                                categoryView.setText(title);
-                                applyCategoryViewStyle(categoryView);
+                                updateCategoryView();
                             } catch (IllegalAccessException ignored) {} // impossible
+                        } else {
+                            mNote.setCategory(null);
+                            updateCategoryView();
                         }
                         categoriesLayout.removeAllViews();
-                        categoriesLayout.setVisibility(View.GONE);
-                        categoriesHelp.setVisibility(View.GONE);
+                        categoriesPanel.setVisibility(View.GONE);
                     }
                 },
                 new View.OnLongClickListener() {
                     @Override
-                    public boolean onLongClick(View view) {
-                        final CompoundButton category = (CompoundButton) view;
+                    public boolean onLongClick(View categoryItemView) {
+                        final CompoundButton category = (CompoundButton) categoryItemView;
                         new AlertDialog.Builder(mContext)
                                 .setTitle(getString(R.string.delete_category_dialog_title))
                                 .setMessage(getString(R.string.delete_category_dialog_message))
@@ -411,11 +462,10 @@ public class NoteFragment extends Fragment {
                                                 String title = category.getText().toString();
                                                 if (mNote.hasCategory(title)) {
                                                     mNote.setCategory(null);
-                                                    categoryView.setText("");
-                                                    applyCategoryViewStyle(categoryView);
+                                                    updateCategoryView();
                                                 }
                                                 categoriesLayout.removeAllViews();
-                                                categoriesHelp.setVisibility(View.GONE);
+                                                categoriesPanel.setVisibility(View.GONE);
                                                 mNotesKeeper.removeCategory(title);
                                                 Toast.makeText(mContext,
                                                         getString(R.string.delete_category_toast_message),
@@ -446,37 +496,21 @@ public class NoteFragment extends Fragment {
         return itemView;
     }
 
-    private void updateDeadlineView() {
-        if (mNote.isDeadlined()) {
-            mDeadlineView.setText(mNote.getDeadlineRepresent(mContext));
-        } else mDeadlineView.setText("");
-        applyDeadlineViewStyle();
+    private void titleInstallation() {
+        mTitleView = mNoteLayout.findViewById(R.id.title_note);
+        if (mNote.isTitled()) {
+            mTitleView.setText(mNote.getTitle());
+        }
     }
 
-    private void applyDeadlineViewStyle() {
-        int color;
+    private void contentInstallation() {
+        mContentView = mNoteLayout.findViewById(R.id.content_view);
+        mNote.fillContentView(mContentView, mContext);
+    }
 
-        if (mNote.isDeadlined()) {
-            color = R.color.colorDeadlineLightAhead;
-            mDeadlineView.setBackground(getResources().getDrawable(R.drawable.rounded_fill_field));
-        } else {
-            color = R.color.colorDeadlineAhead;
-            mDeadlineView.setBackground(getResources().getDrawable(R.drawable.rounded_not_fill_field));
-        }
-
-        switch (mNote.getDeadlineStatus(Calendar.getInstance())) {
-            case OVERDUE:
-                color = R.color.colorDeadlineOverdue;
-                mDeadlineView.setTypeface(Typeface.DEFAULT_BOLD);
-                break;
-            case IMMEDIATE:
-                mDeadlineView.setTypeface(Typeface.DEFAULT_BOLD);
-                break;
-            default:
-                mDeadlineView.setTypeface(Typeface.DEFAULT);
-        }
-
-        mDeadlineView.setTextColor(getResources().getColor(color));
+    private void tagsInstallation() {
+        FlexboxLayout mTagsLayout = mNoteLayout.findViewById(R.id.tags_note);
+        showTags(mTagsLayout);
     }
 
     private void showTags(@NonNull final FlexboxLayout tagsLayout) {
