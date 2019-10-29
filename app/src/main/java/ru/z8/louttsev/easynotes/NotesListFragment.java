@@ -157,7 +157,6 @@ public class NotesListFragment extends Fragment {
                     deadlineView.setTypeface(Typeface.DEFAULT_BOLD);
                     break;
                 case IMMEDIATE:
-                    color = R.color.colorDeadlineImmediate;
                     deadlineView.setTypeface(Typeface.DEFAULT_BOLD);
                     break;
                 default:

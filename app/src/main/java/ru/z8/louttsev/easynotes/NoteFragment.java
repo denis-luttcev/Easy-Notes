@@ -463,7 +463,6 @@ public class NoteFragment extends Fragment {
                 mDeadlineView.setTypeface(Typeface.DEFAULT_BOLD);
                 break;
             case IMMEDIATE:
-                color = R.color.colorDeadlineImmediate;
                 mDeadlineView.setTypeface(Typeface.DEFAULT_BOLD);
                 break;
             default:

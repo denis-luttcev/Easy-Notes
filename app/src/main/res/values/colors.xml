@@ -17,7 +17,6 @@
     <color name="colorNoneNote">@color/colorBackground</color>
 
     <color name="colorDeadlineOverdue">#E53935</color>
-    <color name="colorDeadlineImmediate">#880E4F</color>
     <color name="colorDeadlineAhead">@color/colorPrimaryText</color>
     <color name="colorDeadlineLightAhead">@color/colorLightText</color>
 </resources>
