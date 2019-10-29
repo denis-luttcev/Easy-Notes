@@ -18,7 +18,7 @@ import java.util.UUID;
 
 import ru.z8.louttsev.easynotes.R;
 
-public abstract class Note implements Comparable<Note> {
+public abstract class Note implements Comparable<Note>, Cloneable {
 
     public enum Color {
         URGENT, ATTENTION, NORMAL, QUIET, ACCESSORY, NONE
@@ -41,6 +41,7 @@ public abstract class Note implements Comparable<Note> {
     private Color color;
     private Calendar deadline;
     private Calendar lastModification;
+    private boolean isModified;
 
     Note() {
         id = UUID.randomUUID();
@@ -50,6 +51,7 @@ public abstract class Note implements Comparable<Note> {
         tags = new HashMap<>();
         deadline = null;
         modificationUpdate();
+        isModified = false;
     }
 
     /**
@@ -76,8 +78,9 @@ public abstract class Note implements Comparable<Note> {
         return note.lastModification.compareTo(lastModification);
     }
 
-    private void modificationUpdate() {
+    void modificationUpdate() {
         lastModification = Calendar.getInstance();
+        isModified = true;
         //TODO: ? point to write new or edited note to DB
     }
 
@@ -255,8 +258,8 @@ public abstract class Note implements Comparable<Note> {
         return lastModification;
     }
 
-    public boolean isModified(@NonNull Calendar toDate) {
-        return lastModification.after(toDate);
+    public boolean isModified() {
+        return isModified;
     }
 
     @Override
@@ -272,7 +275,13 @@ public abstract class Note implements Comparable<Note> {
         return Objects.hash(id);
     }
 
-    public abstract boolean isEditable();
+    @NonNull
+    @Override
+    public Note clone() throws CloneNotSupportedException {
+        Note clone = (Note) super.clone();
+        clone.tags = new HashMap<>(this.tags);
+        return clone;
+    }
 
     public abstract void fillContentPreView(@NonNull FrameLayout contentPreView, Context context);
 

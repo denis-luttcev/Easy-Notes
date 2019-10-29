@@ -199,7 +199,7 @@ public class NotesRepository implements NotesKeeper {
     @NonNull
     @Override
     public Note getNote(int position) {
-        //TODO: after release eliminate this performance bottleneck
+        //TODO: eliminate this performance bottleneck
         // (need collection that is auto sortable after changing item)
         Note[] notesArray = notes.values().toArray(new Note[getNotesCount()]);
         Arrays.sort(notesArray);

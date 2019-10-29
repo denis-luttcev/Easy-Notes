@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
@@ -57,6 +58,7 @@ public class NoteFragment extends Fragment {
     private TextView mDeadlineView;
     private TextView mCategoryView;
 
+    private String mInitialTitle;
     private EditText mTitleView;
     private FrameLayout mContentView;
 
@@ -100,12 +102,18 @@ public class NoteFragment extends Fragment {
             if (args.containsKey(ARG_NOTE_ID)) { // open exist
                 try {
                     mNote = mNotesKeeper.getNote(
-                            (UUID) Objects.requireNonNull(args.getSerializable(ARG_NOTE_ID)));
-                } catch (IllegalAccessException ignored) {}
+                            (UUID) Objects.requireNonNull(args.getSerializable(ARG_NOTE_ID)))
+                            .clone();
+                } catch (IllegalAccessException | CloneNotSupportedException ignored) {}
             }
             if (args.containsKey(ARG_NOTE_TYPE)) { // create new
                 mNote = mNotesKeeper.createNote((NoteType) args.getSerializable(ARG_NOTE_TYPE));
             }
+        }
+
+        mInitialTitle = mNote.getTitle();
+        if (mInitialTitle == null) {
+            mInitialTitle = "";
         }
     }
 
@@ -118,22 +126,26 @@ public class NoteFragment extends Fragment {
                     Calendar date = (Calendar) resultIntent
                             .getSerializableExtra(DatePickerDialogFragment.RESULT_DATE);
 
-                    mNote.setDeadline(date);
-                    updateDeadlineView();
-
-                    if (mNote.isDeadlined()) { // date selected
+                    if (date != null) {
+                        mNote.setDeadline(date);
                         requestTime();
+                    } else {
+                        if (mNote.isDeadlined()) {
+                            mNote.setDeadline(date);
+                        }
                     }
 
+                    updateDeadlineView();
                     break;
+
                 case REQUEST_TIME:
                     Calendar time = (Calendar) resultIntent
                             .getSerializableExtra(TimePickerDialogFragment.RESULT_TIME);
 
                     mNote.setDeadline(time);
                     updateDeadlineView();
-
                     break;
+
                 default: // ignored
             }
         }
@@ -165,6 +177,14 @@ public class NoteFragment extends Fragment {
         titleInstallation();
         contentInstallation();
         tagsInstallation();
+
+        Button mBackButton = mNoteLayout.findViewById(R.id.back_button);
+        mBackButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View backButton) {
+                closeNote();
+            }
+        });
 
         return mNoteLayout;
     }
@@ -618,5 +638,20 @@ public class NoteFragment extends Fragment {
             string = string.substring(0, 1).toUpperCase() + string.substring(1);
         }
         return string;
+    }
+
+    public void closeNote() {
+        String title = mTitleView.getText().toString().trim();
+
+        if (!title.equals(mInitialTitle)) {
+            mNote.setTitle(title);
+        }
+        mNote.setContent(mContentView);
+
+        if (mNote.isModified()) {
+            mNotesKeeper.addNote(mNote);
+        }
+
+        Objects.requireNonNull(getFragmentManager()).popBackStack();
     }
 }

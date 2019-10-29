@@ -26,11 +26,6 @@ public class TextNote extends Note {
     }
 
     @Override
-    public boolean isEditable() {
-        return true;
-    }
-
-    @Override
     public void fillContentPreView(@NonNull FrameLayout contentPreView, Context context) {
         LayoutInflater.from(context).inflate(R.layout.text_note_content_pre_view, contentPreView, true);
         ((TextView) contentPreView.findViewById(R.id.text_note_pre_view)).setText(content);
@@ -44,6 +39,10 @@ public class TextNote extends Note {
 
     @Override
     public void setContent(@NonNull FrameLayout contentView) {
-        content = ((EditText) contentView.findViewById(R.id.text_note_view)).getText().toString();
+        String content = ((EditText) contentView.findViewById(R.id.text_note_view)).getText().toString();
+        if (!content.isEmpty() && !content.equals(this.content)) {
+            this.content = content;
+            modificationUpdate();
+        }
     }
 }

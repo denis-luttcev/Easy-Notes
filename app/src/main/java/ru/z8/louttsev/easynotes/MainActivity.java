@@ -73,4 +73,15 @@ public class MainActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+
+    @Override
+    public void onBackPressed() {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        NoteFragment fragment = (NoteFragment) fragmentManager.findFragmentById(R.id.fragment_container);
+        if (fragment != null) {
+            fragment.closeNote();
+        } else {
+            super.onBackPressed();
+        }
+    }
 }
