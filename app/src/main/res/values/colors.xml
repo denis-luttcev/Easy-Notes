@@ -10,9 +10,9 @@
     <color name="colorCardBorder">#B4B4B4</color>
 
     <color name="colorUrgentNote">#33FF0000</color>
-    <color name="colorAttentionNote">#33FFCC00</color>
+    <color name="colorAttentionNote">#33E65100</color>
     <color name="colorNormalNote">#33FFFF00</color>
-    <color name="colorQuietNote">#330000FF</color>
+    <color name="colorQuietNote">#3300E0FF</color>
     <color name="colorAccessoryNote">#3300FF0A</color>
     <color name="colorNoneNote">@color/colorBackground</color>
 

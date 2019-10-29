@@ -138,7 +138,7 @@ public class NotesListFragment extends Fragment {
             Iterator<Tag> tags = Objects.requireNonNull(noteTags).iterator();
             while (tags.hasNext()){
                 TextView tagView = (TextView) mInflater
-                        .inflate(R.layout.tag__pre_view, tagsLineView, false);
+                        .inflate(R.layout.tag_pre_view, tagsLineView, false);
                 tagView.setText(tags.next().getTitle());
                 if (!tags.hasNext()) {
                     FlexboxLayout.LayoutParams layoutParams = (FlexboxLayout.LayoutParams) tagView.getLayoutParams();

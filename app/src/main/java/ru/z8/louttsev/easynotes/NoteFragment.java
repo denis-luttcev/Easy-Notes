@@ -16,13 +16,13 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.constraintlayout.widget.Group;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.flexbox.FlexboxLayout;
@@ -148,7 +148,7 @@ public class NoteFragment extends Fragment {
 
         applyNoteLayoutColor(mNoteLayout);
 
-        final LinearLayout mColorPalette = mNoteLayout.findViewById(R.id.color_palette);
+        final Group mColorPalette = mNoteLayout.findViewById(R.id.color_palette);
         final TextView mNoteColor = mNoteLayout.findViewById(R.id.color_note);
         mNoteColor.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -216,6 +216,7 @@ public class NoteFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 mCategoriesLayout.removeAllViews(); // prevents refilling
+                mCategoriesLayout.setVisibility(View.VISIBLE);
                 mCategoriesHelp.setVisibility(View.VISIBLE);
                 showCategories(mCategoriesLayout, mCategoryView, mCategoriesHelp);
             }
@@ -319,6 +320,7 @@ public class NoteFragment extends Fragment {
                             categoryView.setText(title);
                             applyCategoryViewStyle(categoryView);
                             categoriesLayout.removeAllViews();
+                            categoriesLayout.setVisibility(View.GONE);
                             categoriesHelp.setVisibility(View.GONE);
                             return true;
                         }
@@ -386,6 +388,7 @@ public class NoteFragment extends Fragment {
                             } catch (IllegalAccessException ignored) {} // impossible
                         }
                         categoriesLayout.removeAllViews();
+                        categoriesLayout.setVisibility(View.GONE);
                         categoriesHelp.setVisibility(View.GONE);
                     }
                 },

@@ -38,72 +38,104 @@
         app:layout_constraintEnd_toStartOf="@+id/icon_deadline"
         app:layout_constraintTop_toTopOf="@id/icon_deadline" />
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.Group
         android:id="@+id/color_palette"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginTop="16dp"
-        android:orientation="horizontal"
         android:visibility="gone"
-        app:layout_constraintDimensionRatio="6.67"
+        app:constraint_referenced_ids="color_quiet,color_urgent,color_normal,color_attention,color_accessory,color_none" />
+
+    <TextView
+        android:id="@+id/color_none"
+        android:layout_width="0dp"
+        android:layout_height="34sp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="8dp"
+        android:layout_weight="1"
+        android:background="@drawable/palette_color_none"
+        app:layout_constraintDimensionRatio="1"
+        app:layout_constraintEnd_toStartOf="@+id/color_accessory"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/color_note" />
+
+    <TextView
+        android:id="@+id/color_accessory"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginEnd="8dp"
+        android:layout_weight="1"
+        android:background="@drawable/palette_color_accessory"
+        app:layout_constraintBottom_toBottomOf="@+id/color_none"
+        app:layout_constraintDimensionRatio="1"
+        app:layout_constraintEnd_toStartOf="@+id/color_quiet"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintStart_toEndOf="@+id/color_none"
+        app:layout_constraintTop_toTopOf="@+id/color_none" />
+
+    <TextView
+        android:id="@+id/color_quiet"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginEnd="8dp"
+        android:layout_weight="1"
+        android:background="@drawable/palette_color_quiet"
+        app:layout_constraintBottom_toBottomOf="@id/color_accessory"
+        app:layout_constraintDimensionRatio="1"
+        app:layout_constraintEnd_toStartOf="@+id/color_normal"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintStart_toEndOf="@+id/color_accessory"
+        app:layout_constraintTop_toTopOf="@id/color_accessory"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <TextView
+        android:id="@+id/color_normal"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginEnd="8dp"
+        android:layout_weight="1"
+        android:background="@drawable/palette_color_normal"
+        app:layout_constraintBottom_toBottomOf="@id/color_quiet"
+        app:layout_constraintDimensionRatio="1"
+        app:layout_constraintEnd_toStartOf="@+id/color_attention"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintStart_toEndOf="@+id/color_quiet"
+        app:layout_constraintTop_toTopOf="@id/color_quiet"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <TextView
+        android:id="@+id/color_attention"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginEnd="8dp"
+        android:layout_weight="1"
+        android:background="@drawable/palette_color_attention"
+        app:layout_constraintBottom_toBottomOf="@id/color_normal"
+        app:layout_constraintDimensionRatio="1"
+        app:layout_constraintEnd_toStartOf="@+id/color_urgent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintStart_toEndOf="@+id/color_normal"
+        app:layout_constraintTop_toTopOf="@id/color_normal"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <TextView
+        android:id="@+id/color_urgent"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="@drawable/palette_color_urgent"
+        app:layout_constraintBottom_toBottomOf="@id/color_attention"
+        app:layout_constraintDimensionRatio="1"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@id/icon_color"
-        app:layout_constraintTop_toBottomOf="@id/color_note">
-
-        <TextView
-            android:id="@+id/color_none"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginEnd="4dp"
-            android:layout_weight="1"
-            android:background="@drawable/palette_color_none"
-            app:layout_constraintDimensionRatio="1" />
-
-        <TextView
-            android:id="@+id/color_accessory"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginEnd="4dp"
-            android:layout_weight="1"
-            android:background="@drawable/palette_color_accessory"
-            app:layout_constraintDimensionRatio="1" />
-
-        <TextView
-            android:id="@+id/color_quiet"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginEnd="4dp"
-            android:layout_weight="1"
-            android:background="@drawable/palette_color_quiet"
-            app:layout_constraintDimensionRatio="1" />
-
-        <TextView
-            android:id="@+id/color_normal"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginEnd="4dp"
-            android:layout_weight="1"
-            android:background="@drawable/palette_color_normal"
-            app:layout_constraintDimensionRatio="1" />
-
-        <TextView
-            android:id="@+id/color_attention"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginEnd="4dp"
-            android:layout_weight="1"
-            android:background="@drawable/palette_color_attention"
-            app:layout_constraintDimensionRatio="1" />
-
-        <TextView
-            android:id="@+id/color_urgent"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginEnd="4dp"
-            android:layout_weight="1"
-            android:background="@drawable/palette_color_urgent"
-            app:layout_constraintDimensionRatio="1" />
-    </LinearLayout>
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintStart_toEndOf="@+id/color_attention"
+        app:layout_constraintTop_toTopOf="@id/color_attention" />
 
     <ImageView
         android:id="@+id/icon_category"
@@ -126,15 +158,17 @@
         android:hint="@string/note_category_hint"
         android:textSize="18sp"
         app:layout_constraintStart_toEndOf="@+id/icon_category"
-        app:layout_constraintTop_toBottomOf="@id/color_palette" />
+        app:layout_constraintTop_toBottomOf="@id/color_none" />
 
     <com.google.android.flexbox.FlexboxLayout
         android:id="@+id/categories_line"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:paddingStart="8dp"
+        android:paddingTop="8dp"
         android:paddingEnd="8dp"
         android:paddingBottom="8dp"
+        android:visibility="gone"
         app:flexDirection="row"
         app:flexWrap="wrap"
         app:justifyContent="flex_start"
@@ -207,7 +241,7 @@
         app:layout_constraintBottom_toTopOf="@+id/tags_note"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/title_note" >
+        app:layout_constraintTop_toBottomOf="@+id/title_note">
 
     </FrameLayout>
 
