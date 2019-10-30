@@ -19,6 +19,11 @@
 
     <string name="pin_code_input_title">Enter pin code</string>
 
+    <string name="notes_line_help_text">Press and hold on note to remove it</string>
+    <string name="remove_note_dialog_title">Remove note</string>
+    <string name="remove_note_dialog_message">You want to remove the note. This action cannot be undone.\n\nAre you sure?</string>
+    <string name="remove_note_toast_message">Note removed successfully</string>
+
     <string name="note_title_hint">Title</string>
     <string name="note_text_hint">Text</string>
     <string name="note_category_hint">Category</string>
@@ -36,7 +41,7 @@
     <string name="delete_category_toast_message">Category deleted successfully</string>
 
     <string name="save_empty_note_dialog_title">Save empty note</string>
-    <string name="save_empty_note_dialog_message">This note has neither title nor content.\n\nWant to keep it like that?</string>
+    <string name="save_empty_note_dialog_message">This note has neither title nor content.\n\nWant to save it like that?</string>
 
     <string name="clear_button_text">Clear</string>
 </resources>

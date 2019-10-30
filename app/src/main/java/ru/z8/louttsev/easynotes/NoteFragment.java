@@ -39,7 +39,7 @@ import ru.z8.louttsev.easynotes.datamodel.NotesKeeper;
 import ru.z8.louttsev.easynotes.datamodel.Tag;
 
 public class NoteFragment extends Fragment {
-    public static final String FRAGMENT_TAG = "note_fragment";
+    private static final String FRAGMENT_TAG = "note_fragment";
     private static final String ARG_NOTE_ID = "note_id";
     private static final String ARG_NOTE_TYPE = "note_type";
 
@@ -86,7 +86,7 @@ public class NoteFragment extends Fragment {
     }
 
     @NonNull
-    public static String getFragmentTag() {
+    static String getFragmentTag() {
         return FRAGMENT_TAG;
     }
 
@@ -191,6 +191,14 @@ public class NoteFragment extends Fragment {
             @Override
             public void onClick(View backButton) {
                 closeNote();
+            }
+        });
+
+        Button mDeleteButton = mNoteLayout.findViewById(R.id.delete_button);
+        mDeleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                requestRemoveConfirmation(mNote);
             }
         });
 
@@ -672,6 +680,28 @@ public class NoteFragment extends Fragment {
                                 Objects.requireNonNull(getFragmentManager()).popBackStack();
                             }
                         })
+                .create()
+                .show();
+    }
+
+    private void requestRemoveConfirmation(@NonNull final Note note) {
+        new AlertDialog.Builder(mContext)
+                .setTitle(getString(R.string.remove_note_dialog_title))
+                .setMessage(getString(R.string.remove_note_dialog_message))
+                .setNegativeButton(android.R.string.cancel, null)
+                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        if (mNotesKeeper.containNote(mNote.getId())) {
+                            mNotesKeeper.removeNote(mNote.getId());
+                        }
+                        Toast.makeText(mContext,
+                                getString(R.string.remove_note_toast_message),
+                                Toast.LENGTH_SHORT)
+                                .show();
+                        Objects.requireNonNull(getFragmentManager()).popBackStack();
+                    }
+                })
                 .create()
                 .show();
     }

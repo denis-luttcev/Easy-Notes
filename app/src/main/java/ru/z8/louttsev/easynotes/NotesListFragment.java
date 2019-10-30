@@ -1,5 +1,7 @@
 package ru.z8.louttsev.easynotes;
 
+import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -8,9 +10,11 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
@@ -37,6 +41,8 @@ public class NotesListFragment extends Fragment {
     private NotesKeeper mNotesKeeper;
     private RecyclerView mNotesList;
 
+    private Context mContext;
+
     @NonNull
     static NotesListFragment newInstance() {
         return new NotesListFragment();
@@ -49,7 +55,16 @@ public class NotesListFragment extends Fragment {
         mNotesKeeper = App.getNotesKeeper();
     }
 
-    private class NoteHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+
+        mContext = context;
+    }
+
+    private class NoteHolder extends RecyclerView.ViewHolder
+            implements View.OnClickListener, View.OnLongClickListener {
+
         private LayoutInflater mInflater;
 
         private Note mNote;
@@ -74,6 +89,7 @@ public class NotesListFragment extends Fragment {
             mNoteDeadlineView = itemView.findViewById(R.id.note_deadline);
 
             itemView.setOnClickListener(this);
+            itemView.setOnLongClickListener(this);
         }
 
         public void bindNote(@NonNull Note note) {
@@ -175,6 +191,32 @@ public class NotesListFragment extends Fragment {
                     .addToBackStack(NoteFragment.getFragmentTag())
                     .commit();
         }
+
+        @Override
+        public boolean onLongClick(View view) {
+            requestRemoveConfirmation(mNote);
+            return true;
+        }
+    }
+
+    private void requestRemoveConfirmation(@NonNull final Note note) {
+        new AlertDialog.Builder(mContext)
+                .setTitle(getString(R.string.remove_note_dialog_title))
+                .setMessage(getString(R.string.remove_note_dialog_message))
+                .setNegativeButton(android.R.string.cancel, null)
+                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        mNotesKeeper.removeNote(note.getId());
+                        Objects.requireNonNull(mNotesList.getAdapter()).notifyDataSetChanged();
+                        Toast.makeText(mContext,
+                                getString(R.string.remove_note_toast_message),
+                                Toast.LENGTH_SHORT)
+                                .show();
+                    }
+                })
+                .create()
+                .show();
     }
 
     private class NotesAdapter extends RecyclerView.Adapter<NoteHolder> {
@@ -227,5 +269,4 @@ public class NotesListFragment extends Fragment {
 
         return mNotesListLayout;
     }
-
 }
