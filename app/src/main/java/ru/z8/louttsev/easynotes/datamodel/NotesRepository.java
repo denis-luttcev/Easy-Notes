@@ -1,5 +1,8 @@
 package ru.z8.louttsev.easynotes.datamodel;
 
+import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
+
 import androidx.annotation.NonNull;
 
 import java.util.Arrays;
@@ -10,15 +13,22 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import ru.z8.louttsev.easynotes.database.NotesBaseHelper;
+
 public class NotesRepository implements NotesKeeper {
+    private SQLiteDatabase db;
+
     private Map<String, Category> categories;
     private Map<String, Tag> tags;
     private Map<UUID, Note> notes;
 
-    public NotesRepository() {
+    public NotesRepository(@NonNull Context context) {
+        db = new NotesBaseHelper(context).getWritableDatabase();
+
         categories = new HashMap<>();
         tags = new HashMap<>();
         notes = new HashMap<>();
+
         readData();
     }
 

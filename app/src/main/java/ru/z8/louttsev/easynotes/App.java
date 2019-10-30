@@ -15,7 +15,7 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
 
-        sNotesKeeper = new NotesRepository();
+        sNotesKeeper = new NotesRepository(this);
         sProtector = new PinCodeProtector(this);
     }
 
