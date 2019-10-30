@@ -3,8 +3,10 @@ package ru.z8.louttsev.easynotes.datamodel;
 import androidx.annotation.NonNull;
 
 import java.util.Objects;
+import java.util.UUID;
 
 public class Tag {
+    private UUID id;
     /**
      * Allowable: any, exclude null ald empty (senselessly)
      */
@@ -15,6 +17,7 @@ public class Tag {
      */
     public Tag(@NonNull String title) throws IllegalArgumentException {
         if (!title.isEmpty()) {
+            id = UUID.randomUUID();
             this.title = title;
         } else throw new IllegalArgumentException();
     }

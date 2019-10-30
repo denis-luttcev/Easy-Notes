@@ -31,7 +31,7 @@ public abstract class Note implements Comparable<Note>, Cloneable {
     /**
      * Unique id (primary key), null not allowable
      */
-    private final UUID id;
+    private UUID id;
     private String title;
     private Category category;
     private Map<String, Tag> tags;
