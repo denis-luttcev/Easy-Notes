@@ -2,6 +2,7 @@ package ru.z8.louttsev.easynotes.datamodel;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import androidx.annotation.NonNull;
@@ -15,6 +16,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
+import ru.z8.louttsev.easynotes.database.CategoriesCursorWrapper;
 import ru.z8.louttsev.easynotes.database.NotesBaseHelper;
 import ru.z8.louttsev.easynotes.database.NotesDBSchema.CategoriesTable;
 import ru.z8.louttsev.easynotes.database.NotesDBSchema.NotesTable;
@@ -35,6 +37,7 @@ public class NotesRepository implements NotesKeeper {
         tags = new HashMap<>();
         notes = new HashMap<>();
 
+        readData();
         readSamples();
     }
 
@@ -54,12 +57,41 @@ public class NotesRepository implements NotesKeeper {
         }
     }
 
+    private void readData() {
+        readCategories();
+    }
+
+    private void readCategories() {
+        try (CategoriesCursorWrapper cursor = queryCategories()) {
+            cursor.moveToFirst();
+            while (!cursor.isAfterLast()) {
+                Category category = cursor.getCategory();
+                categories.put(category.getTitle(), category);
+                cursor.moveToNext();
+            }
+        }
+    }
+
+    @NonNull
+    private CategoriesCursorWrapper queryCategories() {
+
+        Cursor cursor = db.query(
+                CategoriesTable.NAME,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null
+        );
+
+        return new CategoriesCursorWrapper(cursor);
+    }
+
     private void readSamples() {
         //TODO: change to read from db
 
         try {
-            addCategory("Holiday");
-            addCategory("Work");
             addTag("Ideas");
             addTag("Todo");
             addTag("Photo");
@@ -76,7 +108,6 @@ public class NotesRepository implements NotesKeeper {
             note.setTitle("note1");
             note.setContent("note1 content");
             note.setColor(Note.Color.ATTENTION);
-            note.setCategory(getCategory("Holiday"));
             Calendar date = Calendar.getInstance();
             date.add(Calendar.DATE, 1);
             note.setDeadline(date);
@@ -85,7 +116,6 @@ public class NotesRepository implements NotesKeeper {
             note = new TextNote();
             note.setTitle("");
             note.setContent("note2 content");
-            note.setCategory(getCategory("Work"));
             note.markTag(getTag("Ideas"));
             //date = Calendar.getInstance();
             //date.add(Calendar.DATE, -1);
@@ -240,7 +270,7 @@ public class NotesRepository implements NotesKeeper {
             doTagging(note);
         }
     }
-    
+
     private void doTagging(@NonNull Note note) {
         Set<Tag> tags = note.getTags();
 

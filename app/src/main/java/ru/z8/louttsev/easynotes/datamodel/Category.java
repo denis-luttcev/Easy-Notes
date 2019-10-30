@@ -19,10 +19,14 @@ public class Category {
      * @throws IllegalArgumentException if title is empty
      */
     Category(@NonNull String title) throws IllegalArgumentException {
+        this(UUID.randomUUID());
         if (!title.isEmpty()) {
-            id = UUID.randomUUID();
             this.title = title;
         } else throw new IllegalArgumentException();
+    }
+
+    public Category(@NonNull UUID id) {
+        this.id = id;
     }
 
     @NonNull
@@ -33,6 +37,12 @@ public class Category {
     @NonNull
     public String getTitle() {
         return title;
+    }
+
+    public void setTitle(String title) throws IllegalArgumentException {
+        if (!title.isEmpty()) {
+            this.title = title;
+        } else throw new IllegalArgumentException();
     }
 
     @Override
