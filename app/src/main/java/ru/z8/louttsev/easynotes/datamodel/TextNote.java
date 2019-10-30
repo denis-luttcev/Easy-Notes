@@ -40,9 +40,14 @@ public class TextNote extends Note {
     @Override
     public void setContent(@NonNull FrameLayout contentView) {
         String content = ((EditText) contentView.findViewById(R.id.text_note_view)).getText().toString();
-        if (!content.isEmpty() && !content.equals(this.content)) {
+        if (!content.equals(this.content)) {
             this.content = content;
             modificationUpdate();
         }
+    }
+
+    @Override
+    public boolean isContentEmpty() {
+        return content.isEmpty();
     }
 }

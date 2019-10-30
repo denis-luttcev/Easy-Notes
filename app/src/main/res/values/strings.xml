@@ -35,5 +35,8 @@
     <string name="delete_category_dialog_message">You delete the category, which other notes could be placed. After this all such notes will be without category.\n\nAre you sure?</string>
     <string name="delete_category_toast_message">Category deleted successfully</string>
 
+    <string name="save_empty_note_dialog_title">Save empty note</string>
+    <string name="save_empty_note_dialog_message">This note has neither title nor content.\n\nWant to keep it like that?</string>
+
     <string name="clear_button_text">Clear</string>
 </resources>

@@ -32,9 +32,6 @@ public abstract class Note implements Comparable<Note>, Cloneable {
      * Unique id (primary key), null not allowable
      */
     private final UUID id;
-    /**
-     * Allowable: null or any not empty
-     */
     private String title;
     private Category category;
     private Map<String, Tag> tags;
@@ -45,7 +42,7 @@ public abstract class Note implements Comparable<Note>, Cloneable {
 
     Note() {
         id = UUID.randomUUID();
-        title = null;
+        title = "";
         category = null;
         color = Color.NONE;
         tags = new HashMap<>();
@@ -81,7 +78,6 @@ public abstract class Note implements Comparable<Note>, Cloneable {
     void modificationUpdate() {
         lastModification = Calendar.getInstance();
         isModified = true;
-        //TODO: ? point to write new or edited note to DB
     }
 
     @NonNull
@@ -89,18 +85,13 @@ public abstract class Note implements Comparable<Note>, Cloneable {
         return id;
     }
 
-    @Nullable
+    @NonNull
     public String getTitle() {
         return title;
     }
 
-    public void setTitle(@Nullable String title) {
-        // empty senselessly and replace to null
-        if (title != null && !title.isEmpty()) {
-            this.title = title;
-        } else {
-            this.title = null;
-        }
+    public void setTitle(@NonNull String title) {
+        this.title = title;
         modificationUpdate();
     }
 
@@ -112,7 +103,7 @@ public abstract class Note implements Comparable<Note>, Cloneable {
     }
 
     public boolean isTitled() {
-        return title != null;
+        return !title.isEmpty();
     }
 
     @Nullable
@@ -288,6 +279,8 @@ public abstract class Note implements Comparable<Note>, Cloneable {
     public abstract void fillContentView(@NonNull FrameLayout contentView, Context context);
 
     public abstract void setContent(@NonNull FrameLayout contentView);
+
+    public abstract boolean isContentEmpty();
 
     //TODO: remove
     public abstract void setContent(String content);

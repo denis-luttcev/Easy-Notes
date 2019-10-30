@@ -7,7 +7,6 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
@@ -77,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         FragmentManager fragmentManager = getSupportFragmentManager();
-        NoteFragment fragment = (NoteFragment) fragmentManager.findFragmentById(R.id.fragment_container);
+        NoteFragment fragment = (NoteFragment) fragmentManager.findFragmentByTag(NoteFragment.getFragmentTag());
         if (fragment != null) {
             fragment.closeNote();
         } else {

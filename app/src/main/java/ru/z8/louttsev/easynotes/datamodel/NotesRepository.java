@@ -67,7 +67,7 @@ public class NotesRepository implements NotesKeeper {
             addNote(note);
 
             note = new TextNote();
-            note.setTitle(null);
+            note.setTitle("");
             note.setContent("note2 content");
             note.setCategory(getCategory("Work"));
             note.markTag(getTag("Ideas"));

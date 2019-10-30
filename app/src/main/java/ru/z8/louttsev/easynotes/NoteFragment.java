@@ -39,6 +39,7 @@ import ru.z8.louttsev.easynotes.datamodel.NotesKeeper;
 import ru.z8.louttsev.easynotes.datamodel.Tag;
 
 public class NoteFragment extends Fragment {
+    public static final String FRAGMENT_TAG = "note_fragment";
     private static final String ARG_NOTE_ID = "note_id";
     private static final String ARG_NOTE_TYPE = "note_type";
 
@@ -84,6 +85,11 @@ public class NoteFragment extends Fragment {
         return fragment;
     }
 
+    @NonNull
+    public static String getFragmentTag() {
+        return FRAGMENT_TAG;
+    }
+
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
@@ -112,9 +118,6 @@ public class NoteFragment extends Fragment {
         }
 
         mInitialTitle = mNote.getTitle();
-        if (mInitialTitle == null) {
-            mInitialTitle = "";
-        }
     }
 
     @Override
@@ -174,8 +177,13 @@ public class NoteFragment extends Fragment {
         colorInstallation();
         deadlineInstallation();
         categoryInstallation();
-        titleInstallation();
-        contentInstallation();
+
+        mTitleView = mNoteLayout.findViewById(R.id.title_note);
+        mTitleView.setText(mNote.getTitle());
+
+        mContentView = mNoteLayout.findViewById(R.id.content_view);
+        mNote.fillContentView(mContentView, mContext);
+
         tagsInstallation();
 
         Button mBackButton = mNoteLayout.findViewById(R.id.back_button);
@@ -287,22 +295,26 @@ public class NoteFragment extends Fragment {
         mDeadlineView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View deadlineView) {
-                DatePickerDialogFragment datePicker;
-
-                if (mNote.isDeadlined()) {
-                    Calendar deadline = mNote.getDeadline();
-                    datePicker = DatePickerDialogFragment
-                            .getInstance(Objects.requireNonNull(deadline));
-                } else {
-                    datePicker = DatePickerDialogFragment.newInstance();
-                }
-
-                datePicker.setTargetFragment(NoteFragment.this, REQUEST_DATE);
-                datePicker.show(Objects.requireNonNull(getFragmentManager()), DIALOG_DATE_PICKER);
+                requestDate();
             }
         });
 
         updateDeadlineView();
+    }
+
+    private void requestDate() {
+        DatePickerDialogFragment datePicker;
+
+        if (mNote.isDeadlined()) {
+            Calendar deadline = mNote.getDeadline();
+            datePicker = DatePickerDialogFragment
+                    .getInstance(Objects.requireNonNull(deadline));
+        } else {
+            datePicker = DatePickerDialogFragment.newInstance();
+        }
+
+        datePicker.setTargetFragment(NoteFragment.this, REQUEST_DATE);
+        datePicker.show(Objects.requireNonNull(getFragmentManager()), DIALOG_DATE_PICKER);
     }
 
     private void updateDeadlineView() {
@@ -516,18 +528,6 @@ public class NoteFragment extends Fragment {
         return itemView;
     }
 
-    private void titleInstallation() {
-        mTitleView = mNoteLayout.findViewById(R.id.title_note);
-        if (mNote.isTitled()) {
-            mTitleView.setText(mNote.getTitle());
-        }
-    }
-
-    private void contentInstallation() {
-        mContentView = mNoteLayout.findViewById(R.id.content_view);
-        mNote.fillContentView(mContentView, mContext);
-    }
-
     private void tagsInstallation() {
         FlexboxLayout mTagsLayout = mNoteLayout.findViewById(R.id.tags_note);
         showTags(mTagsLayout);
@@ -640,18 +640,39 @@ public class NoteFragment extends Fragment {
         return string;
     }
 
-    public void closeNote() {
+    void closeNote() {
         String title = mTitleView.getText().toString().trim();
 
         if (!title.equals(mInitialTitle)) {
             mNote.setTitle(title);
         }
+
         mNote.setContent(mContentView);
 
         if (mNote.isModified()) {
-            mNotesKeeper.addNote(mNote);
+            if (!mNote.getTitle().isEmpty() || !mNote.isContentEmpty()) {
+                mNotesKeeper.addNote(mNote);
+                Objects.requireNonNull(getFragmentManager()).popBackStack();
+            } else {
+                requestSaveConfirmation();
+            }
         }
+    }
 
-        Objects.requireNonNull(getFragmentManager()).popBackStack();
+    private void requestSaveConfirmation() {
+        new AlertDialog.Builder(mContext)
+                .setTitle(getString(R.string.save_empty_note_dialog_title))
+                .setMessage(getString(R.string.save_empty_note_dialog_message))
+                .setNegativeButton(android.R.string.cancel, null)
+                .setPositiveButton(android.R.string.ok,
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                mNotesKeeper.addNote(mNote);
+                                Objects.requireNonNull(getFragmentManager()).popBackStack();
+                            }
+                        })
+                .create()
+                .show();
     }
 }

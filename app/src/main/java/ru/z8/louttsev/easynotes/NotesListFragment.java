@@ -171,8 +171,8 @@ public class NotesListFragment extends Fragment {
             Fragment fragment = NoteFragment.getInstance(mNote.getId());
             fragmentManager.beginTransaction()
                     .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                    .replace(R.id.fragment_container, fragment)
-                    .addToBackStack(null)
+                    .replace(R.id.fragment_container, fragment, NoteFragment.getFragmentTag())
+                    .addToBackStack(NoteFragment.getFragmentTag())
                     .commit();
         }
     }
@@ -208,13 +208,13 @@ public class NotesListFragment extends Fragment {
         mAddNoteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //TODO: After adding new note types implement choice and another fragments call
-                FragmentManager fragmentManager = Objects.requireNonNull(getActivity()).getSupportFragmentManager();
+                //TODO: After adding new note types implement choice and another types call
+                FragmentManager fragmentManager = getFragmentManager();
                 Fragment fragment = NoteFragment.newInstance(NoteType.TEXT_NOTE);
-                fragmentManager.beginTransaction()
+                Objects.requireNonNull(fragmentManager).beginTransaction()
                         .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                        .replace(R.id.fragment_container, fragment)
-                        .addToBackStack(null)
+                        .replace(R.id.fragment_container, fragment, NoteFragment.getFragmentTag())
+                        .addToBackStack(NoteFragment.getFragmentTag())
                         .commit();
             }
         });
@@ -222,13 +222,10 @@ public class NotesListFragment extends Fragment {
         mNotesList = mNotesListLayout.findViewById(R.id.notes_list);
         mNotesList.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-        updateNotesList();
+        NotesAdapter mNotesAdapter = new NotesAdapter();
+        mNotesList.setAdapter(mNotesAdapter);
 
         return mNotesListLayout;
     }
 
-    private void updateNotesList() {
-        NotesAdapter mNotesAdapter = new NotesAdapter();
-        mNotesList.setAdapter(mNotesAdapter);
-    }
 }
