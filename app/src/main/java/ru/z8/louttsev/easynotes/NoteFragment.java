@@ -660,11 +660,12 @@ public class NoteFragment extends Fragment {
         if (mNote.isModified()) {
             if (!mNote.getTitle().isEmpty() || !mNote.isContentEmpty()) {
                 mNotesKeeper.addNote(mNote);
-                Objects.requireNonNull(getFragmentManager()).popBackStack();
             } else {
                 requestSaveConfirmation();
             }
         }
+
+        Objects.requireNonNull(getFragmentManager()).popBackStack();
     }
 
     private void requestSaveConfirmation() {
