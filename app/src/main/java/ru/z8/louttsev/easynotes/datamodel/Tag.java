@@ -6,6 +6,9 @@ import java.util.Objects;
 import java.util.UUID;
 
 public class Tag {
+    /**
+     * Unique id, null not allowable
+     */
     private UUID id;
     /**
      * Allowable: any, exclude null ald empty (senselessly)
@@ -15,11 +18,16 @@ public class Tag {
     /**
      * @throws IllegalArgumentException if title is empty
      */
-    public Tag(@NonNull String title) throws IllegalArgumentException {
+    Tag(@NonNull String title) throws IllegalArgumentException {
         if (!title.isEmpty()) {
             id = UUID.randomUUID();
             this.title = title;
         } else throw new IllegalArgumentException();
+    }
+
+    @NonNull
+    public UUID getId() {
+        return id;
     }
 
     @NonNull

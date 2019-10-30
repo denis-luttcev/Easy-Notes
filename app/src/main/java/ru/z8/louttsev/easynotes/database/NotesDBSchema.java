@@ -12,6 +12,7 @@ public class NotesDBSchema {
             public static final String COLOR = "color";
             public static final String DEADLINE = "deadline";
             public static final String LAST_MODIFICATION = "modification";
+            public static final String CONTENT = "content";
         }
     }
 

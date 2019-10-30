@@ -1,5 +1,6 @@
 package ru.z8.louttsev.easynotes.datamodel;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 
@@ -10,10 +11,15 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
 import ru.z8.louttsev.easynotes.database.NotesBaseHelper;
+import ru.z8.louttsev.easynotes.database.NotesDBSchema.CategoriesTable;
+import ru.z8.louttsev.easynotes.database.NotesDBSchema.NotesTable;
+import ru.z8.louttsev.easynotes.database.NotesDBSchema.TaggingTable;
+import ru.z8.louttsev.easynotes.database.NotesDBSchema.TagsTable;
 
 public class NotesRepository implements NotesKeeper {
     private SQLiteDatabase db;
@@ -29,7 +35,7 @@ public class NotesRepository implements NotesKeeper {
         tags = new HashMap<>();
         notes = new HashMap<>();
 
-        readData();
+        readSamples();
     }
 
     /**
@@ -48,7 +54,7 @@ public class NotesRepository implements NotesKeeper {
         }
     }
 
-    private void readData() {
+    private void readSamples() {
         //TODO: change to read from db
 
         try {
@@ -116,9 +122,14 @@ public class NotesRepository implements NotesKeeper {
 
     @Override
     public void addCategory(@NonNull String title) {
-        try {
-            categories.put(title, new Category(title));
-        } catch (IllegalArgumentException ignored) {}
+        if (!containCategory(title)) {
+            try {
+                Category category = new Category(title);
+                categories.put(title, category);
+                db.insert(CategoriesTable.NAME, null, getCategoryContentValues(category));
+            } catch (IllegalArgumentException ignored) {
+            }
+        }
     }
 
     @Override
@@ -146,16 +157,41 @@ public class NotesRepository implements NotesKeeper {
     }
 
     @NonNull
+    private static ContentValues getCategoryContentValues (@NonNull Category category) {
+        ContentValues values = new ContentValues();
+
+        values.put(CategoriesTable.Cols.UUID, category.getId().toString());
+        values.put(CategoriesTable.Cols.TITLE, category.getTitle());
+
+        return values;
+    }
+
+    @NonNull
     @Override
     public Set<Tag> getTags() {
         return new HashSet<>(tags.values());
     }
 
+    @NonNull
+    private static ContentValues getTaggingContentValues(@NonNull Note note, @NonNull Tag tag) {
+        ContentValues values = new ContentValues();
+
+        values.put(TaggingTable.Cols.NOTE, note.getId().toString());
+        values.put(TaggingTable.Cols.TAG, tag.getId().toString());
+
+        return values;
+    }
+
     @Override
     public void addTag(@NonNull String title) {
-        try {
-            tags.put(title, new Tag(title));
-        } catch (IllegalArgumentException ignored) {}
+        if (!containTag(title)) {
+            try {
+                Tag tag = new Tag(title);
+                tags.put(title, tag);
+                db.insert(TagsTable.NAME, null, getTagContentValues(tag));
+            } catch (IllegalArgumentException ignored) {
+            }
+        }
     }
 
     @Override
@@ -182,9 +218,38 @@ public class NotesRepository implements NotesKeeper {
         } else throw new IllegalAccessException();
     }
 
+    @NonNull
+    private static ContentValues getTagContentValues (@NonNull Tag tag) {
+        ContentValues values = new ContentValues();
+
+        values.put(TagsTable.Cols.UUID, tag.getId().toString());
+        values.put(TagsTable.Cols.TITLE, tag.getTitle());
+
+        return values;
+    }
+
     @Override
     public void addNote(@NonNull Note note) {
+        if (containNote(note.getId())) {
+            removeNote(note.getId());
+        }
+
         notes.put(note.getId(), note);
+        db.insert(NotesTable.NAME, null, getNoteContentValues(note));
+        if (note.isTagged()) {
+            doTagging(note);
+        }
+    }
+    
+    private void doTagging(@NonNull Note note) {
+        Set<Tag> tags = note.getTags();
+
+        for (Tag tag : tags) {
+            ContentValues values = new ContentValues();
+            values.put(TaggingTable.Cols.NOTE, note.getId().toString());
+            values.put(TaggingTable.Cols.TAG, tag.getId().toString());
+            db.insert(TaggingTable.NAME, null, values);
+        }
     }
 
     @Override
@@ -204,6 +269,31 @@ public class NotesRepository implements NotesKeeper {
         if (note != null) {
             return note;
         } else throw new IllegalAccessException();
+    }
+
+    @NonNull
+    private static ContentValues getNoteContentValues(@NonNull Note note) {
+        ContentValues values = new ContentValues();
+
+        values.put(NotesTable.Cols.UUID, note.getId().toString());
+        values.put(NotesTable.Cols.TITLE, note.getTitle());
+        if (note.isCategorized()) {
+            values.put(NotesTable.Cols.CATEGORY,
+                    Objects.requireNonNull(note.getCategory()).getId().toString());
+        } else {
+            values.putNull(NotesTable.Cols.CATEGORY);
+        }
+        values.put(NotesTable.Cols.COLOR, note.getColor().ordinal());
+        if (note.isDeadlined()) {
+            values.put(NotesTable.Cols.DEADLINE,
+                    Objects.requireNonNull(note.getDeadline()).getTimeInMillis());
+        } else {
+            values.putNull(NotesTable.Cols.DEADLINE);
+        }
+        values.put(NotesTable.Cols.LAST_MODIFICATION, note.getLastModification().getTimeInMillis());
+        note.putContentForDB(NotesTable.Cols.CONTENT, values);
+
+        return values;
     }
 
     @NonNull

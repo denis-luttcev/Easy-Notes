@@ -6,6 +6,9 @@ import java.util.Objects;
 import java.util.UUID;
 
 public class Category {
+    /**
+     * Unique id, null not allowable
+     */
     private UUID id;
     /**
      * Allowable: any, exclude null and empty (senselessly)
@@ -15,11 +18,16 @@ public class Category {
     /**
      * @throws IllegalArgumentException if title is empty
      */
-    public Category(@NonNull String title) throws IllegalArgumentException {
+    Category(@NonNull String title) throws IllegalArgumentException {
         if (!title.isEmpty()) {
             id = UUID.randomUUID();
             this.title = title;
         } else throw new IllegalArgumentException();
+    }
+
+    @NonNull
+    public UUID getId() {
+        return id;
     }
 
     @NonNull

@@ -1,5 +1,6 @@
 package ru.z8.louttsev.easynotes.datamodel;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.widget.FrameLayout;
 
@@ -29,7 +30,7 @@ public abstract class Note implements Comparable<Note>, Cloneable {
     }
 
     /**
-     * Unique id (primary key), null not allowable
+     * Unique id, null not allowable
      */
     private UUID id;
     private String title;
@@ -245,7 +246,7 @@ public abstract class Note implements Comparable<Note>, Cloneable {
     }
 
     @NonNull
-    public Calendar getLastModification() {
+    Calendar getLastModification() {
         return lastModification;
     }
 
@@ -281,6 +282,8 @@ public abstract class Note implements Comparable<Note>, Cloneable {
     public abstract void setContent(@NonNull FrameLayout contentView);
 
     public abstract boolean isContentEmpty();
+
+    public abstract void putContentForDB(@NonNull String key, @NonNull ContentValues values);
 
     //TODO: remove
     public abstract void setContent(String content);

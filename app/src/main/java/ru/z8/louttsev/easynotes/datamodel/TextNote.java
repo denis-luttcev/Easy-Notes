@@ -1,5 +1,6 @@
 package ru.z8.louttsev.easynotes.datamodel;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.widget.EditText;
@@ -15,7 +16,7 @@ public class TextNote extends Note {
 
     private final int MAX_LINES_PREVIEW = 3;
 
-    public TextNote() {
+    TextNote() {
         super();
         content = "";
     }
@@ -49,5 +50,10 @@ public class TextNote extends Note {
     @Override
     public boolean isContentEmpty() {
         return content.isEmpty();
+    }
+
+    @Override
+    public void putContentForDB(@NonNull String key, @NonNull ContentValues values) {
+        values.put(key, content);
     }
 }
