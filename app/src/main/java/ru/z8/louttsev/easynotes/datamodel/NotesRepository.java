@@ -148,7 +148,14 @@ public class NotesRepository implements NotesKeeper {
         for (Note note : notes.values()) {
             if (note.hasCategory(title)) {
                 note.setCategory(null);
-                //TODO: update all this notes
+                ContentValues values = new ContentValues();
+                values.put(NotesTable.Cols.CATEGORY, "");
+                try {
+                    db.update(NotesTable.NAME,
+                            values,
+                            NotesTable.Cols.CATEGORY + " = ?",
+                            new String[] { getCategory(title).getId().toString() });
+                } catch (IllegalAccessException ignored) {} // impossible
             }
         }
         categories.remove(title);

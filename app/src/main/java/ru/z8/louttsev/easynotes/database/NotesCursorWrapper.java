@@ -12,7 +12,6 @@ import ru.z8.louttsev.easynotes.database.NotesDBSchema.NotesTable;
 import ru.z8.louttsev.easynotes.datamodel.Note;
 import ru.z8.louttsev.easynotes.datamodel.Note.Color;
 import ru.z8.louttsev.easynotes.datamodel.NotesRepository;
-import ru.z8.louttsev.easynotes.datamodel.TextNote;
 
 public class NotesCursorWrapper extends CursorWrapper {
     private NotesRepository repository;
