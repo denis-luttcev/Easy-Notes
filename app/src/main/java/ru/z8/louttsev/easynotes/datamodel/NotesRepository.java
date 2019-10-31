@@ -8,7 +8,6 @@ import android.database.sqlite.SQLiteDatabase;
 import androidx.annotation.NonNull;
 
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -18,6 +17,7 @@ import java.util.UUID;
 
 import ru.z8.louttsev.easynotes.database.CategoriesCursorWrapper;
 import ru.z8.louttsev.easynotes.database.NotesBaseHelper;
+import ru.z8.louttsev.easynotes.database.NotesCursorWrapper;
 import ru.z8.louttsev.easynotes.database.NotesDBSchema.CategoriesTable;
 import ru.z8.louttsev.easynotes.database.NotesDBSchema.NotesTable;
 import ru.z8.louttsev.easynotes.database.NotesDBSchema.TaggingTable;
@@ -39,7 +39,6 @@ public class NotesRepository implements NotesKeeper {
         notes = new HashMap<>();
 
         readData();
-        readSamples();
     }
 
     /**
@@ -48,7 +47,7 @@ public class NotesRepository implements NotesKeeper {
      */
     @NonNull
     @Override
-    public Note createNote(NoteType noteType) {
+    public Note createNote(@NonNull NoteType noteType) {
         switch (noteType) {
             case TEXT_NOTE:
                 return new TextNote();
@@ -58,9 +57,20 @@ public class NotesRepository implements NotesKeeper {
         }
     }
 
+    public Note createNote(@NonNull NoteType noteType, @NonNull UUID id) {
+        switch (noteType) {
+            case TEXT_NOTE:
+                return new TextNote(id);
+            //TODO: New concrete class constructors are placed here
+            default:
+                return null; // unreachable
+        }
+    }
+
     private void readData() {
         readCategories();
         readTags();
+        readNotes();
     }
 
     private void readCategories() {
@@ -83,6 +93,32 @@ public class NotesRepository implements NotesKeeper {
                 cursor.moveToNext();
             }
         }
+    }
+
+    private void readNotes() {
+        try (NotesCursorWrapper cursor = queryNotes()) {
+            cursor.moveToFirst();
+            while (!cursor.isAfterLast()) {
+                Note note = cursor.getNote();
+                notes.put(note.getId(), note);
+                cursor.moveToNext();
+            }
+        }
+    }
+
+    @NonNull
+    private NotesCursorWrapper queryNotes() {
+        Cursor cursor = db.query(
+                NotesTable.NAME,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null
+        );
+
+        return new NotesCursorWrapper(cursor, this);
     }
 
     @NonNull
@@ -113,29 +149,6 @@ public class NotesRepository implements NotesKeeper {
         );
 
         return new TagsCursorWrapper(cursor);
-    }
-
-    private void readSamples() {
-        Note note;
-        note = new TextNote();
-        note.setTitle("note1");
-        note.setContent("note1 content");
-        note.setColor(Note.Color.ATTENTION);
-        Calendar date = Calendar.getInstance();
-        date.add(Calendar.DATE, 1);
-        note.setDeadline(date);
-        addNote(note);
-
-        note = new TextNote();
-        note.setTitle("");
-        note.setContent("note2 content");
-        addNote(note);
-
-        note = new TextNote();
-        note.setTitle("note3");
-        note.setContent("note3 long content: Lorem ipsum dolor sit amet, consectetur adipiscing elit. In varius malesuada neque sed pellentesque. Aenean sit amet luctus justo. Maecenas venenatis lorem sit amet orci ultricies maximus. Morbi sagittis neque vitae risus tristique tincidunt. Ut tellus lectus, tempor vitae iaculis quis, tempor non ex. Maecenas imperdiet pretium ligula ac rutrum. Mauris massa felis, vulputate eget sem et, ullamcorper convallis augue.");
-        note.setColor(Note.Color.ACCESSORY);
-        addNote(note);
     }
 
     @NonNull
@@ -182,6 +195,16 @@ public class NotesRepository implements NotesKeeper {
         if (category != null) {
             return category;
         } else throw new IllegalAccessException();
+    }
+
+    @NonNull
+    public Category getCategory(@NonNull UUID id) throws IllegalArgumentException {
+        for (Category category : categories.values()) {
+            if (category.getId().equals(id)) {
+                return category;
+            }
+        }
+        throw new IllegalArgumentException();
     }
 
     @NonNull
@@ -264,16 +287,17 @@ public class NotesRepository implements NotesKeeper {
     public void addNote(@NonNull Note note) {
         if (containNote(note.getId())) {
             removeNote(note.getId());
+            //TODO erase tagging
         }
 
         notes.put(note.getId(), note);
         db.insert(NotesTable.NAME, null, getNoteContentValues(note));
         if (note.isTagged()) {
-            doTagging(note);
+            makeTagging(note);
         }
     }
 
-    private void doTagging(@NonNull Note note) {
+    private void makeTagging(@NonNull Note note) {
         Set<Tag> tags = note.getTags();
 
         for (Tag tag : tags) {
@@ -308,21 +332,21 @@ public class NotesRepository implements NotesKeeper {
         ContentValues values = new ContentValues();
 
         values.put(NotesTable.Cols.UUID, note.getId().toString());
+        values.put(NotesTable.Cols.TYPE, note.getType().ordinal());
         values.put(NotesTable.Cols.TITLE, note.getTitle());
         if (note.isCategorized()) {
             values.put(NotesTable.Cols.CATEGORY,
                     Objects.requireNonNull(note.getCategory()).getId().toString());
-        } else {
-            values.putNull(NotesTable.Cols.CATEGORY);
-        }
+        } else values.put(NotesTable.Cols.CATEGORY, "");
+
         values.put(NotesTable.Cols.COLOR, note.getColor().ordinal());
         if (note.isDeadlined()) {
             values.put(NotesTable.Cols.DEADLINE,
                     Objects.requireNonNull(note.getDeadline()).getTimeInMillis());
-        } else {
-            values.putNull(NotesTable.Cols.DEADLINE);
-        }
+        } else values.put(NotesTable.Cols.DEADLINE, 0);
+
         values.put(NotesTable.Cols.LAST_MODIFICATION, note.getLastModification().getTimeInMillis());
+
         note.putContentForDB(NotesTable.Cols.CONTENT, values);
 
         return values;

@@ -9,21 +9,23 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
+import java.util.Objects;
+import java.util.UUID;
+
 import ru.z8.louttsev.easynotes.R;
+import ru.z8.louttsev.easynotes.database.NotesCursorWrapper;
 
 public class TextNote extends Note {
     private String content;
-
-    private final int MAX_LINES_PREVIEW = 3;
 
     TextNote() {
         super();
         content = "";
     }
 
-    //TODO: remove
-    public void setContent(String content) {
-        this.content = content;
+    public TextNote(@NonNull UUID id) {
+        super(id);
+        content = "";
     }
 
     @Override
@@ -55,5 +57,26 @@ public class TextNote extends Note {
     @Override
     public void putContentForDB(@NonNull String key, @NonNull ContentValues values) {
         values.put(key, content);
+    }
+
+    @Override
+    public void setContentFromDB(@NonNull String key, @NonNull NotesCursorWrapper cursor) {
+        this.content = Objects.requireNonNull(cursor).getString(cursor.getColumnIndex(key));
+    }
+
+    @Override
+    public NoteType getType() {
+        return NoteType.TEXT_NOTE;
+    }
+
+    //TODO: remove
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    //TODO: remove
+    @Override
+    public String getContent() {
+        return content;
     }
 }

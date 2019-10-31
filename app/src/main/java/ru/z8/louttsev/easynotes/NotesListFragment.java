@@ -105,17 +105,13 @@ public class NotesListFragment extends Fragment {
 
             if (note.isCategorized()) {
                 mNoteCategoryView.setText(Objects.requireNonNull(note.getCategory()).getTitle());
-            } else {
-                mNoteCategoryView.setVisibility(View.GONE);
-            }
+            } else mNoteCategoryView.setVisibility(View.GONE);
 
             note.fillContentPreView(mNoteContentPreView, getActivity());
 
             if (note.isTagged()) {
                 showTags(note, mNoteTagsLineView);
-            } else {
-                mNoteTagsLineView.setVisibility(View.GONE);
-            }
+            } else mNoteTagsLineView.setVisibility(View.GONE);
 
             if (note.isDeadlined()) {
                 mNoteDeadlineView.setText(note.getDeadlineRepresent(Objects.requireNonNull(getActivity())));

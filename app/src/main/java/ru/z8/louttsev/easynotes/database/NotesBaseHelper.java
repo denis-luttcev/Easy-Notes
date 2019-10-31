@@ -24,11 +24,13 @@ public class NotesBaseHelper extends SQLiteOpenHelper {
         db.execSQL("create table " + NotesTable.NAME + "(" +
                 " _id integer primary key autoincrement, " +
                 NotesTable.Cols.UUID + ", " +
+                NotesTable.Cols.TYPE + ", " +
                 NotesTable.Cols.TITLE + ", " +
                 NotesTable.Cols.CATEGORY + ", " +
                 NotesTable.Cols.COLOR + ", " +
                 NotesTable.Cols.DEADLINE + ", " +
-                NotesTable.Cols.LAST_MODIFICATION + ")"
+                NotesTable.Cols.LAST_MODIFICATION + ", " +
+                NotesTable.Cols.CONTENT +")"
         );
         db.execSQL("create table " + CategoriesTable.NAME + "(" +
                 " _id integer primary key autoincrement, " +

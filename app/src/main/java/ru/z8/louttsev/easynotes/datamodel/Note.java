@@ -18,6 +18,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import ru.z8.louttsev.easynotes.R;
+import ru.z8.louttsev.easynotes.database.NotesCursorWrapper;
 
 public abstract class Note implements Comparable<Note>, Cloneable {
 
@@ -42,7 +43,11 @@ public abstract class Note implements Comparable<Note>, Cloneable {
     private boolean isModified;
 
     Note() {
-        id = UUID.randomUUID();
+        this(UUID.randomUUID());
+    }
+
+    Note(@NonNull UUID id) {
+        this.id = id;
         title = "";
         category = null;
         color = Color.NONE;
@@ -245,6 +250,10 @@ public abstract class Note implements Comparable<Note>, Cloneable {
         return isToday(prevDay);
     }
 
+    public void setLastModification(Calendar lastModification) {
+        this.lastModification = lastModification;
+    }
+
     @NonNull
     Calendar getLastModification() {
         return lastModification;
@@ -285,6 +294,13 @@ public abstract class Note implements Comparable<Note>, Cloneable {
 
     public abstract void putContentForDB(@NonNull String key, @NonNull ContentValues values);
 
+    public abstract void setContentFromDB(@NonNull String key, @NonNull NotesCursorWrapper cursor);
+
+    public abstract NoteType getType();
+
     //TODO: remove
     public abstract void setContent(String content);
+
+    //TODO: remove
+    public abstract String getContent();
 }
