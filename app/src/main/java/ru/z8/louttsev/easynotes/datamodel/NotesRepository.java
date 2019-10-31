@@ -22,6 +22,7 @@ import ru.z8.louttsev.easynotes.database.NotesDBSchema.CategoriesTable;
 import ru.z8.louttsev.easynotes.database.NotesDBSchema.NotesTable;
 import ru.z8.louttsev.easynotes.database.NotesDBSchema.TaggingTable;
 import ru.z8.louttsev.easynotes.database.NotesDBSchema.TagsTable;
+import ru.z8.louttsev.easynotes.database.TagsCursorWrapper;
 
 public class NotesRepository implements NotesKeeper {
     private SQLiteDatabase db;
@@ -59,6 +60,7 @@ public class NotesRepository implements NotesKeeper {
 
     private void readData() {
         readCategories();
+        readTags();
     }
 
     private void readCategories() {
@@ -72,9 +74,19 @@ public class NotesRepository implements NotesKeeper {
         }
     }
 
+    private void readTags() {
+        try (TagsCursorWrapper cursor = queryTags()) {
+            cursor.moveToFirst();
+            while (!cursor.isAfterLast()) {
+                Tag tag = cursor.getTag();
+                tags.put(tag.getTitle(), tag);
+                cursor.moveToNext();
+            }
+        }
+    }
+
     @NonNull
     private CategoriesCursorWrapper queryCategories() {
-
         Cursor cursor = db.query(
                 CategoriesTable.NAME,
                 null,
@@ -88,60 +100,42 @@ public class NotesRepository implements NotesKeeper {
         return new CategoriesCursorWrapper(cursor);
     }
 
+    @NonNull
+    private TagsCursorWrapper queryTags() {
+        Cursor cursor = db.query(
+                TagsTable.NAME,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null
+        );
+
+        return new TagsCursorWrapper(cursor);
+    }
+
     private void readSamples() {
-        //TODO: change to read from db
+        Note note;
+        note = new TextNote();
+        note.setTitle("note1");
+        note.setContent("note1 content");
+        note.setColor(Note.Color.ATTENTION);
+        Calendar date = Calendar.getInstance();
+        date.add(Calendar.DATE, 1);
+        note.setDeadline(date);
+        addNote(note);
 
-        try {
-            addTag("Ideas");
-            addTag("Todo");
-            addTag("Photo");
-            addTag("Smile");
-            addTag("Class");
-            addTag("Share");
-            addTag("Common");
-            addTag("Private");
-            addTag("Plus");
-            addTag("Native");
+        note = new TextNote();
+        note.setTitle("");
+        note.setContent("note2 content");
+        addNote(note);
 
-            Note note;
-            note = new TextNote();
-            note.setTitle("note1");
-            note.setContent("note1 content");
-            note.setColor(Note.Color.ATTENTION);
-            Calendar date = Calendar.getInstance();
-            date.add(Calendar.DATE, 1);
-            note.setDeadline(date);
-            addNote(note);
-
-            note = new TextNote();
-            note.setTitle("");
-            note.setContent("note2 content");
-            note.markTag(getTag("Ideas"));
-            //date = Calendar.getInstance();
-            //date.add(Calendar.DATE, -1);
-            //note.setDeadline(date);
-            addNote(note);
-
-            note = new TextNote();
-            note.setTitle("note3");
-            //noinspection SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection
-            note.setContent("note3 long content: Lorem ipsum dolor sit amet, consectetur adipiscing elit. In varius malesuada neque sed pellentesque. Aenean sit amet luctus justo. Maecenas venenatis lorem sit amet orci ultricies maximus. Morbi sagittis neque vitae risus tristique tincidunt. Ut tellus lectus, tempor vitae iaculis quis, tempor non ex. Maecenas imperdiet pretium ligula ac rutrum. Mauris massa felis, vulputate eget sem et, ullamcorper convallis augue.");
-            note.setColor(Note.Color.ACCESSORY);
-            note.markTag(getTag("Ideas"));
-            note.markTag(getTag("Todo"));
-            note.markTag(getTag("Photo"));
-            note.markTag(getTag("Smile"));
-            note.markTag(getTag("Class"));
-            note.markTag(getTag("Share"));
-            note.markTag(getTag("Common"));
-            note.markTag(getTag("Private"));
-            note.markTag(getTag("Plus"));
-            note.markTag(getTag("Native"));
-            //date = Calendar.getInstance();
-            //date.add(Calendar.DATE, 1);
-            //note.setDeadline(date);
-            addNote(note);
-        } catch (IllegalAccessException ignored) {}
+        note = new TextNote();
+        note.setTitle("note3");
+        note.setContent("note3 long content: Lorem ipsum dolor sit amet, consectetur adipiscing elit. In varius malesuada neque sed pellentesque. Aenean sit amet luctus justo. Maecenas venenatis lorem sit amet orci ultricies maximus. Morbi sagittis neque vitae risus tristique tincidunt. Ut tellus lectus, tempor vitae iaculis quis, tempor non ex. Maecenas imperdiet pretium ligula ac rutrum. Mauris massa felis, vulputate eget sem et, ullamcorper convallis augue.");
+        note.setColor(Note.Color.ACCESSORY);
+        addNote(note);
     }
 
     @NonNull
@@ -233,9 +227,13 @@ public class NotesRepository implements NotesKeeper {
         for (Note note : notes.values()) {
             if (note.hasTag(title)) {
                 note.unmarkTag(title);
+                //TODO: update all this notes
             }
         }
         tags.remove(title);
+        db.delete(TagsTable.NAME,
+                TagsTable.Cols.TITLE + " = ?",
+                new String[] { title });
     }
 
     @Override

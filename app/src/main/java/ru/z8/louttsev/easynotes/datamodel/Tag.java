@@ -19,10 +19,15 @@ public class Tag {
      * @throws IllegalArgumentException if title is empty
      */
     Tag(@NonNull String title) throws IllegalArgumentException {
+        this(UUID.randomUUID());
         if (!title.isEmpty()) {
             id = UUID.randomUUID();
             this.title = title;
         } else throw new IllegalArgumentException();
+    }
+
+    public Tag(@NonNull UUID id) {
+        this.id = id;
     }
 
     @NonNull
@@ -33,6 +38,14 @@ public class Tag {
     @NonNull
     public String getTitle() {
         return title;
+    }
+
+
+    public void setTitle(String title) throws IllegalArgumentException {
+        if (!title.isEmpty()) {
+            id = UUID.randomUUID();
+            this.title = title;
+        } else throw new IllegalArgumentException();
     }
 
     @Override
