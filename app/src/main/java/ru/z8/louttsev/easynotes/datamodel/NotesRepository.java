@@ -167,9 +167,13 @@ public class NotesRepository implements NotesKeeper {
         for (Note note : notes.values()) {
             if (note.hasCategory(title)) {
                 note.setCategory(null);
+                //TODO: update all this notes
             }
         }
         categories.remove(title);
+        db.delete(CategoriesTable.NAME,
+                CategoriesTable.Cols.TITLE + " = ?",
+                new String[] { title });
     }
 
     @Override
