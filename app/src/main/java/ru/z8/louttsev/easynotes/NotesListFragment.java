@@ -33,7 +33,6 @@ import java.util.Objects;
 import java.util.Set;
 
 import ru.z8.louttsev.easynotes.datamodel.Note;
-import ru.z8.louttsev.easynotes.datamodel.NoteType;
 import ru.z8.louttsev.easynotes.datamodel.NotesKeeper;
 import ru.z8.louttsev.easynotes.datamodel.Tag;
 
@@ -248,7 +247,7 @@ public class NotesListFragment extends Fragment {
             public void onClick(View view) {
                 //TODO: After adding new note types implement choice and another types call
                 FragmentManager fragmentManager = getFragmentManager();
-                Fragment fragment = NoteFragment.newInstance(NoteType.TEXT_NOTE);
+                Fragment fragment = NoteFragment.newInstance(Note.Type.TEXT_NOTE);
                 Objects.requireNonNull(fragmentManager).beginTransaction()
                         .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                         .replace(R.id.fragment_container, fragment, NoteFragment.getFragmentTag())

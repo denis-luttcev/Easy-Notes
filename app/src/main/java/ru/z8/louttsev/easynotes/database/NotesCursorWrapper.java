@@ -31,7 +31,7 @@ public class NotesCursorWrapper extends CursorWrapper {
         long deadlineInMillis = getLong(getColumnIndex(NotesTable.Cols.DEADLINE));
         long lastModificationInMillis = getLong(getColumnIndex(NotesTable.Cols.LAST_MODIFICATION));
 
-        Note note = new TextNote(UUID.fromString(uuidString));
+        Note note = Note.getInstance(Note.Type.values()[type], UUID.fromString(uuidString));
 
         note.setTitle(title);
 

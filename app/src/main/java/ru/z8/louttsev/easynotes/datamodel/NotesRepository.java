@@ -41,32 +41,6 @@ public class NotesRepository implements NotesKeeper {
         readData();
     }
 
-    /**
-     * Creates new note match NoteType
-     * New type need declare in NoteType enum
-     */
-    @NonNull
-    @Override
-    public Note createNote(@NonNull NoteType noteType) {
-        switch (noteType) {
-            case TEXT_NOTE:
-                return new TextNote();
-            //TODO: New concrete class constructors are placed here
-            default:
-                return null; // unreachable
-        }
-    }
-
-    public Note createNote(@NonNull NoteType noteType, @NonNull UUID id) {
-        switch (noteType) {
-            case TEXT_NOTE:
-                return new TextNote(id);
-            //TODO: New concrete class constructors are placed here
-            default:
-                return null; // unreachable
-        }
-    }
-
     private void readData() {
         readCategories();
         readTags();

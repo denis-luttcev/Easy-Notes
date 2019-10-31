@@ -19,8 +19,7 @@ public class TextNote extends Note {
     private String content;
 
     TextNote() {
-        super();
-        content = "";
+        this(UUID.randomUUID());
     }
 
     public TextNote(@NonNull UUID id) {
@@ -65,8 +64,8 @@ public class TextNote extends Note {
     }
 
     @Override
-    public NoteType getType() {
-        return NoteType.TEXT_NOTE;
+    public Type getType() {
+        return Type.TEXT_NOTE;
     }
 
     //TODO: remove

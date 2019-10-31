@@ -22,6 +22,10 @@ import ru.z8.louttsev.easynotes.database.NotesCursorWrapper;
 
 public abstract class Note implements Comparable<Note>, Cloneable {
 
+    public enum Type {
+        TEXT_NOTE;
+    }
+
     public enum Color {
         URGENT, ATTENTION, NORMAL, QUIET, ACCESSORY, NONE
     }
@@ -30,9 +34,6 @@ public abstract class Note implements Comparable<Note>, Cloneable {
         OVERDUE, IMMEDIATE, AHEAD, NONE
     }
 
-    /**
-     * Unique id, null not allowable
-     */
     private UUID id;
     private String title;
     private Category category;
@@ -41,10 +42,6 @@ public abstract class Note implements Comparable<Note>, Cloneable {
     private Calendar deadline;
     private Calendar lastModification;
     private boolean isModified;
-
-    Note() {
-        this(UUID.randomUUID());
-    }
 
     Note(@NonNull UUID id) {
         this.id = id;
@@ -55,6 +52,28 @@ public abstract class Note implements Comparable<Note>, Cloneable {
         deadline = null;
         modificationUpdate();
         isModified = false;
+    }
+
+    @NonNull
+    public static Note newInstance(@NonNull Type type) throws IllegalArgumentException {
+        switch (type) {
+            case TEXT_NOTE:
+                return new TextNote();
+            //TODO: New concrete class constructors are placed here
+            default:
+                throw new IllegalArgumentException(); // unreachable
+        }
+    }
+
+    @NonNull
+    public static Note getInstance(@NonNull Type type, UUID id) throws IllegalArgumentException {
+        switch (type) {
+            case TEXT_NOTE:
+                return new TextNote(id);
+            //TODO: New concrete class constructors are placed here
+            default:
+                throw new IllegalArgumentException(); // unreachable
+        }
     }
 
     /**
@@ -296,7 +315,7 @@ public abstract class Note implements Comparable<Note>, Cloneable {
 
     public abstract void setContentFromDB(@NonNull String key, @NonNull NotesCursorWrapper cursor);
 
-    public abstract NoteType getType();
+    public abstract Type getType();
 
     //TODO: remove
     public abstract void setContent(String content);

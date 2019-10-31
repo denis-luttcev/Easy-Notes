@@ -34,7 +34,6 @@ import java.util.UUID;
 
 import ru.z8.louttsev.easynotes.datamodel.Category;
 import ru.z8.louttsev.easynotes.datamodel.Note;
-import ru.z8.louttsev.easynotes.datamodel.NoteType;
 import ru.z8.louttsev.easynotes.datamodel.NotesKeeper;
 import ru.z8.louttsev.easynotes.datamodel.Tag;
 
@@ -75,7 +74,7 @@ public class NoteFragment extends Fragment {
     }
 
     @NonNull
-    static NoteFragment newInstance(@NonNull NoteType noteType) {
+    static NoteFragment newInstance(@NonNull Note.Type noteType) {
         Bundle args = new Bundle();
         NoteFragment fragment = new NoteFragment();
 
@@ -113,7 +112,7 @@ public class NoteFragment extends Fragment {
                 } catch (IllegalAccessException | CloneNotSupportedException ignored) {}
             }
             if (args.containsKey(ARG_NOTE_TYPE)) { // create new
-                mNote = mNotesKeeper.createNote((NoteType) args.getSerializable(ARG_NOTE_TYPE));
+                mNote = Note.newInstance((Note.Type) Objects.requireNonNull(args.getSerializable(ARG_NOTE_TYPE)));
             }
         }
 
