@@ -21,7 +21,6 @@ public class Tag {
     Tag(@NonNull String title) throws IllegalArgumentException {
         this(UUID.randomUUID());
         if (!title.isEmpty()) {
-            id = UUID.randomUUID();
             this.title = title;
         } else throw new IllegalArgumentException();
     }
@@ -43,7 +42,6 @@ public class Tag {
 
     public void setTitle(String title) throws IllegalArgumentException {
         if (!title.isEmpty()) {
-            id = UUID.randomUUID();
             this.title = title;
         } else throw new IllegalArgumentException();
     }

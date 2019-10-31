@@ -17,9 +17,9 @@ public interface NotesKeeper {
     boolean containTag(@NonNull String title);
     @NonNull Tag getTag(@NonNull String title) throws IllegalAccessException;
     void addNote(@NonNull Note note);
-    void removeNote(@NonNull UUID uuid);
-    boolean containNote(@NonNull UUID uuid);
-    @NonNull Note getNote(@NonNull UUID uuid) throws IllegalAccessException;
+    void removeNote(@NonNull UUID id);
+    boolean containNote(@NonNull UUID id);
+    @NonNull Note getNote(@NonNull UUID id) throws IllegalAccessException;
     @NonNull Note getNote(int position);
     int getNotesCount();
 }

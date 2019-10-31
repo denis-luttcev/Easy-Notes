@@ -22,6 +22,7 @@ import ru.z8.louttsev.easynotes.database.NotesDBSchema.CategoriesTable;
 import ru.z8.louttsev.easynotes.database.NotesDBSchema.NotesTable;
 import ru.z8.louttsev.easynotes.database.NotesDBSchema.TaggingTable;
 import ru.z8.louttsev.easynotes.database.NotesDBSchema.TagsTable;
+import ru.z8.louttsev.easynotes.database.TaggingCursorWrapper;
 import ru.z8.louttsev.easynotes.database.TagsCursorWrapper;
 
 public class NotesRepository implements NotesKeeper {
@@ -45,6 +46,7 @@ public class NotesRepository implements NotesKeeper {
         readCategories();
         readTags();
         readNotes();
+        readTagging();
     }
 
     private void readCategories() {
@@ -78,6 +80,33 @@ public class NotesRepository implements NotesKeeper {
                 cursor.moveToNext();
             }
         }
+    }
+
+    private void readTagging() {
+        try (TaggingCursorWrapper cursor = queryTagging()) {
+            cursor.moveToFirst();
+            while (!cursor.isAfterLast()) {
+                Note note = cursor.getNote();
+                Tag tag = cursor.getTag();
+                note.markTag(tag);
+                cursor.moveToNext();
+            }
+        } catch (IllegalAccessException ignored) {} // impossible
+    }
+
+    @NonNull
+    private TaggingCursorWrapper queryTagging() {
+        Cursor cursor = db.query(
+                TaggingTable.NAME,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null
+        );
+
+        return new TaggingCursorWrapper(cursor, this);
     }
 
     @NonNull
@@ -255,6 +284,16 @@ public class NotesRepository implements NotesKeeper {
     }
 
     @NonNull
+    public Tag getTag(@NonNull UUID id) throws IllegalArgumentException {
+        for (Tag tag : tags.values()) {
+            if (tag.getId().equals(id)) {
+                return tag;
+            }
+        }
+        throw new IllegalArgumentException();
+    }
+
+    @NonNull
     private static ContentValues getTagContentValues (@NonNull Tag tag) {
         ContentValues values = new ContentValues();
 
@@ -282,27 +321,24 @@ public class NotesRepository implements NotesKeeper {
         Set<Tag> tags = note.getTags();
 
         for (Tag tag : tags) {
-            ContentValues values = new ContentValues();
-            values.put(TaggingTable.Cols.NOTE, note.getId().toString());
-            values.put(TaggingTable.Cols.TAG, tag.getId().toString());
-            db.insert(TaggingTable.NAME, null, values);
+            db.insert(TaggingTable.NAME, null, getTaggingContentValues(note, tag));
         }
     }
 
     @Override
-    public void removeNote(@NonNull UUID uuid) {
-        notes.remove(uuid);
+    public void removeNote(@NonNull UUID id) {
+        notes.remove(id);
     }
 
     @Override
-    public boolean containNote(@NonNull UUID uuid) {
-        return notes.containsKey(uuid);
+    public boolean containNote(@NonNull UUID id) {
+        return notes.containsKey(id);
     }
 
     @NonNull
     @Override
-    public Note getNote(@NonNull UUID uuid) throws IllegalAccessException {
-        Note note = notes.get(uuid);
+    public Note getNote(@NonNull UUID id) throws IllegalAccessException {
+        Note note = notes.get(id);
         if (note != null) {
             return note;
         } else throw new IllegalAccessException();
