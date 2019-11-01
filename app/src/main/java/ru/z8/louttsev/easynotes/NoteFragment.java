@@ -24,6 +24,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.constraintlayout.widget.Group;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import com.google.android.flexbox.FlexboxLayout;
 
@@ -48,6 +49,7 @@ public class NoteFragment extends Fragment {
     private static final int REQUEST_TIME = 2;
 
     private Context mContext;
+    private FragmentManager mFragmentManager;
 
     private NotesKeeper mNotesKeeper;
     private Note mNote;
@@ -100,6 +102,7 @@ public class NoteFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         mNotesKeeper = App.getNotesKeeper();
+        mFragmentManager = getFragmentManager();
 
         Bundle args = getArguments();
         if (args != null) {
@@ -162,7 +165,7 @@ public class NoteFragment extends Fragment {
 
         timePicker.setTargetFragment(NoteFragment.this, REQUEST_TIME);
 
-        timePicker.show(Objects.requireNonNull(getFragmentManager()), DIALOG_TIME_PICKER);
+        timePicker.show(mFragmentManager, DIALOG_TIME_PICKER);
     }
 
     @Nullable
@@ -318,7 +321,7 @@ public class NoteFragment extends Fragment {
         }
 
         datePicker.setTargetFragment(NoteFragment.this, REQUEST_DATE);
-        datePicker.show(Objects.requireNonNull(getFragmentManager()), DIALOG_DATE_PICKER);
+        datePicker.show(mFragmentManager, DIALOG_DATE_PICKER);
     }
 
     private void updateDeadlineView() {
@@ -656,7 +659,7 @@ public class NoteFragment extends Fragment {
             }
         }
 
-        Objects.requireNonNull(getFragmentManager()).popBackStack();
+        mFragmentManager.popBackStack();
     }
 
     private void requestSaveConfirmation() {
@@ -669,7 +672,7 @@ public class NoteFragment extends Fragment {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 mNotesKeeper.addNote(mNote);
-                                Objects.requireNonNull(getFragmentManager()).popBackStack();
+                                mFragmentManager.popBackStack();
                             }
                         })
                 .create()
@@ -691,7 +694,7 @@ public class NoteFragment extends Fragment {
                                 getString(R.string.remove_note_toast_message),
                                 Toast.LENGTH_SHORT)
                                 .show();
-                        Objects.requireNonNull(getFragmentManager()).popBackStack();
+                        mFragmentManager.popBackStack();
                     }
                 })
                 .create()
