@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteDatabase;
 import androidx.annotation.NonNull;
 
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -87,8 +88,10 @@ public class NotesRepository implements NotesKeeper {
             cursor.moveToFirst();
             while (!cursor.isAfterLast()) {
                 Note note = cursor.getNote();
+                Calendar lastModification = note.getLastModification(); // save sorting criteria
                 Tag tag = cursor.getTag();
                 note.markTag(tag);
+                note.setLastModification(lastModification); // restore sorting criteria
                 cursor.moveToNext();
             }
         } catch (IllegalAccessException ignored) {} // impossible

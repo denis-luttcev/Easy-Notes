@@ -46,11 +46,11 @@ public class NotesCursorWrapper extends CursorWrapper {
             note.setDeadline(deadline);
         } else note.setDeadline(null);
 
+        note.setContentFromDB(NotesTable.Cols.CONTENT, this);
+
         Calendar lastModification = Calendar.getInstance();
         lastModification.setTimeInMillis(lastModificationInMillis);
         note.setLastModification(lastModification);
-
-        note.setContentFromDB(NotesTable.Cols.CONTENT, this);
 
         return note;
     }
