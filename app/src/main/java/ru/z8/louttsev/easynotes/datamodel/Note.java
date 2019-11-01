@@ -116,8 +116,10 @@ public abstract class Note implements Comparable<Note>, Cloneable {
     }
 
     public void setTitle(@NonNull String title) {
-        this.title = title;
-        modificationUpdate();
+        if (!title.equals(this.title)) {
+            this.title = title;
+            modificationUpdate();
+        }
     }
 
     public boolean hasTitle(@NonNull String title) {

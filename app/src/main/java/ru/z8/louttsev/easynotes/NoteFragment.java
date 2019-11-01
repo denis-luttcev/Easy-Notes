@@ -58,7 +58,6 @@ public class NoteFragment extends Fragment {
     private TextView mDeadlineView;
     private TextView mCategoryView;
 
-    private String mInitialTitle;
     private EditText mTitleView;
     private FrameLayout mContentView;
 
@@ -115,8 +114,6 @@ public class NoteFragment extends Fragment {
                 mNote = Note.newInstance((Note.Type) Objects.requireNonNull(args.getSerializable(ARG_NOTE_TYPE)));
             }
         }
-
-        mInitialTitle = mNote.getTitle();
     }
 
     @Override
@@ -648,12 +645,7 @@ public class NoteFragment extends Fragment {
     }
 
     void closeNote() {
-        String title = mTitleView.getText().toString().trim();
-
-        if (!title.equals(mInitialTitle)) {
-            mNote.setTitle(title);
-        }
-
+        mNote.setTitle(mTitleView.getText().toString().trim());
         mNote.setContent(mContentView);
 
         if (mNote.isModified()) {

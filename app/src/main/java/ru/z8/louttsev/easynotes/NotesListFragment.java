@@ -39,8 +39,11 @@ import ru.z8.louttsev.easynotes.datamodel.Tag;
 public class NotesListFragment extends Fragment {
     private NotesKeeper mNotesKeeper;
     private RecyclerView mNotesList;
+    private NotesAdapter mNotesAdapter;
 
     private Context mContext;
+
+    private TextView mHelpLine;
 
     @NonNull
     static NotesListFragment newInstance() {
@@ -204,6 +207,7 @@ public class NotesListFragment extends Fragment {
                     public void onClick(DialogInterface dialogInterface, int i) {
                         mNotesKeeper.removeNote(note.getId());
                         Objects.requireNonNull(mNotesList.getAdapter()).notifyDataSetChanged();
+                        applyHeplLineStyle();
                         Toast.makeText(mContext,
                                 getString(R.string.remove_note_toast_message),
                                 Toast.LENGTH_SHORT)
@@ -239,7 +243,7 @@ public class NotesListFragment extends Fragment {
         View mNotesListLayout = inflater.inflate(R.layout.fragment_notes_list, container, false);
 
         Toolbar mToolBar = mNotesListLayout.findViewById(R.id.notes_list_toolbar);
-        ((AppCompatActivity) Objects.requireNonNull(getActivity())).setSupportActionBar(mToolBar);
+        ((AppCompatActivity) mContext).setSupportActionBar(mToolBar);
 
         FloatingActionButton mAddNoteButton = mNotesListLayout.findViewById(R.id.add_note_button);
         mAddNoteButton.setOnClickListener(new View.OnClickListener() {
@@ -259,9 +263,18 @@ public class NotesListFragment extends Fragment {
         mNotesList = mNotesListLayout.findViewById(R.id.notes_list);
         mNotesList.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-        NotesAdapter mNotesAdapter = new NotesAdapter();
+        mNotesAdapter = new NotesAdapter();
         mNotesList.setAdapter(mNotesAdapter);
 
+        mHelpLine = mNotesListLayout.findViewById(R.id.notes_list_help_line);
+        applyHeplLineStyle();
+
         return mNotesListLayout;
+    }
+
+    private void applyHeplLineStyle() {
+        if (mNotesAdapter.getItemCount() == 0) {
+            mHelpLine.setVisibility(View.GONE);
+        }
     }
 }
