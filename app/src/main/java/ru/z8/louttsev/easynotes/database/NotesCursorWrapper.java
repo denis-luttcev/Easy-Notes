@@ -4,6 +4,7 @@ import android.database.Cursor;
 import android.database.CursorWrapper;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.util.Calendar;
 import java.util.UUID;
@@ -11,32 +12,23 @@ import java.util.UUID;
 import ru.z8.louttsev.easynotes.database.NotesDBSchema.NotesTable;
 import ru.z8.louttsev.easynotes.datamodel.Note;
 import ru.z8.louttsev.easynotes.datamodel.Note.Color;
-import ru.z8.louttsev.easynotes.datamodel.NotesRepository;
 
 public class NotesCursorWrapper extends CursorWrapper {
-    private NotesRepository repository;
 
-    public NotesCursorWrapper(@NonNull Cursor cursor, @NonNull NotesRepository repository) {
+    public NotesCursorWrapper(@NonNull Cursor cursor) {
         super(cursor);
-        this.repository = repository;
     }
 
     public Note getNote() {
         String uuidString = getString(getColumnIndex(NotesTable.Cols.UUID));
         int type = (int) getLong(getColumnIndex(NotesTable.Cols.TYPE));
         String title = getString(getColumnIndex(NotesTable.Cols.TITLE));
-        String categoryUuidString = getString(getColumnIndex(NotesTable.Cols.CATEGORY));
         int color = (int) getLong(getColumnIndex(NotesTable.Cols.COLOR));
         long deadlineInMillis = getLong(getColumnIndex(NotesTable.Cols.DEADLINE));
-        long lastModificationInMillis = getLong(getColumnIndex(NotesTable.Cols.LAST_MODIFICATION));
 
         Note note = Note.getInstance(Note.Type.values()[type], UUID.fromString(uuidString));
 
         note.setTitle(title);
-
-        if (!categoryUuidString.isEmpty()) {
-            note.setCategory(repository.getCategory(UUID.fromString(categoryUuidString)));
-        } else note.setCategory(null);
 
         note.setColor(Color.values()[color]);
 
@@ -46,12 +38,24 @@ public class NotesCursorWrapper extends CursorWrapper {
             note.setDeadline(deadline);
         } else note.setDeadline(null);
 
-        note.setContentFromDB(NotesTable.Cols.CONTENT, this);
+        return note;
+    }
+
+    @Nullable
+    public UUID getCategoryId() {
+        String categoryUuidString = getString(getColumnIndex(NotesTable.Cols.CATEGORY));
+        if (!categoryUuidString.isEmpty()) {
+            return UUID.fromString(categoryUuidString);
+        } else return null;
+    }
+
+    @NonNull
+    public Calendar getLastModification() {
+        long lastModificationInMillis = getLong(getColumnIndex(NotesTable.Cols.LAST_MODIFICATION));
 
         Calendar lastModification = Calendar.getInstance();
         lastModification.setTimeInMillis(lastModificationInMillis);
-        note.setLastModification(lastModification);
 
-        return note;
+        return lastModification;
     }
 }

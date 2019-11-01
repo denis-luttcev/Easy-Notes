@@ -81,7 +81,18 @@ public class NotesRepository implements NotesKeeper {
             cursor.moveToFirst();
             while (!cursor.isAfterLast()) {
                 Note note = cursor.getNote();
+
+                UUID categoryId = cursor.getCategoryId();
+                if (categoryId != null) {
+                    note.setCategory(getCategory(categoryId));
+                } else note.setCategory(null);
+
+                note.setContentFromDB(NotesTable.Cols.CONTENT, cursor);
+
+                note.setLastModification(cursor.getLastModification());
+
                 putNote(note);
+
                 cursor.moveToNext();
             }
         }
@@ -92,9 +103,9 @@ public class NotesRepository implements NotesKeeper {
         try (TaggingCursorWrapper cursor = queryTagging()) {
             cursor.moveToFirst();
             while (!cursor.isAfterLast()) {
-                Note note = cursor.getNote();
+                Note note = getNote(cursor.getNoteId());
                 Calendar lastModification = note.getLastModification(); // save sorting criteria
-                Tag tag = cursor.getTag();
+                Tag tag = getTag(cursor.getTagId());
                 note.markTag(tag);
                 note.setLastModification(lastModification); // restore sorting criteria
                 cursor.moveToNext();
@@ -114,7 +125,7 @@ public class NotesRepository implements NotesKeeper {
                 null
         );
 
-        return new TaggingCursorWrapper(cursor, this);
+        return new TaggingCursorWrapper(cursor);
     }
 
     @NonNull
@@ -129,7 +140,7 @@ public class NotesRepository implements NotesKeeper {
                 null
         );
 
-        return new NotesCursorWrapper(cursor, this);
+        return new NotesCursorWrapper(cursor);
     }
 
     @NonNull
