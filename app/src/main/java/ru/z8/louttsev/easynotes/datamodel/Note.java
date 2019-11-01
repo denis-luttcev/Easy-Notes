@@ -276,7 +276,7 @@ public abstract class Note implements Comparable<Note>, Cloneable {
     }
 
     @NonNull
-    Calendar getLastModification() {
+    public Calendar getLastModification() {
         return lastModification;
     }
 
