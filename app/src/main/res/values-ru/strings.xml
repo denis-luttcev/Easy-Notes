@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Удобные Заметки</string>
+    <string name="access_denied_toast_message">Доступ запрещён</string>
+    <string name="yesterday">"Вчера, "</string>
+    <string name="today">"Сегодня, "</string>
+    <string name="tomorrow">"Завтра,  "</string>
+    <string name="action_settings">Настройки</string>
+    <string name="activity_settings_title">Настройки</string>
+    <string name="protection_setting_switch_label">Включить защиту хранилища</string>
+    <string name="protection_setting_description_text">Охраняет доступ к вашим заметкам</string>
+    <string name="protection_change_key_button_text">Изменить защитный ключ</string>
+    <string name="protection_key_changed_success_toast_message">Зашитный ключ изменён</string>
+    <string name="protection_key_changed_error_toast_message">Невозможно изменить защитный ключ</string>
+    <string name="protection_enabled_success_toast_message">Защита включена</string>
+    <string name="protection_enabled_error_toast_message">Невозможно включить защиту</string>
+    <string name="protection_disabled_toast_message">Защита отключена</string>
+    <string name="pin_code_input_title">Введите пин-код</string>
+    <string name="notes_line_help_text">Нажмите и удерживайте заметку для её удаления</string>
+    <string name="remove_note_dialog_title">Удаление заметки</string>
+    <string name="remove_note_dialog_message">Вы хотите удалить заметку. Эта операция не может быть отменена.\n\nВы уверены?</string>
+    <string name="remove_note_toast_message">Заметка удалена успешно</string>
+    <string name="note_title_hint">Название</string>
+    <string name="note_text_hint">Текст</string>
+    <string name="note_category_hint">Рубрика</string>
+    <string name="deadline_hint">Дедлайн</string>
+    <string name="add_new_tag_hint">+ метка</string>
+    <string name="add_new_category_hint">+ рубрика</string>
+    <string name="tags_line_help_text">Нажмите и удерживайте метку для её удаления</string>
+    <string name="categories_line_help_text">Нажмите и удерживайте рубрику для её удаления</string>
+    <string name="delete_tag_dialog_title">Удаление метки</string>
+    <string name="delete_tag_dialog_message">Вы удаляете метку, которой могут быть отмечены другие заметки. После этого все такие отметки будут очищены.\n\nВы уверены?</string>
+    <string name="delete_tag_toast_message">Метка удалена успешно</string>
+    <string name="delete_category_dialog_title">Удаление рубрики</string>
+    <string name="delete_category_dialog_message">Вы удаляете рубрику, в которой могут быть другие заметки. После этого все такие заметки будут без рубрики.\n\nВы уверены?</string>
+    <string name="delete_category_toast_message">Рубрика удалена успешно</string>
+    <string name="save_empty_note_dialog_title">Сохранение пустой заметки</string>
+    <string name="save_empty_note_dialog_message">Эта заметка не имеет ни названия, ни содержания.\n\nХотите сохранить её в таком виде?</string>
+    <string name="clear_button_text">Очистить</string>
+</resources>

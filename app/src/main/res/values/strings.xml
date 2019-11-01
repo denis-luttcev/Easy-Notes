@@ -1,11 +1,9 @@
 <resources>
     <string name="app_name">Easy Notes</string>
     <string name="access_denied_toast_message">Access denied</string>
-
     <string name="yesterday">"Yesterday, "</string>
     <string name="today">"Today, "</string>
     <string name="tomorrow">"Tomorrow,  "</string>
-
     <string name="action_settings">Settings</string>
     <string name="activity_settings_title">Settings</string>
     <string name="protection_setting_switch_label">Enable storage protection</string>
@@ -16,14 +14,11 @@
     <string name="protection_enabled_success_toast_message">Protection enabled</string>
     <string name="protection_enabled_error_toast_message">Impossible to enable protection</string>
     <string name="protection_disabled_toast_message">Protection disabled</string>
-
     <string name="pin_code_input_title">Enter pin code</string>
-
     <string name="notes_line_help_text">Press and hold on note to remove it</string>
     <string name="remove_note_dialog_title">Remove note</string>
     <string name="remove_note_dialog_message">You want to remove the note. This action cannot be undone.\n\nAre you sure?</string>
     <string name="remove_note_toast_message">Note removed successfully</string>
-
     <string name="note_title_hint">Title</string>
     <string name="note_text_hint">Text</string>
     <string name="note_category_hint">Category</string>
@@ -32,16 +27,13 @@
     <string name="add_new_category_hint">+ category</string>
     <string name="tags_line_help_text">Press and hold on tag to delete it</string>
     <string name="categories_line_help_text">Press and hold on category to delete it</string>
-
     <string name="delete_tag_dialog_title">Delete tag</string>
     <string name="delete_tag_dialog_message">You delete the tag, which other notes could be marked. After this all such marks will be cleared.\n\nAre you sure?</string>
     <string name="delete_tag_toast_message">Tag deleted successfully</string>
     <string name="delete_category_dialog_title">Delete category</string>
     <string name="delete_category_dialog_message">You delete the category, which other notes could be placed. After this all such notes will be without category.\n\nAre you sure?</string>
     <string name="delete_category_toast_message">Category deleted successfully</string>
-
     <string name="save_empty_note_dialog_title">Save empty note</string>
     <string name="save_empty_note_dialog_message">This note has neither title nor content.\n\nWant to save it like that?</string>
-
     <string name="clear_button_text">Clear</string>
 </resources>
