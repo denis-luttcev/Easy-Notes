@@ -260,9 +260,13 @@ public class NotesRepository implements NotesKeeper {
         for (Note note : notes.values()) {
             if (note.hasTag(title)) {
                 note.unmarkTag(title);
-                //TODO: update all this notes
             }
         }
+        try {
+            db.delete(TaggingTable.NAME,
+                    TaggingTable.Cols.TAG + " = ?",
+                    new String[] { getTag(title).getId().toString() });
+        } catch (IllegalAccessException ignored) {} // impossible
         tags.remove(title);
         db.delete(TagsTable.NAME,
                 TagsTable.Cols.TITLE + " = ?",
