@@ -40,17 +40,17 @@ public class NotesRepository implements NotesKeeper {
         tags = new HashMap<>();
         notes = new HashMap<>();
 
-        readData();
+        loadData();
     }
 
-    private void readData() {
-        readCategories();
-        readTags();
-        readNotes();
-        readTagging();
+    private void loadData() {
+        loadCategories();
+        loadTags();
+        loadNotes();
+        loadTagging();
     }
 
-    private void readCategories() {
+    private void loadCategories() {
         try (CategoriesCursorWrapper cursor = queryCategories()) {
             cursor.moveToFirst();
             while (!cursor.isAfterLast()) {
@@ -61,7 +61,7 @@ public class NotesRepository implements NotesKeeper {
         }
     }
 
-    private void readTags() {
+    private void loadTags() {
         try (TagsCursorWrapper cursor = queryTags()) {
             cursor.moveToFirst();
             while (!cursor.isAfterLast()) {
@@ -72,7 +72,7 @@ public class NotesRepository implements NotesKeeper {
         }
     }
 
-    private void readNotes() {
+    private void loadNotes() {
         try (NotesCursorWrapper cursor = queryNotes()) {
             cursor.moveToFirst();
             while (!cursor.isAfterLast()) {
@@ -83,7 +83,7 @@ public class NotesRepository implements NotesKeeper {
         }
     }
 
-    private void readTagging() {
+    private void loadTagging() {
         try (TaggingCursorWrapper cursor = queryTagging()) {
             cursor.moveToFirst();
             while (!cursor.isAfterLast()) {
@@ -335,7 +335,13 @@ public class NotesRepository implements NotesKeeper {
 
     @Override
     public void removeNote(@NonNull UUID id) {
+        db.delete(TaggingTable.NAME,
+                TaggingTable.Cols.NOTE + " = ?",
+                new String[] { id.toString() });
         notes.remove(id);
+        db.delete(NotesTable.NAME,
+                NotesTable.Cols.UUID + " = ?",
+                new String[] { id.toString() });
     }
 
     @Override
