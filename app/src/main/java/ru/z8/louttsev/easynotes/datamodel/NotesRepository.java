@@ -7,10 +7,12 @@ import android.database.sqlite.SQLiteDatabase;
 
 import androidx.annotation.NonNull;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -31,14 +33,16 @@ public class NotesRepository implements NotesKeeper {
 
     private Map<String, Category> categories;
     private Map<String, Tag> tags;
-    private Map<UUID, Note> notes;
+    private List<Note> notes;
+    private Map<UUID, Note> index;
 
     public NotesRepository(@NonNull Context context) {
         db = new NotesBaseHelper(context).getWritableDatabase();
 
         categories = new HashMap<>();
         tags = new HashMap<>();
-        notes = new HashMap<>();
+        notes = new ArrayList<>();
+        index = new HashMap<>();
 
         loadData();
     }
@@ -77,11 +81,12 @@ public class NotesRepository implements NotesKeeper {
             cursor.moveToFirst();
             while (!cursor.isAfterLast()) {
                 Note note = cursor.getNote();
-                notes.put(note.getId(), note);
+                putNote(note);
                 cursor.moveToNext();
             }
         }
     }
+
 
     private void loadTagging() {
         try (TaggingCursorWrapper cursor = queryTagging()) {
@@ -177,7 +182,7 @@ public class NotesRepository implements NotesKeeper {
 
     @Override
     public void removeCategory(@NonNull String title) {
-        for (Note note : notes.values()) {
+        for (Note note : notes) {
             if (note.hasCategory(title)) {
                 note.setCategory(null);
                 ContentValues values = new ContentValues();
@@ -260,7 +265,7 @@ public class NotesRepository implements NotesKeeper {
 
     @Override
     public void removeTag(@NonNull String title) {
-        for (Note note : notes.values()) {
+        for (Note note : notes) {
             if (note.hasTag(title)) {
                 note.unmarkTag(title);
             }
@@ -318,7 +323,7 @@ public class NotesRepository implements NotesKeeper {
                     TaggingTable.Cols.NOTE + " = ?",
                     new String[] { note.getId().toString() });
         }
-        notes.put(note.getId(), note);
+        putNote(note);
         db.insert(NotesTable.NAME, null, getNoteContentValues(note));
         if (note.isTagged()) {
             makeTagging(note);
@@ -338,7 +343,8 @@ public class NotesRepository implements NotesKeeper {
         db.delete(TaggingTable.NAME,
                 TaggingTable.Cols.NOTE + " = ?",
                 new String[] { id.toString() });
-        notes.remove(id);
+        notes.remove(index.get(id));
+        index.remove(id);
         db.delete(NotesTable.NAME,
                 NotesTable.Cols.UUID + " = ?",
                 new String[] { id.toString() });
@@ -346,13 +352,13 @@ public class NotesRepository implements NotesKeeper {
 
     @Override
     public boolean containNote(@NonNull UUID id) {
-        return notes.containsKey(id);
+        return index.containsKey(id);
     }
 
     @NonNull
     @Override
     public Note getNote(@NonNull UUID id) throws IllegalAccessException {
-        Note note = notes.get(id);
+        Note note = index.get(id);
         if (note != null) {
             return note;
         } else throw new IllegalAccessException();
@@ -386,15 +392,21 @@ public class NotesRepository implements NotesKeeper {
     @NonNull
     @Override
     public Note getNote(int position) {
-        //TODO: eliminate this performance bottleneck
-        // (need collection that is auto sortable after changing item)
-        Note[] notesArray = notes.values().toArray(new Note[getNotesCount()]);
-        Arrays.sort(notesArray);
-        return notesArray[position];
+        return notes.get(position);
     }
 
     @Override
     public int getNotesCount() {
         return notes.size();
+    }
+
+    private void putNote(Note note) {
+        index.put(note.getId(), note);
+
+        int position = Collections.binarySearch(notes, note);
+        if (position < 0) {
+            position = 0 - (position + 1);
+        }
+        notes.add(position, note);
     }
 }
