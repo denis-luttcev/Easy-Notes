@@ -311,9 +311,10 @@ public class NotesRepository implements NotesKeeper {
     public void addNote(@NonNull Note note) {
         if (containNote(note.getId())) {
             removeNote(note.getId());
-            //TODO erase tagging
+            db.delete(TaggingTable.NAME,
+                    TaggingTable.Cols.NOTE + " = ?",
+                    new String[] { note.getId().toString() });
         }
-
         notes.put(note.getId(), note);
         db.insert(NotesTable.NAME, null, getNoteContentValues(note));
         if (note.isTagged()) {
