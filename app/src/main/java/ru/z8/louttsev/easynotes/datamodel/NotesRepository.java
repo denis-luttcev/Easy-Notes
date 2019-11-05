@@ -12,10 +12,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-import ru.z8.louttsev.easynotes.database.NotesStorageDB;
+import ru.z8.louttsev.easynotes.database.NotesDatabaseStorage;
+import ru.z8.louttsev.easynotes.database.NotesStorage;
 
 public class NotesRepository implements NotesKeeper {
-    private NotesStorageDB storage;
+    private NotesStorage storage;
 
     private Map<String, Category> categories;
     private Map<String, Tag> tags;
@@ -23,7 +24,7 @@ public class NotesRepository implements NotesKeeper {
     private Map<UUID, Note> index;
 
     public NotesRepository(@NonNull Context context) {
-        storage = new NotesStorageDB(context);
+        storage = new NotesDatabaseStorage(context);
 
         categories = storage.loadCategories();
         tags = storage.loadTags();

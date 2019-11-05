@@ -25,14 +25,14 @@ import ru.z8.louttsev.easynotes.datamodel.Category;
 import ru.z8.louttsev.easynotes.datamodel.Note;
 import ru.z8.louttsev.easynotes.datamodel.Tag;
 
-public class NotesStorageDB {
+public class NotesDatabaseStorage implements NotesStorage {
     private SQLiteDatabase db;
 
     private Map<String, Category> categories;
     private Map<String, Tag> tags;
     private Map<UUID, Note> index;
 
-    public NotesStorageDB(@NonNull Context context) {
+    public NotesDatabaseStorage(@NonNull Context context) {
         db = new NotesBaseHelper(context).getWritableDatabase();
     }
 
@@ -46,6 +46,7 @@ public class NotesStorageDB {
         return values;
     }
 
+    @Override
     @NonNull
     public Map<String, Category> loadCategories() {
         categories = new HashMap<>();
@@ -89,10 +90,12 @@ public class NotesStorageDB {
         return null;
     }
 
+    @Override
     public void insertCategory(@NonNull Category category) {
         db.insert(CategoriesTable.NAME, null, getCategoryContentValues(category));
     }
 
+    @Override
     public void deleteCategory(@NonNull Category category) {
         db.delete(CategoriesTable.NAME,
                 CategoriesTable.Cols.UUID + " = ?",
@@ -109,6 +112,7 @@ public class NotesStorageDB {
         return values;
     }
 
+    @Override
     @NonNull
     public Map<String, Tag> loadTags() {
         tags = new HashMap<>();
@@ -150,10 +154,12 @@ public class NotesStorageDB {
         throw new IllegalArgumentException();
     }
 
+    @Override
     public void insertTag(@NonNull Tag tag) {
         db.insert(TagsTable.NAME, null, getTagContentValues(tag));
     }
 
+    @Override
     public void deleteTag(@NonNull Tag tag) {
         db.delete(TagsTable.NAME,
                 TagsTable.Cols.UUID + " = ?",
@@ -185,6 +191,7 @@ public class NotesStorageDB {
         return values;
     }
 
+    @Override
     @NonNull
     public List<Note> loadNotes() {
         index = new HashMap<>();
@@ -222,16 +229,19 @@ public class NotesStorageDB {
         return new NotesCursorWrapper(cursor);
     }
 
+    @Override
     public void insertNote(@NonNull Note note) {
         db.insert(NotesTable.NAME, null, getNoteContentValues(note));
     }
 
+    @Override
     public void deleteNote(@NonNull UUID id) {
         db.delete(NotesTable.NAME,
                 NotesTable.Cols.UUID + " = ?",
                 new String[] { id.toString() });
     }
 
+    @Override
     public void removeNoteCategory(@NonNull Category category) {
         ContentValues values = new ContentValues();
         values.put(NotesTable.Cols.CATEGORY, "");
@@ -251,6 +261,7 @@ public class NotesStorageDB {
         return values;
     }
 
+    @Override
     public void loadTagging() {
         try (TaggingCursorWrapper cursor = queryTagging()) {
             cursor.moveToFirst();
@@ -280,18 +291,21 @@ public class NotesStorageDB {
         return new TaggingCursorWrapper(cursor);
     }
 
+    @Override
     public void removeTagging(@NonNull Tag tag) {
         db.delete(TaggingTable.NAME,
                 TaggingTable.Cols.TAG + " = ?",
                 new String[]{tag.getId().toString()});
     }
 
+    @Override
     public void removeTagging(@NonNull UUID noteId) {
         db.delete(TaggingTable.NAME,
                 TaggingTable.Cols.NOTE + " = ?",
                 new String[] { noteId.toString() });
     }
 
+    @Override
     public void insertTagging(@NonNull Note note, @NonNull Tag tag) {
         db.insert(TaggingTable.NAME, null, getTaggingContentValues(note, tag));
     }
