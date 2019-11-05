@@ -6,17 +6,21 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 import java.util.UUID;
 
+import ru.z8.louttsev.easynotes.database.NotesDBSchema.CategoriesTable;
+import ru.z8.louttsev.easynotes.database.NotesDBSchema.NotesTable;
+import ru.z8.louttsev.easynotes.database.NotesDBSchema.TaggingTable;
+import ru.z8.louttsev.easynotes.database.NotesDBSchema.TagsTable;
 import ru.z8.louttsev.easynotes.datamodel.Category;
 import ru.z8.louttsev.easynotes.datamodel.Note;
 import ru.z8.louttsev.easynotes.datamodel.Tag;
@@ -26,18 +30,18 @@ public class NotesStorageDB {
 
     private Map<String, Category> categories;
     private Map<String, Tag> tags;
+    private Map<UUID, Note> index;
 
     public NotesStorageDB(@NonNull Context context) {
         db = new NotesBaseHelper(context).getWritableDatabase();
     }
 
-
     @NonNull
-    public static ContentValues getCategoryContentValues(@NonNull Category category) {
+    private static ContentValues getCategoryContentValues(@NonNull Category category) {
         ContentValues values = new ContentValues();
 
-        values.put(NotesDBSchema.CategoriesTable.Cols.UUID, category.getId().toString());
-        values.put(NotesDBSchema.CategoriesTable.Cols.TITLE, category.getTitle());
+        values.put(CategoriesTable.Cols.UUID, category.getId().toString());
+        values.put(CategoriesTable.Cols.TITLE, category.getTitle());
 
         return values;
     }
@@ -61,7 +65,7 @@ public class NotesStorageDB {
     @NonNull
     private CategoriesCursorWrapper queryCategories() {
         Cursor cursor = db.query(
-                NotesDBSchema.CategoriesTable.NAME,
+                CategoriesTable.NAME,
                 null,
                 null,
                 null,
@@ -73,13 +77,34 @@ public class NotesStorageDB {
         return new CategoriesCursorWrapper(cursor);
     }
 
+    @Nullable
+    private Category getCategory(@Nullable UUID id) {
+        if (id != null) {
+            for (Category category : categories.values()) {
+                if (category.getId().equals(id)) {
+                    return category;
+                }
+            }
+        }
+        return null;
+    }
+
+    public void insertCategory(@NonNull Category category) {
+        db.insert(CategoriesTable.NAME, null, getCategoryContentValues(category));
+    }
+
+    public void deleteCategory(@NonNull Category category) {
+        db.delete(CategoriesTable.NAME,
+                CategoriesTable.Cols.UUID + " = ?",
+                new String[] { category.getId().toString() });
+    }
 
     @NonNull
     private static ContentValues getTagContentValues (@NonNull Tag tag) {
         ContentValues values = new ContentValues();
 
-        values.put(NotesDBSchema.TagsTable.Cols.UUID, tag.getId().toString());
-        values.put(NotesDBSchema.TagsTable.Cols.TITLE, tag.getTitle());
+        values.put(TagsTable.Cols.UUID, tag.getId().toString());
+        values.put(TagsTable.Cols.TITLE, tag.getTitle());
 
         return values;
     }
@@ -103,7 +128,7 @@ public class NotesStorageDB {
     @NonNull
     private TagsCursorWrapper queryTags() {
         Cursor cursor = db.query(
-                NotesDBSchema.TagsTable.NAME,
+                TagsTable.NAME,
                 null,
                 null,
                 null,
@@ -115,50 +140,69 @@ public class NotesStorageDB {
         return new TagsCursorWrapper(cursor);
     }
 
+    @NonNull
+    private Tag getTag(@NonNull UUID id) throws IllegalArgumentException {
+        for (Tag tag : tags.values()) {
+            if (tag.getId().equals(id)) {
+                return tag;
+            }
+        }
+        throw new IllegalArgumentException();
+    }
+
+    public void insertTag(@NonNull Tag tag) {
+        db.insert(TagsTable.NAME, null, getTagContentValues(tag));
+    }
+
+    public void deleteTag(@NonNull Tag tag) {
+        db.delete(TagsTable.NAME,
+                TagsTable.Cols.UUID + " = ?",
+                new String[] { tag.getId().toString() });
+    }
 
     @NonNull
     private static ContentValues getNoteContentValues(@NonNull Note note) {
         ContentValues values = new ContentValues();
 
-        values.put(NotesDBSchema.NotesTable.Cols.UUID, note.getId().toString());
-        values.put(NotesDBSchema.NotesTable.Cols.TYPE, note.getType().ordinal());
-        values.put(NotesDBSchema.NotesTable.Cols.TITLE, note.getTitle());
+        values.put(NotesTable.Cols.UUID, note.getId().toString());
+        values.put(NotesTable.Cols.TYPE, note.getType().ordinal());
+        values.put(NotesTable.Cols.TITLE, note.getTitle());
         if (note.isCategorized()) {
-            values.put(NotesDBSchema.NotesTable.Cols.CATEGORY,
+            values.put(NotesTable.Cols.CATEGORY,
                     Objects.requireNonNull(note.getCategory()).getId().toString());
-        } else values.put(NotesDBSchema.NotesTable.Cols.CATEGORY, "");
+        } else values.put(NotesTable.Cols.CATEGORY, "");
 
-        values.put(NotesDBSchema.NotesTable.Cols.COLOR, note.getColor().ordinal());
+        values.put(NotesTable.Cols.COLOR, note.getColor().ordinal());
         if (note.isDeadlined()) {
-            values.put(NotesDBSchema.NotesTable.Cols.DEADLINE,
+            values.put(NotesTable.Cols.DEADLINE,
                     Objects.requireNonNull(note.getDeadline()).getTimeInMillis());
-        } else values.put(NotesDBSchema.NotesTable.Cols.DEADLINE, 0);
+        } else values.put(NotesTable.Cols.DEADLINE, 0);
 
-        values.put(NotesDBSchema.NotesTable.Cols.LAST_MODIFICATION, note.getLastModification().getTimeInMillis());
+        values.put(NotesTable.Cols.LAST_MODIFICATION, note.getLastModification().getTimeInMillis());
 
-        note.putContentForDB(NotesDBSchema.NotesTable.Cols.CONTENT, values);
+        note.putContentForDB(NotesTable.Cols.CONTENT, values);
 
         return values;
     }
 
     @NonNull
     public List<Note> loadNotes() {
-        List<Note> notes = new ArrayList<>();
-        //TODO: now
+        index = new HashMap<>();
+
         try (NotesCursorWrapper cursor = queryNotes()) {
             cursor.moveToFirst();
             while (!cursor.isAfterLast()) {
                 Note note = cursor.getNote();
-                UUID categoryId = cursor.getCategoryId();
-                if (categoryId != null) {
-                    note.setCategory(getCategory(categoryId));
-                } else note.setCategory(null);
-                note.setContentFromDB(NotesDBSchema.NotesTable.Cols.CONTENT, cursor);
+                note.setCategory(getCategory(cursor.getCategoryId()));
+                note.setContentFromDB(NotesTable.Cols.CONTENT, cursor);
                 note.setLastModification(cursor.getLastModification());
-                notes.add(note);
+                index.put(note.getId(), note);
                 cursor.moveToNext();
             }
         }
+
+        List<Note> notes = new ArrayList<>(index.values());
+        Collections.sort(notes);
 
         return notes;
     }
@@ -166,7 +210,7 @@ public class NotesStorageDB {
     @NonNull
     private NotesCursorWrapper queryNotes() {
         Cursor cursor = db.query(
-                NotesDBSchema.NotesTable.NAME,
+                NotesTable.NAME,
                 null,
                 null,
                 null,
@@ -178,12 +222,31 @@ public class NotesStorageDB {
         return new NotesCursorWrapper(cursor);
     }
 
+    public void insertNote(@NonNull Note note) {
+        db.insert(NotesTable.NAME, null, getNoteContentValues(note));
+    }
+
+    public void deleteNote(@NonNull UUID id) {
+        db.delete(NotesTable.NAME,
+                NotesTable.Cols.UUID + " = ?",
+                new String[] { id.toString() });
+    }
+
+    public void removeNoteCategory(@NonNull Category category) {
+        ContentValues values = new ContentValues();
+        values.put(NotesTable.Cols.CATEGORY, "");
+        db.update(NotesTable.NAME,
+                values,
+                NotesTable.Cols.CATEGORY + " = ?",
+                new String[] { category.getId().toString() });
+    }
+
     @NonNull
     private static ContentValues getTaggingContentValues(@NonNull Note note, @NonNull Tag tag) {
         ContentValues values = new ContentValues();
 
-        values.put(NotesDBSchema.TaggingTable.Cols.NOTE, note.getId().toString());
-        values.put(NotesDBSchema.TaggingTable.Cols.TAG, tag.getId().toString());
+        values.put(TaggingTable.Cols.NOTE, note.getId().toString());
+        values.put(TaggingTable.Cols.TAG, tag.getId().toString());
 
         return values;
     }
@@ -192,21 +255,20 @@ public class NotesStorageDB {
         try (TaggingCursorWrapper cursor = queryTagging()) {
             cursor.moveToFirst();
             while (!cursor.isAfterLast()) {
-                Note note = getNote(cursor.getNoteId());
-                Calendar lastModification = note.getLastModification(); // save sorting criteria
+                Note note = index.get(cursor.getNoteId());
+                Calendar lastModification = Objects.requireNonNull(note).getLastModification(); // save sorting criteria
                 Tag tag = getTag(cursor.getTagId());
                 note.markTag(tag);
                 note.setLastModification(lastModification); // restore sorting criteria
                 cursor.moveToNext();
             }
-        } catch (IllegalAccessException ignored) {} // impossible
+        } catch (NullPointerException ignored) {} // impossible
     }
-
 
     @NonNull
     private TaggingCursorWrapper queryTagging() {
         Cursor cursor = db.query(
-                NotesDBSchema.TaggingTable.NAME,
+                TaggingTable.NAME,
                 null,
                 null,
                 null,
@@ -216,5 +278,21 @@ public class NotesStorageDB {
         );
 
         return new TaggingCursorWrapper(cursor);
+    }
+
+    public void removeTagging(@NonNull Tag tag) {
+        db.delete(TaggingTable.NAME,
+                TaggingTable.Cols.TAG + " = ?",
+                new String[]{tag.getId().toString()});
+    }
+
+    public void removeTagging(@NonNull UUID noteId) {
+        db.delete(TaggingTable.NAME,
+                TaggingTable.Cols.NOTE + " = ?",
+                new String[] { noteId.toString() });
+    }
+
+    public void insertTagging(@NonNull Note note, @NonNull Tag tag) {
+        db.insert(TaggingTable.NAME, null, getTaggingContentValues(note, tag));
     }
 }

@@ -1,11 +1,9 @@
 package ru.z8.louttsev.easynotes.datamodel;
 
-import android.content.ContentValues;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -14,10 +12,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-import ru.z8.louttsev.easynotes.database.NotesDBSchema.CategoriesTable;
-import ru.z8.louttsev.easynotes.database.NotesDBSchema.NotesTable;
-import ru.z8.louttsev.easynotes.database.NotesDBSchema.TaggingTable;
-import ru.z8.louttsev.easynotes.database.NotesDBSchema.TagsTable;
 import ru.z8.louttsev.easynotes.database.NotesStorageDB;
 
 public class NotesRepository implements NotesKeeper {
@@ -31,19 +25,14 @@ public class NotesRepository implements NotesKeeper {
     public NotesRepository(@NonNull Context context) {
         storage = new NotesStorageDB(context);
 
-        categories = new HashMap<>();
-        tags = new HashMap<>();
-        notes = new ArrayList<>();
-        index = new HashMap<>();
-
-        loadData();
-    }
-
-    private void loadData() {
         categories = storage.loadCategories();
         tags = storage.loadTags();
         notes = storage.loadNotes();
-        //TODO: to index
+
+        index = new HashMap<>();
+        for (Note note : notes) {
+            index.put(note.getId(), note);
+        }
 
         storage.loadTagging();
     }
@@ -60,7 +49,7 @@ public class NotesRepository implements NotesKeeper {
             try {
                 Category category = new Category(title);
                 categories.put(title, category);
-                db.insert(CategoriesTable.NAME, null, getCategoryContentValues(category));
+                storage.insertCategory(category);
             } catch (IllegalArgumentException ignored) {
             }
         }
@@ -71,20 +60,15 @@ public class NotesRepository implements NotesKeeper {
         for (Note note : notes) {
             if (note.hasCategory(title)) {
                 note.setCategory(null);
-                ContentValues values = new ContentValues();
-                values.put(NotesTable.Cols.CATEGORY, "");
                 try {
-                    db.update(NotesTable.NAME,
-                            values,
-                            NotesTable.Cols.CATEGORY + " = ?",
-                            new String[] { getCategory(title).getId().toString() });
+                    storage.removeNoteCategory(getCategory(title));
                 } catch (IllegalAccessException ignored) {} // impossible
             }
         }
+        try {
+            storage.deleteCategory(getCategory(title));
+        } catch (IllegalAccessException ignored) {} // impossible
         categories.remove(title);
-        db.delete(CategoriesTable.NAME,
-                CategoriesTable.Cols.TITLE + " = ?",
-                new String[] { title });
     }
 
     @Override
@@ -102,16 +86,6 @@ public class NotesRepository implements NotesKeeper {
     }
 
     @NonNull
-    private Category getCategory(@NonNull UUID id) throws IllegalArgumentException {
-        for (Category category : categories.values()) {
-            if (category.getId().equals(id)) {
-                return category;
-            }
-        }
-        throw new IllegalArgumentException();
-    }
-
-    @NonNull
     @Override
     public Set<Tag> getTags() {
         return new HashSet<>(tags.values());
@@ -123,7 +97,7 @@ public class NotesRepository implements NotesKeeper {
             try {
                 Tag tag = new Tag(title);
                 tags.put(title, tag);
-                db.insert(TagsTable.NAME, null, getTagContentValues(tag));
+                storage.insertTag(tag);
             } catch (IllegalArgumentException ignored) {
             }
         }
@@ -137,14 +111,12 @@ public class NotesRepository implements NotesKeeper {
             }
         }
         try {
-            db.delete(TaggingTable.NAME,
-                    TaggingTable.Cols.TAG + " = ?",
-                    new String[] { getTag(title).getId().toString() });
+            storage.removeTagging(getTag(title));
+        } catch (IllegalAccessException ignored) {} // impossible
+        try {
+            storage.deleteTag(getTag(title));
         } catch (IllegalAccessException ignored) {} // impossible
         tags.remove(title);
-        db.delete(TagsTable.NAME,
-                TagsTable.Cols.TITLE + " = ?",
-                new String[] { title });
     }
 
     @Override
@@ -161,26 +133,14 @@ public class NotesRepository implements NotesKeeper {
         } else throw new IllegalAccessException();
     }
 
-    @NonNull
-    public Tag getTag(@NonNull UUID id) throws IllegalArgumentException {
-        for (Tag tag : tags.values()) {
-            if (tag.getId().equals(id)) {
-                return tag;
-            }
-        }
-        throw new IllegalArgumentException();
-    }
-
     @Override
     public void addNote(@NonNull Note note) {
         if (containNote(note.getId())) {
             removeNote(note.getId());
-            db.delete(TaggingTable.NAME,
-                    TaggingTable.Cols.NOTE + " = ?",
-                    new String[] { note.getId().toString() });
+            storage.removeTagging(note.getId());
         }
         putNote(note);
-        db.insert(NotesTable.NAME, null, getNoteContentValues(note));
+        storage.insertNote(note);
         if (note.isTagged()) {
             makeTagging(note);
         }
@@ -190,20 +150,16 @@ public class NotesRepository implements NotesKeeper {
         Set<Tag> tags = note.getTags();
 
         for (Tag tag : tags) {
-            db.insert(TaggingTable.NAME, null, getTaggingContentValues(note, tag));
+            storage.insertTagging(note, tag);
         }
     }
 
     @Override
     public void removeNote(@NonNull UUID id) {
-        db.delete(TaggingTable.NAME,
-                TaggingTable.Cols.NOTE + " = ?",
-                new String[] { id.toString() });
+        storage.removeTagging(id);
         notes.remove(index.get(id));
         index.remove(id);
-        db.delete(NotesTable.NAME,
-                NotesTable.Cols.UUID + " = ?",
-                new String[] { id.toString() });
+        storage.deleteNote(id);
     }
 
     @Override
@@ -238,6 +194,7 @@ public class NotesRepository implements NotesKeeper {
         if (position < 0) {
             position = 0 - (position + 1);
         }
+
         notes.add(position, note);
     }
 }
