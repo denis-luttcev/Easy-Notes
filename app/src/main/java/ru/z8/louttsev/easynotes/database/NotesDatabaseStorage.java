@@ -186,7 +186,7 @@ public class NotesDatabaseStorage implements NotesStorage {
 
         values.put(NotesTable.Cols.LAST_MODIFICATION, note.getLastModification().getTimeInMillis());
 
-        note.putContentForDB(NotesTable.Cols.CONTENT, values);
+        note.getContentForDB(NotesTable.Cols.CONTENT, values);
 
         return values;
     }
@@ -242,7 +242,7 @@ public class NotesDatabaseStorage implements NotesStorage {
     }
 
     @Override
-    public void removeNoteCategory(@NonNull Category category) {
+    public void clearCategoryFromNotes(@NonNull Category category) {
         ContentValues values = new ContentValues();
         values.put(NotesTable.Cols.CATEGORY, "");
         db.update(NotesTable.NAME,

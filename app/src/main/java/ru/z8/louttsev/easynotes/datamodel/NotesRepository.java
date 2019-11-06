@@ -16,12 +16,13 @@ import ru.z8.louttsev.easynotes.database.NotesDatabaseStorage;
 import ru.z8.louttsev.easynotes.database.NotesStorage;
 
 public class NotesRepository implements NotesKeeper {
-    private NotesStorage storage;
+    private final NotesStorage storage; // long term storage
 
-    private Map<String, Category> categories;
-    private Map<String, Tag> tags;
-    private List<Note> notes;
-    private Map<UUID, Note> index;
+    // short term storage and operations in memory
+    private final Map<String, Category> categories;
+    private final Map<String, Tag> tags;
+    private final List<Note> notes; // sorted collection
+    private final Map<UUID, Note> index; // indexed collection
 
     public NotesRepository(@NonNull Context context) {
         storage = new NotesDatabaseStorage(context);
@@ -46,34 +47,32 @@ public class NotesRepository implements NotesKeeper {
 
     @Override
     public void addCategory(@NonNull String title) {
-        if (!containCategory(title)) {
-            try {
-                Category category = new Category(title);
-                categories.put(title, category);
-                storage.insertCategory(category);
-            } catch (IllegalArgumentException ignored) {
-            }
+        if (!title.isEmpty() && !containCategory(title)) {
+            Category category = new Category(title);
+            categories.put(title, category);
+            storage.insertCategory(category);
         }
     }
 
     @Override
     public void removeCategory(@NonNull String title) {
-        for (Note note : notes) {
-            if (note.hasCategory(title)) {
-                note.setCategory(null);
-                try {
-                    storage.removeNoteCategory(getCategory(title));
-                } catch (IllegalAccessException ignored) {} // impossible
-            }
-        }
         try {
-            storage.deleteCategory(getCategory(title));
+            Category category = getCategory(title);
+
+            for (Note note : notes) {
+                if (note.hasCategory(title)) {
+                    note.setCategory(null);
+                    storage.clearCategoryFromNotes(category);
+                }
+            }
+
+            storage.deleteCategory(category);
+            categories.remove(title);
+
         } catch (IllegalAccessException ignored) {} // impossible
-        categories.remove(title);
     }
 
-    @Override
-    public boolean containCategory(@NonNull String title) {
+    private boolean containCategory(@NonNull String title) {
         return categories.containsKey(title);
     }
 
@@ -81,6 +80,7 @@ public class NotesRepository implements NotesKeeper {
     @Override
     public Category getCategory(@NonNull String title) throws IllegalAccessException {
         Category category = categories.get(title);
+
         if (category != null) {
             return category;
         } else throw new IllegalAccessException();
@@ -94,34 +94,32 @@ public class NotesRepository implements NotesKeeper {
 
     @Override
     public void addTag(@NonNull String title) {
-        if (!containTag(title)) {
-            try {
-                Tag tag = new Tag(title);
-                tags.put(title, tag);
-                storage.insertTag(tag);
-            } catch (IllegalArgumentException ignored) {
-            }
+        if (!title.isEmpty() && !containTag(title)) {
+            Tag tag = new Tag(title);
+            tags.put(title, tag);
+            storage.insertTag(tag);
         }
     }
 
     @Override
     public void removeTag(@NonNull String title) {
-        for (Note note : notes) {
-            if (note.hasTag(title)) {
-                note.unmarkTag(title);
+        try {
+            Tag tag = getTag(title);
+
+            for (Note note : notes) {
+                if (note.hasTag(title)) {
+                    note.unmarkTag(title);
+                }
             }
-        }
-        try {
-            storage.removeTagging(getTag(title));
+
+            storage.removeTagging(tag);
+            storage.deleteTag(tag);
+            tags.remove(title);
+
         } catch (IllegalAccessException ignored) {} // impossible
-        try {
-            storage.deleteTag(getTag(title));
-        } catch (IllegalAccessException ignored) {} // impossible
-        tags.remove(title);
     }
 
-    @Override
-    public boolean containTag(@NonNull String title) {
+    private boolean containTag(@NonNull String title) {
         return tags.containsKey(title);
     }
 
@@ -129,6 +127,7 @@ public class NotesRepository implements NotesKeeper {
     @Override
     public Tag getTag(@NonNull String title) throws IllegalAccessException {
         Tag tag = tags.get(title);
+
         if (tag != null) {
             return tag;
         } else throw new IllegalAccessException();
@@ -136,12 +135,16 @@ public class NotesRepository implements NotesKeeper {
 
     @Override
     public void addNote(@NonNull Note note) {
-        if (containNote(note.getId())) {
-            removeNote(note.getId());
-            storage.removeTagging(note.getId());
+        UUID id = note.getId();
+
+        if (containNote(id)) {
+            removeNote(id);
+            storage.removeTagging(id);
         }
+
         putNote(note);
         storage.insertNote(note);
+
         if (note.isTagged()) {
             makeTagging(note);
         }
@@ -172,6 +175,7 @@ public class NotesRepository implements NotesKeeper {
     @Override
     public Note getNote(@NonNull UUID id) throws IllegalAccessException {
         Note note = index.get(id);
+
         if (note != null) {
             return note;
         } else throw new IllegalAccessException();

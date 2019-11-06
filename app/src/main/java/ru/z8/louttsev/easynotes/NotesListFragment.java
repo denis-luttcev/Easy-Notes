@@ -27,7 +27,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.flexbox.FlexboxLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import java.util.Calendar;
 import java.util.Iterator;
 import java.util.Objects;
 import java.util.Set;
@@ -116,7 +115,7 @@ public class NotesListFragment extends Fragment {
             } else mNoteTagsLineView.setVisibility(View.GONE);
 
             if (note.isDeadlined()) {
-                mNoteDeadlineView.setText(note.getDeadlineRepresent(Objects.requireNonNull(getActivity())));
+                mNoteDeadlineView.setText(note.getDeadline(Objects.requireNonNull(getActivity())));
                 applyDeadlineColor(note, mNoteDeadlineView);
             } else {
                 mNoteDeadlineIcon.setVisibility(View.GONE);
@@ -165,7 +164,7 @@ public class NotesListFragment extends Fragment {
 
         private void applyDeadlineColor(@NonNull Note note, @NonNull TextView deadlineView) {
             int color = R.color.colorDeadlineAhead;
-            switch (note.getDeadlineStatus(Calendar.getInstance())) {
+            switch (note.getStatus()) {
                 case OVERDUE:
                     color = R.color.colorDeadlineOverdue;
                     deadlineView.setTypeface(Typeface.DEFAULT_BOLD);

@@ -23,18 +23,19 @@ import ru.z8.louttsev.easynotes.database.NotesCursorWrapper;
 public abstract class Note implements Comparable<Note>, Cloneable {
 
     public enum Type {
-        TEXT_NOTE;
+        TEXT_NOTE
+        // new types of notes should be listed here
     }
 
     public enum Color {
         URGENT, ATTENTION, NORMAL, QUIET, ACCESSORY, NONE
     }
 
-    public enum DeadlineStatus {
+    public enum Status {
         OVERDUE, IMMEDIATE, AHEAD, NONE
     }
 
-    private UUID id;
+    private final UUID id;
     private String title;
     private Category category;
     private Map<String, Tag> tags;
@@ -50,59 +51,55 @@ public abstract class Note implements Comparable<Note>, Cloneable {
         color = Color.NONE;
         tags = new HashMap<>();
         deadline = null;
-        modificationUpdate();
+        lastModification = Calendar.getInstance();
         isModified = false;
     }
 
+    @SuppressWarnings("SwitchStatementWithTooFewBranches")
     @NonNull
-    public static Note newInstance(@NonNull Type type) throws IllegalArgumentException {
-        switch (type) {
+    public static Note newInstance(@NonNull Type noteType) throws IllegalArgumentException {
+        switch (noteType) {
             case TEXT_NOTE:
                 return new TextNote();
-            //TODO: New concrete class constructors are placed here
+            // calls to the constructors of new concrete classes should be placed here
             default:
                 throw new IllegalArgumentException(); // unreachable
         }
     }
 
+    @SuppressWarnings("SwitchStatementWithTooFewBranches")
     @NonNull
-    public static Note getInstance(@NonNull Type type, UUID id) throws IllegalArgumentException {
-        switch (type) {
+    public static Note getInstance(@NonNull Type noteType, UUID id) throws IllegalArgumentException {
+        switch (noteType) {
             case TEXT_NOTE:
                 return new TextNote(id);
-            //TODO: New concrete class constructors are placed here
+            // calls to the constructors of new concrete classes should be placed here
             default:
                 throw new IllegalArgumentException(); // unreachable
         }
     }
 
-    /**
-     * Comparison for base sorting implementation:
-     * (1) any deadlined note before any not deadlined
-     * (2) among deadlined notes: by deadline ascending order, for equals rule (3)
-     * (3) among not deadlined notes: by last modification descending order
-     */
     @Override
-    public int compareTo(@NonNull Note note) {
-        if (this.equals(note)) return 0;
+    public int compareTo(@NonNull Note that) {
+        /* Comparison for base sorting implementation:
+            (1) any deadlined before any not deadlined
+            (2) among deadlined: by deadline ascending order, for equals: use rule (3)
+            (3) among not deadlined: by last modification descending order */
+
+        if (this.equals(that)) return 0;
 
         if (deadline != null) {
-            if (note.deadline != null) {
-                int deadlineComparing = deadline.compareTo(note.deadline);
+            if (that.deadline != null) {
+                int deadlineComparing = deadline.compareTo(that.deadline);
                 if (deadlineComparing != 0) {
                     return deadlineComparing;
                 }
             } else return -1;
         } else {
-            if (note.deadline != null) return 1;
+            if (that.deadline != null) return 1;
         }
 
-        return note.lastModification.compareTo(lastModification);
-    }
-
-    void modificationUpdate() {
-        lastModification = Calendar.getInstance();
-        isModified = true;
+        return that.lastModification.compareTo(lastModification);
     }
 
     @NonNull
@@ -122,11 +119,9 @@ public abstract class Note implements Comparable<Note>, Cloneable {
         }
     }
 
-    public boolean hasTitle(@NonNull String title) {
-        if (isTitled()) {
-            return this.title.equals(title);
-        }
-        return false;
+    void modificationUpdate() {
+        lastModification = Calendar.getInstance();
+        isModified = true;
     }
 
     public boolean isTitled() {
@@ -146,8 +141,7 @@ public abstract class Note implements Comparable<Note>, Cloneable {
     public boolean hasCategory(@NonNull String title) {
         if (isCategorized()) {
             return category.getTitle().equals(title);
-        }
-        return false;
+        } return false;
     }
 
     public boolean isCategorized() {
@@ -162,10 +156,6 @@ public abstract class Note implements Comparable<Note>, Cloneable {
     public void setColor(@NonNull Color color) {
         this.color = color;
         modificationUpdate();
-    }
-
-    public boolean hasColor(@NonNull Color color) {
-        return this.color == color;
     }
 
     public boolean isColored() {
@@ -183,10 +173,8 @@ public abstract class Note implements Comparable<Note>, Cloneable {
     }
 
     public void unmarkTag(@NonNull String title) {
-        if (hasTag(title)) {
-            tags.remove(title);
-            modificationUpdate();
-        }
+        tags.remove(title);
+        modificationUpdate();
     }
 
     public boolean hasTag(@NonNull String title) {
@@ -202,58 +190,31 @@ public abstract class Note implements Comparable<Note>, Cloneable {
         return deadline;
     }
 
-    public void setDeadline(@Nullable Calendar deadline) {
-        this.deadline = deadline;
-        modificationUpdate();
-    }
-
-    private boolean isOverdue(@NonNull Calendar toDate) throws NullPointerException {
-        return deadline.before(toDate);
-    }
-
-    private boolean isImmediate(@NonNull Calendar toDate) throws NullPointerException {
-        return isToday(deadline);
-    }
-
-    private boolean isAhead(@NonNull Calendar toDate) throws NullPointerException {
-        return deadline.after(toDate);
-    }
-
     @NonNull
-    public DeadlineStatus getDeadlineStatus(@NonNull Calendar toDate) {
-        try {
-            if (isOverdue(toDate)) return DeadlineStatus.OVERDUE;
-            if (isImmediate(toDate)) return DeadlineStatus.IMMEDIATE;
-            if (isAhead(toDate)) return DeadlineStatus.AHEAD;
-        } catch (NullPointerException ignored) {}
-        return DeadlineStatus.NONE;
-    }
+    public String getDeadline(@NonNull Context context) {
+        StringBuilder deadline = new StringBuilder();
 
-    public boolean isDeadlined() {
-        return deadline != null;
-    }
-
-    @NonNull
-    public String getDeadlineRepresent(@NonNull Context context) {
-        StringBuilder dateRepresent = new StringBuilder();
-        if (isYesterday(deadline)) {
-            dateRepresent.append(context.getString(R.string.yesterday));
-        } else if (isToday(deadline)) {
-            dateRepresent.append(context.getString(R.string.today));
-        } else if (isTomorrow(deadline)) {
-            dateRepresent.append(context.getString(R.string.tomorrow));
+        if (isYesterday(this.deadline)) {
+            deadline.append(context.getString(R.string.yesterday));
+        } else if (isToday(this.deadline)) {
+            deadline.append(context.getString(R.string.today));
+        } else if (isTomorrow(this.deadline)) {
+            deadline.append(context.getString(R.string.tomorrow));
         } else {
             DateFormat dateFormat = SimpleDateFormat.getDateInstance(DateFormat.SHORT);
-            dateRepresent.append(dateFormat.format(deadline.getTime()));
-            dateRepresent.append(" ");
+            deadline.append(dateFormat.format(this.deadline.getTime()));
+            deadline.append(" ");
         }
+
         DateFormat timeFormat = SimpleDateFormat.getTimeInstance(DateFormat.SHORT);
-        dateRepresent.append(timeFormat.format(deadline.getTime()));
-        return dateRepresent.toString();
+        deadline.append(timeFormat.format(this.deadline.getTime()));
+
+        return deadline.toString();
     }
 
     private boolean isToday(@NonNull Calendar date) {
         Calendar today = Calendar.getInstance();
+
         return date.get(Calendar.DATE) == today.get(Calendar.DATE)
                 && date.get(Calendar.MONTH) == today.get(Calendar.MONTH)
                 && date.get(Calendar.YEAR) == today.get(Calendar.YEAR);
@@ -262,13 +223,46 @@ public abstract class Note implements Comparable<Note>, Cloneable {
     private boolean isYesterday(@NonNull Calendar date) {
         Calendar nextDay = (Calendar) date.clone();
         nextDay.add(Calendar.DATE, 1);
+
         return isToday(nextDay);
     }
 
     private boolean isTomorrow(@NonNull Calendar date) {
         Calendar prevDay = (Calendar) date.clone();
         prevDay.add(Calendar.DATE, -1);
+
         return isToday(prevDay);
+    }
+
+    public void setDeadline(@Nullable Calendar deadline) {
+        this.deadline = deadline;
+        modificationUpdate();
+    }
+
+    @NonNull
+    public Status getStatus() {
+        try {
+            if (isOverdue()) return Status.OVERDUE;
+            if (isImmediate()) return Status.IMMEDIATE;
+            if (isAhead()) return Status.AHEAD;
+        } catch (NullPointerException ignored) {}
+        return Status.NONE;
+    }
+
+    private boolean isOverdue() throws NullPointerException {
+        return deadline.before(Calendar.getInstance());
+    }
+
+    private boolean isImmediate() {
+        return isToday(deadline);
+    }
+
+    private boolean isAhead() throws NullPointerException {
+        return deadline.after(Calendar.getInstance());
+    }
+
+    public boolean isDeadlined() {
+        return deadline != null;
     }
 
     public void setLastModification(Calendar lastModification) {
@@ -305,23 +299,18 @@ public abstract class Note implements Comparable<Note>, Cloneable {
         return clone;
     }
 
-    public abstract void fillContentPreView(@NonNull FrameLayout contentPreView, Context context);
+    @SuppressWarnings("SameReturnValue")
+    public abstract Type getType();
 
-    public abstract void fillContentView(@NonNull FrameLayout contentView, Context context);
+    public abstract void fillContentPreView(@NonNull FrameLayout contentPreView, @NonNull Context context);
+
+    public abstract void fillContentView(@NonNull FrameLayout contentView, @NonNull Context context);
 
     public abstract void setContent(@NonNull FrameLayout contentView);
 
     public abstract boolean isContentEmpty();
 
-    public abstract void putContentForDB(@NonNull String key, @NonNull ContentValues values);
+    public abstract void getContentForDB(@NonNull String key, @NonNull ContentValues values);
 
     public abstract void setContentFromDB(@NonNull String key, @NonNull NotesCursorWrapper cursor);
-
-    public abstract Type getType();
-
-    //TODO: remove
-    public abstract void setContent(String content);
-
-    //TODO: remove
-    public abstract String getContent();
 }

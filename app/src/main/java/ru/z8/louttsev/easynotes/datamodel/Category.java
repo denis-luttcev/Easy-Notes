@@ -6,23 +6,12 @@ import java.util.Objects;
 import java.util.UUID;
 
 public class Category {
-    /**
-     * Unique id, null not allowable
-     */
-    private UUID id;
-    /**
-     * Allowable: any, exclude null and empty (senselessly)
-     */
+    private final UUID id;
     private String title;
 
-    /**
-     * @throws IllegalArgumentException if title is empty
-     */
-    Category(@NonNull String title) throws IllegalArgumentException {
+    Category(@NonNull String title) {
         this(UUID.randomUUID());
-        if (!title.isEmpty()) {
-            this.title = title;
-        } else throw new IllegalArgumentException();
+        this.title = title;
     }
 
     public Category(@NonNull UUID id) {
@@ -39,10 +28,8 @@ public class Category {
         return title;
     }
 
-    public void setTitle(String title) throws IllegalArgumentException {
-        if (!title.isEmpty()) {
-            this.title = title;
-        } else throw new IllegalArgumentException();
+    public void setTitle(@NonNull String title) {
+        this.title = title;
     }
 
     @Override

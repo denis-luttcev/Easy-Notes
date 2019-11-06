@@ -9,7 +9,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
-import java.util.Objects;
 import java.util.UUID;
 
 import ru.z8.louttsev.easynotes.R;
@@ -22,27 +21,40 @@ public class TextNote extends Note {
         this(UUID.randomUUID());
     }
 
-    public TextNote(@NonNull UUID id) {
+    TextNote(@NonNull UUID id) {
         super(id);
         content = "";
     }
 
+    @NonNull
     @Override
-    public void fillContentPreView(@NonNull FrameLayout contentPreView, Context context) {
-        LayoutInflater.from(context).inflate(R.layout.text_note_content_pre_view, contentPreView, true);
-        ((TextView) contentPreView.findViewById(R.id.text_note_pre_view)).setText(content);
+    public Type getType() {
+        return Type.TEXT_NOTE;
     }
 
     @Override
-    public void fillContentView(@NonNull FrameLayout contentView, Context context) {
-        LayoutInflater.from(context).inflate(R.layout.text_note_content_view, contentView, true);
-        ((EditText) contentView.findViewById(R.id.text_note_view)).setText(content);
+    public void fillContentPreView(@NonNull FrameLayout contentPreView, @NonNull Context context) {
+        LayoutInflater.from(context)
+                .inflate(R.layout.text_note_content_pre_view, contentPreView, true);
+
+        TextView textNotePreView = contentPreView.findViewById(R.id.text_note_pre_view);
+        textNotePreView.setText(content);
+    }
+
+    @Override
+    public void fillContentView(@NonNull FrameLayout contentView, @NonNull Context context) {
+        LayoutInflater.from(context)
+                .inflate(R.layout.text_note_content_view, contentView, true);
+
+        EditText textNoteView = contentView.findViewById(R.id.text_note_view);
+        textNoteView.setText(content);
     }
 
     @Override
     public void setContent(@NonNull FrameLayout contentView) {
-        String content = ((EditText) contentView.findViewById(R.id.text_note_view))
-                .getText().toString().trim();
+        EditText textNoteView = contentView.findViewById(R.id.text_note_view);
+        String content = textNoteView.getText().toString().trim();
+
         if (!content.equals(this.content)) {
             this.content = content;
             modificationUpdate();
@@ -55,28 +67,14 @@ public class TextNote extends Note {
     }
 
     @Override
-    public void putContentForDB(@NonNull String key, @NonNull ContentValues values) {
+    public void getContentForDB(@NonNull String key, @NonNull ContentValues values) {
+        // it depends on the implementation of NotesStorage, refactoring required in case of change
         values.put(key, content);
     }
 
     @Override
     public void setContentFromDB(@NonNull String key, @NonNull NotesCursorWrapper cursor) {
-        this.content = Objects.requireNonNull(cursor).getString(cursor.getColumnIndex(key));
-    }
-
-    @Override
-    public Type getType() {
-        return Type.TEXT_NOTE;
-    }
-
-    //TODO: remove
-    public void setContent(String content) {
-        this.content = content;
-    }
-
-    //TODO: remove
-    @Override
-    public String getContent() {
-        return content;
+        // it depends on the implementation of NotesStorage, refactoring required in case of change
+        this.content = cursor.getString(cursor.getColumnIndex(key));
     }
 }

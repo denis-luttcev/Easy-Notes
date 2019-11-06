@@ -32,7 +32,7 @@ public interface NotesStorage {
 
     void deleteNote(@NonNull UUID id);
 
-    void removeNoteCategory(@NonNull Category category);
+    void clearCategoryFromNotes(@NonNull Category category);
 
     void loadTagging();
 
