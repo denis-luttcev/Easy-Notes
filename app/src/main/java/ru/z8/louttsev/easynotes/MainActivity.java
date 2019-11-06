@@ -13,14 +13,13 @@ import androidx.fragment.app.FragmentManager;
 import ru.z8.louttsev.easynotes.security.Protector;
 
 public class MainActivity extends AppCompatActivity {
-    private Protector mProtector;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mProtector = App.getProtector();
+        Protector mProtector = App.getProtector();
 
         if (mProtector.isProtectionNotConfigured()) {
             Intent settingIntent = new Intent(MainActivity.this, SettingActivity.class);
@@ -48,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
 
         FragmentManager fragmentManager = getSupportFragmentManager();
         Fragment fragment = fragmentManager.findFragmentById(R.id.fragment_container);
+
         if (fragment == null) {
             fragment = NotesListFragment.newInstance();
             fragmentManager.beginTransaction()
@@ -65,18 +65,22 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
+
         if (id == R.id.action_settings) {
             Intent settingIntent = new Intent(MainActivity.this, SettingActivity.class);
             startActivity(settingIntent);
             return true;
         }
+
         return super.onOptionsItemSelected(item);
     }
 
     @Override
     public void onBackPressed() {
         FragmentManager fragmentManager = getSupportFragmentManager();
-        NoteFragment fragment = (NoteFragment) fragmentManager.findFragmentByTag(NoteFragment.getFragmentTag());
+        NoteFragment fragment
+                = (NoteFragment) fragmentManager.findFragmentByTag(NoteFragment.getFragmentTag());
+
         if (fragment != null) {
             fragment.closeNote();
         } else {

@@ -95,6 +95,7 @@ public class NoteFragment extends Fragment {
         super.onAttach(context);
 
         mContext = context;
+        mFragmentManager = getFragmentManager();
     }
 
     @Override
@@ -102,19 +103,22 @@ public class NoteFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         mNotesKeeper = App.getNotesKeeper();
-        mFragmentManager = getFragmentManager();
 
         Bundle args = getArguments();
         if (args != null) {
             if (args.containsKey(ARG_NOTE_ID)) { // open exist
                 try {
                     mNote = mNotesKeeper.getNote(
+                            // checked
                             (UUID) Objects.requireNonNull(args.getSerializable(ARG_NOTE_ID)))
                             .clone();
                 } catch (IllegalAccessException | CloneNotSupportedException ignored) {}
             }
+
             if (args.containsKey(ARG_NOTE_TYPE)) { // create new
-                mNote = Note.newInstance((Note.Type) Objects.requireNonNull(args.getSerializable(ARG_NOTE_TYPE)));
+                mNote = Note.newInstance(
+                        // checked
+                        (Note.Type) Objects.requireNonNull(args.getSerializable(ARG_NOTE_TYPE)));
             }
         }
     }
@@ -123,6 +127,7 @@ public class NoteFragment extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent resultIntent) {
         // processes deadline date and time query results
         if (resultCode == Activity.RESULT_OK && resultIntent != null) {
+
             switch (requestCode) {
                 case REQUEST_DATE:
                     Calendar date = (Calendar) resultIntent
@@ -152,7 +157,10 @@ public class NoteFragment extends Fragment {
             }
         }
 
-        if (resultCode == Activity.RESULT_CANCELED && requestCode == REQUEST_DATE && mNote.isDeadlined()) {
+        if (resultCode == Activity.RESULT_CANCELED
+                && requestCode == REQUEST_DATE
+                && mNote.isDeadlined()) {
+
             requestTime();
         }
     }
@@ -161,7 +169,7 @@ public class NoteFragment extends Fragment {
         Calendar deadline = mNote.getDeadline();
 
         TimePickerDialogFragment timePicker = TimePickerDialogFragment
-                .getInstance(Objects.requireNonNull(deadline));
+                .getInstance(Objects.requireNonNull(deadline)); // was set
 
         timePicker.setTargetFragment(NoteFragment.this, REQUEST_TIME);
 
@@ -170,7 +178,10 @@ public class NoteFragment extends Fragment {
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater,
+                             @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
+
         mNoteLayout = inflater.inflate(R.layout.fragment_note, container, false);
 
         colorInstallation();
@@ -315,7 +326,7 @@ public class NoteFragment extends Fragment {
         if (mNote.isDeadlined()) {
             Calendar deadline = mNote.getDeadline();
             datePicker = DatePickerDialogFragment
-                    .getInstance(Objects.requireNonNull(deadline));
+                    .getInstance(Objects.requireNonNull(deadline)); // checked
         } else {
             datePicker = DatePickerDialogFragment.newInstance();
         }
@@ -445,7 +456,7 @@ public class NoteFragment extends Fragment {
 
     private void updateCategoryView() {
         if (mNote.isCategorized()) {
-            mCategoryView.setText(Objects.requireNonNull(mNote.getCategory()).getTitle());
+            mCategoryView.setText(Objects.requireNonNull(mNote.getCategory()).getTitle()); // checked
         } else {
             mCategoryView.setText("");
         }
@@ -567,10 +578,12 @@ public class NoteFragment extends Fragment {
 
         for (Tag tag : allTags) {
             CheckBox tagItemView = createTagView(tagsLayout, tag.getTitle());
+
             if (mNote.hasTag(tag.getTitle())) {
                 tagItemView.setTextColor(getResources().getColor(R.color.colorLightText));
                 tagItemView.setChecked(true);
             }
+
             tagsLayout.addView(tagItemView);
         }
 
@@ -644,6 +657,7 @@ public class NoteFragment extends Fragment {
         if (!string.isEmpty()) {
             string = string.substring(0, 1).toUpperCase() + string.substring(1);
         }
+
         return string;
     }
 

@@ -2,6 +2,7 @@ package ru.z8.louttsev.easynotes;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -15,11 +16,12 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
 import java.util.Calendar;
-import java.util.Objects;
 
 public class TimePickerDialogFragment extends DialogFragment {
     private static String ARG_TIME = "time";
     static final String RESULT_TIME = "result_time";
+
+    private Context mContext;
 
     @NonNull
     static TimePickerDialogFragment getInstance(@NonNull Calendar deadline) {
@@ -30,6 +32,13 @@ public class TimePickerDialogFragment extends DialogFragment {
         fragment.setArguments(args);
 
         return fragment;
+    }
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+
+        mContext = context;
     }
 
     @NonNull
@@ -49,7 +58,6 @@ public class TimePickerDialogFragment extends DialogFragment {
                 Calendar deadline = (Calendar) args.getSerializable(ARG_TIME);
                 if (deadline != null) {
                     // used deprecated methods since minSdkVersion is API level 19
-                    //TODO: fix it after release
                     timePicker.setCurrentHour(deadline.get(Calendar.HOUR_OF_DAY));
                     timePicker.setCurrentMinute(deadline.get(Calendar.MINUTE));
                     result.set(Calendar.YEAR, deadline.get(Calendar.YEAR));
@@ -61,29 +69,28 @@ public class TimePickerDialogFragment extends DialogFragment {
             }
         }
 
-        return new AlertDialog.Builder(Objects.requireNonNull(getActivity()))
+        return new AlertDialog.Builder(mContext)
                 .setView(mTimePickerView)
                 .setNegativeButton(getString(android.R.string.cancel), null)
                 .setPositiveButton(getString(android.R.string.ok), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         // used deprecated methods since minSdkVersion is API level 19
-                        //TODO: fix it after release
                         result.set(Calendar.HOUR_OF_DAY, timePicker.getCurrentHour());
                         result.set(Calendar.MINUTE, timePicker.getCurrentMinute());
-                        sendResult(Activity.RESULT_OK, result);
+                        sendResult(result);
                     }
                 })
                 .create();
     }
 
-    private void sendResult(int resultCode, Calendar result) {
+    private void sendResult(Calendar result) {
         if (getTargetFragment() != null) {
             Intent resultIntent = new Intent();
             resultIntent.putExtra(RESULT_TIME, result);
 
             getTargetFragment()
-                    .onActivityResult(getTargetRequestCode(), resultCode, resultIntent);
+                    .onActivityResult(getTargetRequestCode(), Activity.RESULT_OK, resultIntent);
         }
     }
 }

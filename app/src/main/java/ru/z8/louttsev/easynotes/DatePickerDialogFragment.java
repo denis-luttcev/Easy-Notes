@@ -2,6 +2,7 @@ package ru.z8.louttsev.easynotes;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -15,11 +16,13 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
 import java.util.Calendar;
-import java.util.Objects;
+//import java.util.Objects;
 
 public class DatePickerDialogFragment extends DialogFragment {
     private static final String ARG_DATE = "date";
     static final String RESULT_DATE = "result_date";
+
+    private Context mContext;
 
     @NonNull
     static DatePickerDialogFragment newInstance() {
@@ -35,6 +38,13 @@ public class DatePickerDialogFragment extends DialogFragment {
         fragment.setArguments(args);
 
         return fragment;
+    }
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+
+        mContext = context;
     }
 
     @NonNull
@@ -54,6 +64,7 @@ public class DatePickerDialogFragment extends DialogFragment {
         if (args != null) {
             if (args.containsKey(ARG_DATE)) {
                 Calendar deadline = (Calendar) args.getSerializable(ARG_DATE);
+
                 if (deadline != null) {
                     datePicker.init(deadline.get(Calendar.YEAR),
                             deadline.get(Calendar.MONTH),
@@ -68,7 +79,7 @@ public class DatePickerDialogFragment extends DialogFragment {
             }
         }
 
-        return new AlertDialog.Builder(Objects.requireNonNull(getActivity()))
+        return new AlertDialog.Builder(mContext)
                 .setView(mDatePickerView)
                 .setNegativeButton(getString(android.R.string.cancel), new DialogInterface.OnClickListener() {
                     @Override

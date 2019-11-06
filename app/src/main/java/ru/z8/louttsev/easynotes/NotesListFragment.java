@@ -36,11 +36,12 @@ import ru.z8.louttsev.easynotes.datamodel.NotesKeeper;
 import ru.z8.louttsev.easynotes.datamodel.Tag;
 
 public class NotesListFragment extends Fragment {
-    private NotesKeeper mNotesKeeper;
-    private RecyclerView mNotesList;
-    private NotesAdapter mNotesAdapter;
-
     private Context mContext;
+    private FragmentManager mFragmentManager;
+
+    private NotesKeeper mNotesKeeper;
+
+    private NotesAdapter mNotesAdapter;
 
     private TextView mHelpLine;
 
@@ -61,6 +62,7 @@ public class NotesListFragment extends Fragment {
         super.onAttach(context);
 
         mContext = context;
+        mFragmentManager = getFragmentManager();
     }
 
     private class NoteHolder extends RecyclerView.ViewHolder
@@ -77,7 +79,7 @@ public class NotesListFragment extends Fragment {
         private ImageView mNoteDeadlineIcon;
         private TextView mNoteDeadlineView;
 
-        public NoteHolder(@NonNull LayoutInflater inflater, @NonNull ViewGroup parent) {
+        NoteHolder(@NonNull LayoutInflater inflater, @NonNull ViewGroup parent) {
             super(inflater.inflate(R.layout.note_list_item_layout, parent, false));
 
             mInflater = inflater;
@@ -93,7 +95,7 @@ public class NotesListFragment extends Fragment {
             itemView.setOnLongClickListener(this);
         }
 
-        public void bindNote(@NonNull Note note) {
+        void bindNote(@NonNull Note note) {
             mNote = note;
 
             if (note.isColored()) {
@@ -108,14 +110,14 @@ public class NotesListFragment extends Fragment {
                 mNoteCategoryView.setText(Objects.requireNonNull(note.getCategory()).getTitle());
             } else mNoteCategoryView.setVisibility(View.GONE);
 
-            note.fillContentPreView(mNoteContentPreView, getActivity());
+            note.fillContentPreView(mNoteContentPreView, mContext);
 
             if (note.isTagged()) {
                 showTags(note, mNoteTagsLineView);
             } else mNoteTagsLineView.setVisibility(View.GONE);
 
             if (note.isDeadlined()) {
-                mNoteDeadlineView.setText(note.getDeadline(Objects.requireNonNull(getActivity())));
+                mNoteDeadlineView.setText(note.getDeadline(mContext));
                 applyDeadlineColor(note, mNoteDeadlineView);
             } else {
                 mNoteDeadlineIcon.setVisibility(View.GONE);
@@ -125,6 +127,7 @@ public class NotesListFragment extends Fragment {
 
         private void applyNoteViewColor(@NonNull View noteView, @NonNull Note note) {
             int color = R.color.colorNoneNote;
+
             switch (note.getColor()) {
                 case URGENT:
                     color = R.color.colorUrgentNote;
@@ -143,27 +146,33 @@ public class NotesListFragment extends Fragment {
                     break;
                 default: // ignored
             }
+
             ((CardView) noteView).setCardBackgroundColor(getResources().getColor(color));
         }
 
         private void showTags(@NonNull Note note, @NonNull FlexboxLayout tagsLineView) {
             Set<Tag> noteTags = note.getTags();
-            Iterator<Tag> tags = Objects.requireNonNull(noteTags).iterator();
+
+            Iterator<Tag> tags = noteTags.iterator();
             while (tags.hasNext()){
                 TextView tagView = (TextView) mInflater
                         .inflate(R.layout.tag_pre_view, tagsLineView, false);
+
                 tagView.setText(tags.next().getTitle());
+
                 if (!tags.hasNext()) {
                     FlexboxLayout.LayoutParams layoutParams = (FlexboxLayout.LayoutParams) tagView.getLayoutParams();
                     layoutParams.setMarginEnd(0);
                     tagView.setLayoutParams(layoutParams);
                 }
+
                 tagsLineView.addView(tagView);
             }
         }
 
         private void applyDeadlineColor(@NonNull Note note, @NonNull TextView deadlineView) {
             int color = R.color.colorDeadlineAhead;
+
             switch (note.getStatus()) {
                 case OVERDUE:
                     color = R.color.colorDeadlineOverdue;
@@ -175,14 +184,14 @@ public class NotesListFragment extends Fragment {
                 default:
                     deadlineView.setTypeface(Typeface.DEFAULT);
             }
+
             deadlineView.setTextColor(getResources().getColor(color));
         }
 
         @Override
         public void onClick(View view) {
-            FragmentManager fragmentManager = Objects.requireNonNull(getActivity()).getSupportFragmentManager();
             Fragment fragment = NoteFragment.getInstance(mNote.getId());
-            fragmentManager.beginTransaction()
+            mFragmentManager.beginTransaction()
                     .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                     .replace(R.id.fragment_container, fragment, NoteFragment.getFragmentTag())
                     .addToBackStack(NoteFragment.getFragmentTag())
@@ -205,7 +214,7 @@ public class NotesListFragment extends Fragment {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         mNotesKeeper.removeNote(note.getId());
-                        Objects.requireNonNull(mNotesList.getAdapter()).notifyDataSetChanged();
+                        mNotesAdapter.notifyDataSetChanged();
                         applyHeplLineStyle();
                         Toast.makeText(mContext,
                                 getString(R.string.remove_note_toast_message),
@@ -238,8 +247,12 @@ public class NotesListFragment extends Fragment {
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View mNotesListLayout = inflater.inflate(R.layout.fragment_notes_list, container, false);
+    public View onCreateView(@NonNull LayoutInflater inflater,
+                             @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
+
+        View mNotesListLayout
+                = inflater.inflate(R.layout.fragment_notes_list, container, false);
 
         Toolbar mToolBar = mNotesListLayout.findViewById(R.id.notes_list_toolbar);
         ((AppCompatActivity) mContext).setSupportActionBar(mToolBar);
@@ -249,9 +262,8 @@ public class NotesListFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 //TODO: After adding new note types implement choice and another types call
-                FragmentManager fragmentManager = getFragmentManager();
                 Fragment fragment = NoteFragment.newInstance(Note.Type.TEXT_NOTE);
-                Objects.requireNonNull(fragmentManager).beginTransaction()
+                mFragmentManager.beginTransaction()
                         .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                         .replace(R.id.fragment_container, fragment, NoteFragment.getFragmentTag())
                         .addToBackStack(NoteFragment.getFragmentTag())
@@ -259,7 +271,7 @@ public class NotesListFragment extends Fragment {
             }
         });
 
-        mNotesList = mNotesListLayout.findViewById(R.id.notes_list);
+        RecyclerView mNotesList = mNotesListLayout.findViewById(R.id.notes_list);
         mNotesList.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         mNotesAdapter = new NotesAdapter();
