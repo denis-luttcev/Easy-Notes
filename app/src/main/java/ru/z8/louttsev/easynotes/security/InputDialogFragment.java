@@ -24,6 +24,7 @@ import java.util.Objects;
 
 import ru.z8.louttsev.easynotes.R;
 
+@SuppressWarnings("WeakerAccess")
 public class InputDialogFragment extends DialogFragment {
     interface ResultListener extends Serializable {
         void onDismiss(String enteredPinCode);

@@ -1,5 +1,6 @@
 package ru.z8.louttsev.easynotes.database;
 
+@SuppressWarnings("unused")
 class NotesDBSchema {
 
     static final class NotesTable {

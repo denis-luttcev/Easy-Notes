@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <EditText xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/add_new"
     style="@style/TagView"
     android:layout_width="wrap_content"
@@ -7,6 +8,8 @@
     android:background="@drawable/rounded_not_fill_label"
     android:inputType="text"
     android:singleLine="true"
-    android:textSize="18sp">
+    android:textSize="18sp"
+    android:importantForAutofill="no"
+    tools:ignore="LabelFor">
 
 </EditText>

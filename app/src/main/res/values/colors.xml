@@ -7,7 +7,6 @@
     <color name="colorBackground">#FAFAFA</color>
     <color name="colorPrimaryText">@android:color/primary_text_light</color>
     <color name="colorLightText">@android:color/white</color>
-    <color name="colorCardBorder">#B4B4B4</color>
 
     <color name="colorUrgentNote">#33FF0000</color>
     <color name="colorAttentionNote">#33E65100</color>

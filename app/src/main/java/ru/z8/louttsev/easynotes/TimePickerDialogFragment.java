@@ -1,5 +1,6 @@
 package ru.z8.louttsev.easynotes;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
@@ -17,8 +18,9 @@ import androidx.fragment.app.DialogFragment;
 
 import java.util.Calendar;
 
+@SuppressWarnings("WeakerAccess")
 public class TimePickerDialogFragment extends DialogFragment {
-    private static String ARG_TIME = "time";
+    private static final String ARG_TIME = "time";
     static final String RESULT_TIME = "result_time";
 
     private Context mContext;
@@ -44,7 +46,7 @@ public class TimePickerDialogFragment extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
-        View mTimePickerView = LayoutInflater.from(getActivity())
+        @SuppressLint("InflateParams") View mTimePickerView = LayoutInflater.from(getActivity())
                 .inflate(R.layout.time_picker_dialog, null);
 
         final TimePicker timePicker = mTimePickerView.findViewById(R.id.dialog_time_picker);

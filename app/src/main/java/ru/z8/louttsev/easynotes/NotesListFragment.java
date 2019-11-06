@@ -68,16 +68,16 @@ public class NotesListFragment extends Fragment {
     private class NoteHolder extends RecyclerView.ViewHolder
             implements View.OnClickListener, View.OnLongClickListener {
 
-        private LayoutInflater mInflater;
+        private final LayoutInflater mInflater;
 
         private Note mNote;
 
-        private TextView mNoteTitleView;
-        private TextView mNoteCategoryView;
-        private FrameLayout mNoteContentPreView;
-        private FlexboxLayout mNoteTagsLineView;
-        private ImageView mNoteDeadlineIcon;
-        private TextView mNoteDeadlineView;
+        private final TextView mNoteTitleView;
+        private final TextView mNoteCategoryView;
+        private final FrameLayout mNoteContentPreView;
+        private final FlexboxLayout mNoteTagsLineView;
+        private final ImageView mNoteDeadlineIcon;
+        private final TextView mNoteDeadlineView;
 
         NoteHolder(@NonNull LayoutInflater inflater, @NonNull ViewGroup parent) {
             super(inflater.inflate(R.layout.note_list_item_layout, parent, false));
@@ -215,7 +215,7 @@ public class NotesListFragment extends Fragment {
                     public void onClick(DialogInterface dialogInterface, int i) {
                         mNotesKeeper.removeNote(note.getId());
                         mNotesAdapter.notifyDataSetChanged();
-                        applyHeplLineStyle();
+                        applyHelpLineStyle();
                         Toast.makeText(mContext,
                                 getString(R.string.remove_note_toast_message),
                                 Toast.LENGTH_SHORT)
@@ -278,12 +278,12 @@ public class NotesListFragment extends Fragment {
         mNotesList.setAdapter(mNotesAdapter);
 
         mHelpLine = mNotesListLayout.findViewById(R.id.notes_list_help_line);
-        applyHeplLineStyle();
+        applyHelpLineStyle();
 
         return mNotesListLayout;
     }
 
-    private void applyHeplLineStyle() {
+    private void applyHelpLineStyle() {
         if (mNotesAdapter.getItemCount() == 0) {
             mHelpLine.setVisibility(View.GONE);
         }

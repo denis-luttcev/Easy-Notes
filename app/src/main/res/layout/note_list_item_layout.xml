@@ -36,7 +36,8 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/note_deadline"
             app:layout_constraintHorizontal_chainStyle="spread_inside"
-            app:layout_constraintTop_toTopOf="@id/note_deadline" />
+            app:layout_constraintTop_toTopOf="@id/note_deadline"
+            tools:ignore="ContentDescription" />
 
         <TextView
             android:id="@+id/note_deadline"

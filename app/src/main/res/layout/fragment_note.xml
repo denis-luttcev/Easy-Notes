@@ -42,7 +42,8 @@
         app:layout_constraintBottom_toBottomOf="@+id/color_note"
         app:layout_constraintDimensionRatio="1"
         app:layout_constraintEnd_toStartOf="@+id/color_note"
-        app:layout_constraintTop_toTopOf="@id/color_note" />
+        app:layout_constraintTop_toTopOf="@id/color_note"
+        tools:ignore="ContentDescription" />
 
     <TextView
         android:id="@+id/color_note"
@@ -165,7 +166,8 @@
         app:layout_constraintBottom_toBottomOf="@+id/category_note"
         app:layout_constraintDimensionRatio="1"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/category_note" />
+        app:layout_constraintTop_toTopOf="@+id/category_note"
+        tools:ignore="ContentDescription" />
 
     <TextView
         android:id="@+id/category_note"
@@ -224,7 +226,8 @@
         app:layout_constraintBottom_toBottomOf="@+id/deadline_note"
         app:layout_constraintDimensionRatio="1"
         app:layout_constraintEnd_toStartOf="@+id/deadline_note"
-        app:layout_constraintTop_toTopOf="@+id/deadline_note" />
+        app:layout_constraintTop_toTopOf="@+id/deadline_note"
+        tools:ignore="ContentDescription" />
 
     <TextView
         android:id="@+id/deadline_note"
@@ -254,7 +257,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/categories_help_line" />
+        app:layout_constraintTop_toBottomOf="@id/categories_help_line"
+        android:importantForAutofill="no" />
 
     <FrameLayout
         android:id="@+id/content_view"

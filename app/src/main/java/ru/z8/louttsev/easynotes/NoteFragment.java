@@ -38,6 +38,7 @@ import ru.z8.louttsev.easynotes.datamodel.Note;
 import ru.z8.louttsev.easynotes.datamodel.NotesKeeper;
 import ru.z8.louttsev.easynotes.datamodel.Tag;
 
+@SuppressWarnings("WeakerAccess")
 public class NoteFragment extends Fragment {
     private static final String FRAGMENT_TAG = "note_fragment";
     private static final String ARG_NOTE_ID = "note_id";
@@ -74,6 +75,7 @@ public class NoteFragment extends Fragment {
         return fragment;
     }
 
+    @SuppressWarnings("SameParameterValue")
     @NonNull
     static NoteFragment newInstance(@NonNull Note.Type noteType) {
         Bundle args = new Bundle();
@@ -138,7 +140,7 @@ public class NoteFragment extends Fragment {
                         requestTime();
                     } else {
                         if (mNote.isDeadlined()) {
-                            mNote.setDeadline(date);
+                            mNote.setDeadline(null);
                         }
                     }
 
@@ -208,7 +210,7 @@ public class NoteFragment extends Fragment {
         mDeleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                requestRemoveConfirmation(mNote);
+                requestRemoveConfirmation();
             }
         });
 
@@ -693,7 +695,7 @@ public class NoteFragment extends Fragment {
                 .show();
     }
 
-    private void requestRemoveConfirmation(@NonNull final Note note) {
+    private void requestRemoveConfirmation() {
         new AlertDialog.Builder(mContext)
                 .setTitle(getString(R.string.remove_note_dialog_title))
                 .setMessage(getString(R.string.remove_note_dialog_message))

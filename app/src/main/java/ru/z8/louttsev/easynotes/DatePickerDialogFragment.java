@@ -1,5 +1,6 @@
 package ru.z8.louttsev.easynotes;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
@@ -18,6 +19,7 @@ import androidx.fragment.app.DialogFragment;
 import java.util.Calendar;
 //import java.util.Objects;
 
+@SuppressWarnings("WeakerAccess")
 public class DatePickerDialogFragment extends DialogFragment {
     private static final String ARG_DATE = "date";
     static final String RESULT_DATE = "result_date";
@@ -50,7 +52,7 @@ public class DatePickerDialogFragment extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
-        View mDatePickerView = LayoutInflater.from(getActivity())
+        @SuppressLint("InflateParams") View mDatePickerView = LayoutInflater.from(getActivity())
                 .inflate(R.layout.date_picker_dialog, null);
 
         final DatePicker datePicker = mDatePickerView.findViewById(R.id.dialog_date_picker);
