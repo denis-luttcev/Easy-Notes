@@ -14,12 +14,12 @@ import ru.z8.louttsev.easynotes.datamodel.Note;
 import ru.z8.louttsev.easynotes.datamodel.Note.Color;
 
 public class NotesCursorWrapper extends CursorWrapper {
-
-    public NotesCursorWrapper(@NonNull Cursor cursor) {
+    NotesCursorWrapper(@NonNull Cursor cursor) {
         super(cursor);
     }
 
-    public Note getNote() {
+    @NonNull
+    Note getNote() {
         String uuidString = getString(getColumnIndex(NotesTable.Cols.UUID));
         int type = (int) getLong(getColumnIndex(NotesTable.Cols.TYPE));
         String title = getString(getColumnIndex(NotesTable.Cols.TITLE));
@@ -42,15 +42,16 @@ public class NotesCursorWrapper extends CursorWrapper {
     }
 
     @Nullable
-    public UUID getCategoryId() {
+    UUID getCategoryId() {
         String categoryUuidString = getString(getColumnIndex(NotesTable.Cols.CATEGORY));
+
         if (!categoryUuidString.isEmpty()) {
             return UUID.fromString(categoryUuidString);
         } else return null;
     }
 
     @NonNull
-    public Calendar getLastModification() {
+    Calendar getLastModification() {
         long lastModificationInMillis = getLong(getColumnIndex(NotesTable.Cols.LAST_MODIFICATION));
 
         Calendar lastModification = Calendar.getInstance();

@@ -26,18 +26,18 @@ import ru.z8.louttsev.easynotes.datamodel.Note;
 import ru.z8.louttsev.easynotes.datamodel.Tag;
 
 public class NotesDatabaseStorage implements NotesStorage {
-    private SQLiteDatabase db;
+    private final SQLiteDatabase db;
 
     private Map<String, Category> categories;
     private Map<String, Tag> tags;
-    private Map<UUID, Note> index;
+    private Map<UUID, Note> notes;
 
     public NotesDatabaseStorage(@NonNull Context context) {
         db = new NotesBaseHelper(context).getWritableDatabase();
     }
 
     @NonNull
-    private static ContentValues getCategoryContentValues(@NonNull Category category) {
+    private ContentValues getCategoryContentValues(@NonNull Category category) {
         ContentValues values = new ContentValues();
 
         values.put(CategoriesTable.Cols.UUID, category.getId().toString());
@@ -46,8 +46,8 @@ public class NotesDatabaseStorage implements NotesStorage {
         return values;
     }
 
-    @Override
     @NonNull
+    @Override
     public Map<String, Category> loadCategories() {
         categories = new HashMap<>();
 
@@ -86,8 +86,7 @@ public class NotesDatabaseStorage implements NotesStorage {
                     return category;
                 }
             }
-        }
-        return null;
+        } return null;
     }
 
     @Override
@@ -103,7 +102,7 @@ public class NotesDatabaseStorage implements NotesStorage {
     }
 
     @NonNull
-    private static ContentValues getTagContentValues (@NonNull Tag tag) {
+    private ContentValues getTagContentValues (@NonNull Tag tag) {
         ContentValues values = new ContentValues();
 
         values.put(TagsTable.Cols.UUID, tag.getId().toString());
@@ -112,8 +111,8 @@ public class NotesDatabaseStorage implements NotesStorage {
         return values;
     }
 
-    @Override
     @NonNull
+    @Override
     public Map<String, Tag> loadTags() {
         tags = new HashMap<>();
 
@@ -151,7 +150,7 @@ public class NotesDatabaseStorage implements NotesStorage {
                 return tag;
             }
         }
-        throw new IllegalArgumentException();
+        throw new IllegalArgumentException(); // unreachable
     }
 
     @Override
@@ -167,25 +166,26 @@ public class NotesDatabaseStorage implements NotesStorage {
     }
 
     @NonNull
-    private static ContentValues getNoteContentValues(@NonNull Note note) {
+    private ContentValues getNoteContentValues(@NonNull Note note) {
         ContentValues values = new ContentValues();
 
         values.put(NotesTable.Cols.UUID, note.getId().toString());
         values.put(NotesTable.Cols.TYPE, note.getType().ordinal());
         values.put(NotesTable.Cols.TITLE, note.getTitle());
+
         if (note.isCategorized()) {
             values.put(NotesTable.Cols.CATEGORY,
                     Objects.requireNonNull(note.getCategory()).getId().toString());
         } else values.put(NotesTable.Cols.CATEGORY, "");
 
         values.put(NotesTable.Cols.COLOR, note.getColor().ordinal());
+
         if (note.isDeadlined()) {
             values.put(NotesTable.Cols.DEADLINE,
                     Objects.requireNonNull(note.getDeadline()).getTimeInMillis());
         } else values.put(NotesTable.Cols.DEADLINE, 0);
 
         values.put(NotesTable.Cols.LAST_MODIFICATION, note.getLastModification().getTimeInMillis());
-
         note.getContentForDB(NotesTable.Cols.CONTENT, values);
 
         return values;
@@ -194,21 +194,24 @@ public class NotesDatabaseStorage implements NotesStorage {
     @Override
     @NonNull
     public List<Note> loadNotes() {
-        index = new HashMap<>();
+        notes = new HashMap<>();
 
         try (NotesCursorWrapper cursor = queryNotes()) {
             cursor.moveToFirst();
             while (!cursor.isAfterLast()) {
                 Note note = cursor.getNote();
+
                 note.setCategory(getCategory(cursor.getCategoryId()));
                 note.setContentFromDB(NotesTable.Cols.CONTENT, cursor);
                 note.setLastModification(cursor.getLastModification());
-                index.put(note.getId(), note);
+
+                notes.put(note.getId(), note);
+
                 cursor.moveToNext();
             }
         }
 
-        List<Note> notes = new ArrayList<>(index.values());
+        List<Note> notes = new ArrayList<>(this.notes.values());
         Collections.sort(notes);
 
         return notes;
@@ -244,7 +247,9 @@ public class NotesDatabaseStorage implements NotesStorage {
     @Override
     public void clearCategoryFromNotes(@NonNull Category category) {
         ContentValues values = new ContentValues();
+
         values.put(NotesTable.Cols.CATEGORY, "");
+
         db.update(NotesTable.NAME,
                 values,
                 NotesTable.Cols.CATEGORY + " = ?",
@@ -252,7 +257,7 @@ public class NotesDatabaseStorage implements NotesStorage {
     }
 
     @NonNull
-    private static ContentValues getTaggingContentValues(@NonNull Note note, @NonNull Tag tag) {
+    private ContentValues getTaggingContentValues(@NonNull Note note, @NonNull Tag tag) {
         ContentValues values = new ContentValues();
 
         values.put(TaggingTable.Cols.NOTE, note.getId().toString());
@@ -266,11 +271,17 @@ public class NotesDatabaseStorage implements NotesStorage {
         try (TaggingCursorWrapper cursor = queryTagging()) {
             cursor.moveToFirst();
             while (!cursor.isAfterLast()) {
-                Note note = index.get(cursor.getNoteId());
-                Calendar lastModification = Objects.requireNonNull(note).getLastModification(); // save sorting criteria
+                Note note = notes.get(cursor.getNoteId());
+
+                // save sorting criteria
+                Calendar lastModification = Objects.requireNonNull(note).getLastModification();
+
                 Tag tag = getTag(cursor.getTagId());
                 note.markTag(tag);
-                note.setLastModification(lastModification); // restore sorting criteria
+
+                // restore sorting criteria
+                note.setLastModification(lastModification);
+
                 cursor.moveToNext();
             }
         } catch (NullPointerException ignored) {} // impossible

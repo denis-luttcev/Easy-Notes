@@ -1,48 +1,48 @@
 package ru.z8.louttsev.easynotes.database;
 
-public class NotesDBSchema {
+class NotesDBSchema {
 
-    public static final class NotesTable {
-        public static final String NAME = "notes";
+    static final class NotesTable {
+        static final String NAME = "notes";
 
-        public static final class Cols {
-            public static final String UUID = "uuid";
-            public static final String TYPE = "type";
-            public static final String TITLE = "title";
-            public static final String CATEGORY = "category";
-            public static final String COLOR = "color";
-            public static final String DEADLINE = "deadline";
-            public static final String LAST_MODIFICATION = "modification";
-            public static final String CONTENT = "content";
+        static final class Cols {
+            static final String UUID = "uuid";
+            static final String TYPE = "type";
+            static final String TITLE = "title";
+            static final String CATEGORY = "category";
+            static final String COLOR = "color";
+            static final String DEADLINE = "deadline";
+            static final String LAST_MODIFICATION = "modification";
+            static final String CONTENT = "content";
         }
     }
 
-    public static final class CategoriesTable {
-        public static final String NAME = "categories";
+    static final class CategoriesTable {
+        static final String NAME = "categories";
 
-        public static final class Cols {
-            public static final String UUID = "uuid";
-            public static final String TITLE = "title";
+        static final class Cols {
+            static final String UUID = "uuid";
+            static final String TITLE = "title";
         }
 
     }
 
-    public static final class TagsTable {
-        public static final String NAME = "tags";
+    static final class TagsTable {
+        static final String NAME = "tags";
 
-        public static final class Cols {
-            public static final String UUID = "uuid";
-            public static final String TITLE = "title";
+        static final class Cols {
+            static final String UUID = "uuid";
+            static final String TITLE = "title";
         }
     }
 
-    public static final class TaggingTable {
-        public static final String NAME = "tagging";
+    static final class TaggingTable {
+        static final String NAME = "tagging";
 
-        public static final class Cols {
-            public static final String UUID = "uuid";
-            public static final String NOTE = "note";
-            public static final String TAG = "tag";
+        static final class Cols {
+            static final String UUID = "uuid";
+            static final String NOTE = "note";
+            static final String TAG = "tag";
         }
     }
 }

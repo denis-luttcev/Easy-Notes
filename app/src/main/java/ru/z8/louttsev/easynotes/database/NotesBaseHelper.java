@@ -11,11 +11,11 @@ import ru.z8.louttsev.easynotes.database.NotesDBSchema.CategoriesTable;
 import ru.z8.louttsev.easynotes.database.NotesDBSchema.TaggingTable;
 import ru.z8.louttsev.easynotes.database.NotesDBSchema.TagsTable;
 
-public class NotesBaseHelper extends SQLiteOpenHelper {
+class NotesBaseHelper extends SQLiteOpenHelper {
     private static final int VERSION = 1;
     private static final String DB_NAME = "notesBase.db";
 
-    public NotesBaseHelper(@NonNull Context context) {
+    NotesBaseHelper(@NonNull Context context) {
         super(context, DB_NAME, null, VERSION);
     }
 
@@ -52,6 +52,6 @@ public class NotesBaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        //TODO later update to migrate on new DB version
+        // update to migrate on new DB version
     }
 }

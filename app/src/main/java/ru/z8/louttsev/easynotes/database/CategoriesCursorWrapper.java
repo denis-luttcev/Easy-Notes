@@ -10,12 +10,13 @@ import java.util.UUID;
 import ru.z8.louttsev.easynotes.database.NotesDBSchema.CategoriesTable;
 import ru.z8.louttsev.easynotes.datamodel.Category;
 
-public class CategoriesCursorWrapper extends CursorWrapper {
-    public CategoriesCursorWrapper(@NonNull Cursor cursor) {
+class CategoriesCursorWrapper extends CursorWrapper {
+    CategoriesCursorWrapper(@NonNull Cursor cursor) {
         super(cursor);
     }
 
-    public Category getCategory() {
+    @NonNull
+    Category getCategory() {
         String uuidString = getString(getColumnIndex(CategoriesTable.Cols.UUID));
         String title = getString(getColumnIndex(CategoriesTable.Cols.TITLE));
 
