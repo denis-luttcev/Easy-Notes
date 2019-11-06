@@ -29,10 +29,11 @@ public class PinCodeProtector implements Protector {
     // see PinCodeProtector#hashPinCode(String, byte[]) about used hash algorithms
     private final int KEY_LENGTH = 128;
     private final SecureRandom RANDOMIZER = new SecureRandom();
+    @SuppressWarnings("FieldCanBeLocal")
     private final int ITERATIONS = 16384;
 
-    private SharedPreferences preferences;
-    private Context context;
+    private final SharedPreferences preferences;
+    private final Context context;
 
     private boolean isLogged = false;
 
@@ -192,6 +193,7 @@ public class PinCodeProtector implements Protector {
         byte[] salt = new byte[KEY_LENGTH];
 
         FileInputStream saltFile = context.openFileInput(SALT_FILE_NAME);
+        //noinspection ResultOfMethodCallIgnored
         saltFile.read(salt, 0, KEY_LENGTH); // read in byte array, result ignored
         saltFile.close();
 

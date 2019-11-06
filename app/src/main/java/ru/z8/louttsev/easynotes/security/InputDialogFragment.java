@@ -1,5 +1,6 @@
 package ru.z8.louttsev.easynotes.security;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -51,7 +52,7 @@ public class InputDialogFragment extends DialogFragment {
             mResultListener = (ResultListener) savedInstanceState.getSerializable(LISTENER);
         }
 
-        View pinCodeInputView = LayoutInflater.from(getActivity())
+        @SuppressLint("InflateParams") View pinCodeInputView = LayoutInflater.from(getActivity())
                 .inflate(R.layout.pin_code_input_dialog, null);
 
         final TextView mPinCodeField = pinCodeInputView.findViewById(R.id.pin_code_field);
@@ -72,7 +73,7 @@ public class InputDialogFragment extends DialogFragment {
             public void afterTextChanged(Editable pinCodeText) {
                 String currentPinCode = pinCodeText.toString();
                 final int PIN_LENGTH = 4;
-                
+
                 if (currentPinCode.length() == PIN_LENGTH) {
                     returnPinCode(currentPinCode);
                 }
