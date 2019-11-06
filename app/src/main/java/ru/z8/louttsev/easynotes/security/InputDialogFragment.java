@@ -23,7 +23,7 @@ import java.util.Objects;
 
 import ru.z8.louttsev.easynotes.R;
 
-public class PinCodeInputDialogFragment extends DialogFragment {
+public class InputDialogFragment extends DialogFragment {
     interface ResultListener extends Serializable {
         void onDismiss(String enteredPinCode);
         void onCancel();
@@ -34,8 +34,8 @@ public class PinCodeInputDialogFragment extends DialogFragment {
     private ResultListener mResultListener;
 
     @NonNull
-    static PinCodeInputDialogFragment newInstance() {
-        return new PinCodeInputDialogFragment();
+    static InputDialogFragment newInstance() {
+        return new InputDialogFragment();
     }
 
     void setResultListener(@NonNull ResultListener resultListener) {
@@ -72,6 +72,7 @@ public class PinCodeInputDialogFragment extends DialogFragment {
             public void afterTextChanged(Editable pinCodeText) {
                 String currentPinCode = pinCodeText.toString();
                 final int PIN_LENGTH = 4;
+                
                 if (currentPinCode.length() == PIN_LENGTH) {
                     returnPinCode(currentPinCode);
                 }

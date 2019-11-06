@@ -10,18 +10,13 @@ public interface Protector {
     }
 
     boolean isProtectionNotConfigured();
+
     boolean isProtectionEnabled();
 
-    /**
-     * Tryes to enable protection (possible technical problems or user refusal)
-     */
     void enableProtection(@NonNull FragmentManager fragmentManager,
                           @NonNull ResultListener resultListener);
     void disableProtection();
 
-    /**
-     * Technical problems and user refusal are need considered as authorization denied
-     */
     void checkAuthorization(@NonNull FragmentManager fragmentManager,
                             @NonNull ResultListener resultListener);
 }

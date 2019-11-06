@@ -175,14 +175,14 @@ public class NotesDatabaseStorage implements NotesStorage {
 
         if (note.isCategorized()) {
             values.put(NotesTable.Cols.CATEGORY,
-                    Objects.requireNonNull(note.getCategory()).getId().toString());
+                    Objects.requireNonNull(note.getCategory()).getId().toString()); // checked
         } else values.put(NotesTable.Cols.CATEGORY, "");
 
         values.put(NotesTable.Cols.COLOR, note.getColor().ordinal());
 
         if (note.isDeadlined()) {
             values.put(NotesTable.Cols.DEADLINE,
-                    Objects.requireNonNull(note.getDeadline()).getTimeInMillis());
+                    Objects.requireNonNull(note.getDeadline()).getTimeInMillis()); // checked
         } else values.put(NotesTable.Cols.DEADLINE, 0);
 
         values.put(NotesTable.Cols.LAST_MODIFICATION, note.getLastModification().getTimeInMillis());
@@ -274,7 +274,8 @@ public class NotesDatabaseStorage implements NotesStorage {
                 Note note = notes.get(cursor.getNoteId());
 
                 // save sorting criteria
-                Calendar lastModification = Objects.requireNonNull(note).getLastModification();
+                Calendar lastModification
+                        = Objects.requireNonNull(note).getLastModification(); // always set
 
                 Tag tag = getTag(cursor.getTagId());
                 note.markTag(tag);
