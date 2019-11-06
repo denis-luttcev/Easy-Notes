@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Удобные Заметки</string>
+    <string name="activity_main_title">Заметки</string>
     <string name="access_denied_toast_message">Доступ запрещён</string>
     <string name="yesterday">"Вчера, "</string>
     <string name="today">"Сегодня, "</string>
