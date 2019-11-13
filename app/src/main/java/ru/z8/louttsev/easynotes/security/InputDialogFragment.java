@@ -122,8 +122,10 @@ public class InputDialogFragment extends DialogFragment {
             @Override
             public void onClick(View view) {
                 String pinCode = mPinCodeField.getText().toString();
-                pinCode = pinCode.substring(0, pinCode.length() - 1);
-                mPinCodeField.setText(pinCode);
+                if (pinCode.length() > 0) {
+                    pinCode = pinCode.substring(0, pinCode.length() - 1);
+                    mPinCodeField.setText(pinCode);
+                }
             }
         });
 
