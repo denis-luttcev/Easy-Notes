@@ -30,8 +30,6 @@ public interface NotesKeeper {
 
     void removeNote(@NonNull UUID id);
 
-    boolean containNote(@NonNull UUID id);
-
     @NonNull
     Note getNote(@NonNull UUID id) throws IllegalAccessException;
 

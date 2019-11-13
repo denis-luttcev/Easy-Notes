@@ -37,5 +37,10 @@
     <string name="delete_category_toast_message">Рубрика удалена успешно</string>
     <string name="save_empty_note_dialog_title">Сохранение пустой заметки</string>
     <string name="save_empty_note_dialog_message">Эта заметка не имеет ни названия, ни содержания.\n\nХотите сохранить её в таком виде?</string>
+    <string name="save_note_toast_message">Заметка сохранена успешно</string>
+    <string name="close_note_dialog_title">Несохранённая заметка</string>
+    <string name="close_note_dialog_message">Эта заметка была изменена.\n\nХотите сохранить изменения?</string>
     <string name="clear_button_text">Очистить</string>
+    <string name="yes_button_text">Да</string>
+    <string name="no_button_text">Нет</string>
 </resources>

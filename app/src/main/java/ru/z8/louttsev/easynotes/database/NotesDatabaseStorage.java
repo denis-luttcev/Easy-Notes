@@ -204,6 +204,7 @@ public class NotesDatabaseStorage implements NotesStorage {
                 note.setCategory(getCategory(cursor.getCategoryId()));
                 note.setContentFromDB(NotesTable.Cols.CONTENT, cursor);
                 note.setLastModification(cursor.getLastModification());
+                note.dropModified();
 
                 notes.put(note.getId(), note);
 
@@ -279,6 +280,7 @@ public class NotesDatabaseStorage implements NotesStorage {
 
                 Tag tag = getTag(cursor.getTagId());
                 note.markTag(tag);
+                note.dropModified();
 
                 // restore sorting criteria
                 note.setLastModification(lastModification);

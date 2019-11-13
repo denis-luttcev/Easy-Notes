@@ -206,11 +206,12 @@ public class NoteFragment extends Fragment {
             }
         });
 
-        Button mDeleteButton = mNoteLayout.findViewById(R.id.delete_button);
-        mDeleteButton.setOnClickListener(new View.OnClickListener() {
+        Button mSaveButton = mNoteLayout.findViewById(R.id.save_button);
+        mSaveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                requestRemoveConfirmation();
+                saveNote();
+                //requestRemoveConfirmation();
             }
         });
 
@@ -663,19 +664,21 @@ public class NoteFragment extends Fragment {
         return string;
     }
 
-    void closeNote() {
+    private void saveNote() {
         mNote.setTitle(mTitleView.getText().toString().trim());
         mNote.setContent(mContentView);
 
         if (mNote.isModified()) {
             if (!mNote.getTitle().isEmpty() || !mNote.isContentEmpty()) {
                 mNotesKeeper.addNote(mNote);
+                Toast.makeText(mContext,
+                        getString(R.string.save_note_toast_message),
+                        Toast.LENGTH_SHORT)
+                        .show();
             } else {
                 requestSaveConfirmation();
             }
         }
-
-        mFragmentManager.popBackStack();
     }
 
     private void requestSaveConfirmation() {
@@ -688,28 +691,36 @@ public class NoteFragment extends Fragment {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 mNotesKeeper.addNote(mNote);
-                                mFragmentManager.popBackStack();
+                                Toast.makeText(mContext,
+                                        getString(R.string.save_note_toast_message),
+                                        Toast.LENGTH_SHORT)
+                                        .show();
                             }
                         })
                 .create()
                 .show();
     }
 
-    private void requestRemoveConfirmation() {
+    void closeNote() {
+        if (mNote.isModified()) {
+            requestCloseConfirmation();
+        } else mFragmentManager.popBackStack();
+    }
+
+    private void requestCloseConfirmation() {
         new AlertDialog.Builder(mContext)
-                .setTitle(getString(R.string.remove_note_dialog_title))
-                .setMessage(getString(R.string.remove_note_dialog_message))
-                .setNegativeButton(android.R.string.cancel, null)
-                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                .setTitle(getString(R.string.close_note_dialog_title))
+                .setMessage(getString(R.string.close_note_dialog_message))
+                .setNegativeButton(getString(R.string.no_button_text), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        if (mNotesKeeper.containNote(mNote.getId())) {
-                            mNotesKeeper.removeNote(mNote.getId());
-                        }
-                        Toast.makeText(mContext,
-                                getString(R.string.remove_note_toast_message),
-                                Toast.LENGTH_SHORT)
-                                .show();
+                        mFragmentManager.popBackStack();
+                    }
+                })
+                .setPositiveButton(getString(R.string.yes_button_text), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        saveNote();
                         mFragmentManager.popBackStack();
                     }
                 })

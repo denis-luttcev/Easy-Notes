@@ -278,6 +278,10 @@ public abstract class Note implements Comparable<Note>, Cloneable {
         return isModified;
     }
 
+    public void dropModified() {
+        isModified = false;
+    }
+
     @Override
     public boolean equals(Object that) {
         if (this == that) return true;

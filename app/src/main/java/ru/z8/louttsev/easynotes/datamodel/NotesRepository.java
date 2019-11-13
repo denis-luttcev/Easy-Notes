@@ -148,6 +148,8 @@ public class NotesRepository implements NotesKeeper {
         if (note.isTagged()) {
             makeTagging(note);
         }
+
+        note.dropModified();
     }
 
     private void makeTagging(@NonNull Note note) {
@@ -166,8 +168,7 @@ public class NotesRepository implements NotesKeeper {
         storage.deleteNote(id);
     }
 
-    @Override
-    public boolean containNote(@NonNull UUID id) {
+    private boolean containNote(@NonNull UUID id) {
         return index.containsKey(id);
     }
 
