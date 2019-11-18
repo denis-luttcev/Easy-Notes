@@ -417,6 +417,23 @@ public class NoteFragment extends Fragment {
                     }
                 });
 
+        if (mNote.isCategorized()) {
+            TextView withoutCategory = createPanelItemView(categoriesLayout,
+                    getString(R.string.note_category_hint),
+                    new View.OnClickListener() {
+                        @Override
+                        public void onClick(View categoryItemView) {
+                            mNote.setCategory(null);
+                            updateCategoryView();
+
+                            categoriesLayout.removeAllViews();
+                            categoriesPanel.setVisibility(View.GONE);
+                        }
+                    },
+                    null);
+            categoriesLayout.addView(withoutCategory);
+        }
+
         for (Category category : allCategories) {
             CheckBox categoryItemView =
                     createCategoryView(categoriesPanel, categoriesLayout, category.getTitle());
@@ -492,9 +509,6 @@ public class NoteFragment extends Fragment {
                                 mNote.setCategory(mNotesKeeper.getCategory((category.getText().toString())));
                                 updateCategoryView();
                             } catch (IllegalAccessException ignored) {} // impossible
-                        } else {
-                            mNote.setCategory(null);
-                            updateCategoryView();
                         }
                         categoriesLayout.removeAllViews();
                         categoriesPanel.setVisibility(View.GONE);
@@ -537,7 +551,7 @@ public class NoteFragment extends Fragment {
     private CheckBox createPanelItemView(@NonNull FlexboxLayout panelLayout,
                                          @NonNull String title,
                                          @NonNull View.OnClickListener onClickListener,
-                                         @NonNull View.OnLongClickListener onLongClickListener) {
+                                         @Nullable View.OnLongClickListener onLongClickListener) {
 
         CheckBox itemView = (CheckBox) getLayoutInflater()
                 .inflate(R.layout.panel_item_view, panelLayout, false);
