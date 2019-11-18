@@ -72,11 +72,17 @@ public class InputDialogFragment extends DialogFragment {
 
             @Override
             public void afterTextChanged(Editable pinCodeText) {
-                String currentPinCode = pinCodeText.toString();
+                final String currentPinCode = pinCodeText.toString();
                 final int PIN_LENGTH = 4;
 
                 if (currentPinCode.length() == PIN_LENGTH) {
-                    returnPinCode(currentPinCode);
+                    mPinCodeField.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            returnPinCode(currentPinCode);
+                            dismiss();
+                        }
+                    });
                 }
             }
         });
@@ -137,7 +143,6 @@ public class InputDialogFragment extends DialogFragment {
 
     private void returnPinCode(@NonNull String enteredPinCode) {
         mResultListener.onDismiss(enteredPinCode);
-        dismiss();
     }
 
     @Override
