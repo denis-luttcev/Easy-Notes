@@ -13,6 +13,7 @@ import androidx.fragment.app.FragmentManager;
 import ru.z8.louttsev.easynotes.security.Protector;
 
 public class MainActivity extends AppCompatActivity {
+    private FragmentManager mFragmentManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,13 +21,14 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         Protector mProtector = App.getProtector();
+        mFragmentManager = getSupportFragmentManager();
 
         if (mProtector.isProtectionNotConfigured()) {
             Intent settingIntent = new Intent(MainActivity.this, SettingActivity.class);
             startActivity(settingIntent);
         } else {
             if (mProtector.isProtectionEnabled()) {
-                mProtector.checkAuthorization(getSupportFragmentManager(),
+                mProtector.checkAuthorization(mFragmentManager,
                         new Protector.ResultListener() {
                             @Override
                             public void onProtectionResultSuccess() {
@@ -45,12 +47,11 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        Fragment fragment = fragmentManager.findFragmentById(R.id.fragment_container);
+        Fragment fragment = mFragmentManager.findFragmentById(R.id.fragment_container);
 
         if (fragment == null) {
             fragment = NotesListFragment.newInstance();
-            fragmentManager.beginTransaction()
+            mFragmentManager.beginTransaction()
                     .add(R.id.fragment_container, fragment)
                     .commit();
         }
@@ -77,9 +78,8 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        FragmentManager fragmentManager = getSupportFragmentManager();
         NoteFragment fragment
-                = (NoteFragment) fragmentManager.findFragmentByTag(NoteFragment.getFragmentTag());
+                = (NoteFragment) mFragmentManager.findFragmentByTag(NoteFragment.getFragmentTag());
 
         if (fragment != null) {
             fragment.closeNote();
