@@ -32,8 +32,10 @@ public class InputDialogFragment extends DialogFragment {
     }
 
     private final String LISTENER = "listener";
+    private final String PIN_CODE = "pin";
 
     private ResultListener mResultListener;
+    private TextView mPinCodeField;
 
     @NonNull
     static InputDialogFragment newInstance() {
@@ -49,16 +51,23 @@ public class InputDialogFragment extends DialogFragment {
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
         super.onCreateDialog(savedInstanceState);
 
-        if (savedInstanceState != null && savedInstanceState.containsKey(LISTENER)) {
-            mResultListener = (ResultListener) savedInstanceState.getSerializable(LISTENER);
-        }
 
         @SuppressLint("InflateParams") View pinCodeInputView = LayoutInflater.from(getActivity())
                 .inflate(R.layout.pin_code_input_dialog, null);
 
-        final TextView mPinCodeField = pinCodeInputView.findViewById(R.id.pin_code_field);
+        mPinCodeField = pinCodeInputView.findViewById(R.id.pin_code_field);
         mPinCodeField.setInputType(InputType.TYPE_CLASS_TEXT
                 | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+
+        if (savedInstanceState != null) {
+            if (savedInstanceState.containsKey(LISTENER)) {
+                mResultListener = (ResultListener) savedInstanceState.getSerializable(LISTENER);
+            }
+            if (savedInstanceState.containsKey(PIN_CODE)) {
+                mPinCodeField.setText(savedInstanceState.getString(PIN_CODE));
+            }
+        }
+
         mPinCodeField.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -80,7 +89,7 @@ public class InputDialogFragment extends DialogFragment {
                         @Override
                         public void run() {
                             returnPinCode(currentPinCode);
-                            dismiss();
+                            //dismiss();
                         }
                     });
                 }
@@ -120,7 +129,7 @@ public class InputDialogFragment extends DialogFragment {
         pinCodeInputView.findViewById(R.id.clear_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mPinCodeField.setText("");
+                clearPinCode();
             }
         });
 
@@ -141,6 +150,10 @@ public class InputDialogFragment extends DialogFragment {
                 .create();
     }
 
+    void clearPinCode() {
+        mPinCodeField.setText("");
+    }
+
     private void returnPinCode(@NonNull String enteredPinCode) {
         mResultListener.onDismiss(enteredPinCode);
     }
@@ -154,6 +167,7 @@ public class InputDialogFragment extends DialogFragment {
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
+        outState.putString(PIN_CODE, mPinCodeField.getText().toString());
         outState.putSerializable(LISTENER, mResultListener);
     }
 }

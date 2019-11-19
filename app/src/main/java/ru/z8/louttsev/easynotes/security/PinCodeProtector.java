@@ -36,6 +36,7 @@ public class PinCodeProtector implements Protector {
     private final Context context;
 
     private boolean isLogged = false;
+    private int attemptLogin;
 
     public PinCodeProtector(@NonNull Context context) {
         this.context = context;
@@ -155,21 +156,32 @@ public class PinCodeProtector implements Protector {
     }
 
     @Override
-    public void checkAuthorization(@NonNull FragmentManager fragmentManager,
-                                   @NonNull final ResultListener resultListener) {
+    public void checkAuthorization(@NonNull final FragmentManager fragmentManager,
+                                   @NonNull final ResultListener resultListener,
+                                   boolean forcibly) {
 
-        if (isLogged) {
+        if (!forcibly && isLogged) {
             resultListener.onProtectionResultSuccess();
         } else {
-            InputDialogFragment pinCodeInput = getInputDialogFragment(fragmentManager);
+            attemptLogin = 3;
 
+            final InputDialogFragment pinCodeInput = getInputDialogFragment(fragmentManager);
             pinCodeInput.setResultListener(new InputDialogFragment.ResultListener() {
                 @Override
                 public void onDismiss(String enteredPinCode) {
                     if (checkPinCode(enteredPinCode)) { // technical problems will cause false
-                        resultListener.onProtectionResultSuccess();
                         isLogged = true;
-                    } else resultListener.onProtectionResultFailure();
+                        resultListener.onProtectionResultSuccess();
+                        pinCodeInput.dismiss();
+                    } else {
+                        if (attemptLogin > 1) {
+                            pinCodeInput.clearPinCode();
+                            attemptLogin--;
+                        } else {
+                            resultListener.onProtectionResultFailure();
+                            pinCodeInput.dismiss();
+                        }
+                    }
                 }
 
                 @Override

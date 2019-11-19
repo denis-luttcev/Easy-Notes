@@ -15,8 +15,10 @@ public interface Protector {
 
     void enableProtection(@NonNull FragmentManager fragmentManager,
                           @NonNull ResultListener resultListener);
+
     void disableProtection();
 
     void checkAuthorization(@NonNull FragmentManager fragmentManager,
-                            @NonNull ResultListener resultListener);
+                            @NonNull ResultListener resultListener,
+                            boolean forcibly);
 }

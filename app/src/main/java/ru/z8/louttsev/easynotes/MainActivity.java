@@ -20,7 +20,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Protector mProtector = App.getProtector();
+        final Protector mProtector = App.getProtector();
         mFragmentManager = getSupportFragmentManager();
 
         if (mProtector.isProtectionNotConfigured()) {
@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
                                         .show();
                                 finish();
                             }
-                        });
+                        }, false);
             }
         }
 
