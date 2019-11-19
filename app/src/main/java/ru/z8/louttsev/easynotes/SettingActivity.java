@@ -1,6 +1,7 @@
 package ru.z8.louttsev.easynotes;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentManager;
 
 import android.os.Bundle;
 import android.view.View;
@@ -13,6 +14,7 @@ import ru.z8.louttsev.easynotes.security.Protector;
 
 public class SettingActivity extends AppCompatActivity {
     private Protector mProtector;
+    private FragmentManager mFragmentManager;
 
     private Switch mProtectionSettingSwitch;
     private Button mProtectionSettingChangeKeyButton;
@@ -23,6 +25,7 @@ public class SettingActivity extends AppCompatActivity {
         setContentView(R.layout.activity_setting);
 
         mProtector = App.getProtector();
+        mFragmentManager = getSupportFragmentManager();
 
         initViews();
     }
@@ -63,7 +66,7 @@ public class SettingActivity extends AppCompatActivity {
 
     private void changeProtectionKey() {
         mProtector
-                .enableProtection(getSupportFragmentManager(), new Protector.ResultListener() {
+                .enableProtection(mFragmentManager, new Protector.ResultListener() {
             @Override
             public void onProtectionResultSuccess() {
                 Toast.makeText(SettingActivity.this,
@@ -84,7 +87,7 @@ public class SettingActivity extends AppCompatActivity {
 
     private void switchProtectionToEnabled() {
         mProtector
-                .enableProtection(getSupportFragmentManager(), new Protector.ResultListener() {
+                .enableProtection(mFragmentManager, new Protector.ResultListener() {
             @Override
             public void onProtectionResultSuccess() {
                 Toast.makeText(SettingActivity.this,
