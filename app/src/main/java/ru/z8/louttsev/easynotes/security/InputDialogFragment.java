@@ -89,7 +89,6 @@ public class InputDialogFragment extends DialogFragment {
                         @Override
                         public void run() {
                             returnPinCode(currentPinCode);
-                            //dismiss();
                         }
                     });
                 }

@@ -2,7 +2,8 @@
 <resources>
     <string name="app_name">Удобные Заметки</string>
     <string name="activity_main_title">Заметки</string>
-    <string name="access_denied_toast_message">Доступ запрещён</string>
+    <string name="incorrect_protection_key_toast_message">Неверный защитный ключ, попробуйте снова</string>
+    <string name="access_denied_toast_message">Исчерпаны попытки входа, доступ запрещён</string>
     <string name="yesterday">"Вчера, "</string>
     <string name="today">"Сегодня, "</string>
     <string name="tomorrow">"Завтра,  "</string>

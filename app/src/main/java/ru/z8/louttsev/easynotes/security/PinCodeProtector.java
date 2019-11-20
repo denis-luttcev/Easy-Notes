@@ -3,6 +3,7 @@ package ru.z8.louttsev.easynotes.security;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Base64;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentManager;
@@ -20,6 +21,8 @@ import java.util.Objects;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 
+import ru.z8.louttsev.easynotes.R;
+
 public class PinCodeProtector implements Protector {
     // separate storage of hash (in shared preferences) and salt (in file) is used
     private final String PROTECTION_CODE = "protection";
@@ -34,9 +37,12 @@ public class PinCodeProtector implements Protector {
 
     private final SharedPreferences preferences;
     private final Context context;
+    private InputDialogFragment pinCodeInput;
 
     private boolean isLogged = false;
-    private int attemptLogin;
+
+    final private int LIMIT_LOGIN_ATTEMPTS = 3;
+    private int loginAttempt = 1;
 
     public PinCodeProtector(@NonNull Context context) {
         this.context = context;
@@ -60,7 +66,7 @@ public class PinCodeProtector implements Protector {
     public void enableProtection(@NonNull FragmentManager fragmentManager,
                                  @NonNull final ResultListener resultListener) {
 
-        InputDialogFragment pinCodeInput = getInputDialogFragment(fragmentManager);
+        pinCodeInput = getInputDialogFragment(fragmentManager);
 
         pinCodeInput.setResultListener(new InputDialogFragment.ResultListener() {
             @Override
@@ -156,28 +162,33 @@ public class PinCodeProtector implements Protector {
     }
 
     @Override
-    public void checkAuthorization(@NonNull final FragmentManager fragmentManager,
+    public void checkAuthorization(@NonNull FragmentManager fragmentManager,
                                    @NonNull final ResultListener resultListener,
                                    boolean forcibly) {
 
         if (!forcibly && isLogged) {
             resultListener.onProtectionResultSuccess();
         } else {
-            attemptLogin = 3;
-
-            final InputDialogFragment pinCodeInput = getInputDialogFragment(fragmentManager);
+            pinCodeInput = getInputDialogFragment(fragmentManager);
             pinCodeInput.setResultListener(new InputDialogFragment.ResultListener() {
                 @Override
                 public void onDismiss(String enteredPinCode) {
                     if (checkPinCode(enteredPinCode)) { // technical problems will cause false
                         isLogged = true;
+                        loginAttempt = 1;
                         resultListener.onProtectionResultSuccess();
                         pinCodeInput.dismiss();
                     } else {
-                        if (attemptLogin > 1) {
+                        if (loginAttempt < LIMIT_LOGIN_ATTEMPTS) {
+                            Toast.makeText(context,
+                                    context.getString(R.string.incorrect_protection_key_toast_message),
+                                    Toast.LENGTH_SHORT)
+                                    .show();
                             pinCodeInput.clearPinCode();
-                            attemptLogin--;
+                            loginAttempt++;
                         } else {
+                            isLogged = false;
+                            loginAttempt = 1;
                             resultListener.onProtectionResultFailure();
                             pinCodeInput.dismiss();
                         }
