@@ -17,7 +17,8 @@
     <string name="protection_enabled_success_toast_message">Защита включена</string>
     <string name="protection_enabled_error_toast_message">Невозможно включить защиту</string>
     <string name="protection_disabled_toast_message">Защита отключена</string>
-    <string name="pin_code_input_title">Введите пин-код</string>
+    <string name="pin_code_input_check_dialog_title">Введите пин-код</string>
+    <string name="pin_code_input_new_dialog_title">Введите новый пин-код</string>
     <string name="notes_line_help_text">Нажмите и удерживайте заметку для её удаления.</string>
     <string name="remove_note_dialog_title">Удаление заметки</string>
     <string name="remove_note_dialog_message">Вы хотите удалить заметку. Эта операция не может быть отменена.\n\nВы уверены?</string>

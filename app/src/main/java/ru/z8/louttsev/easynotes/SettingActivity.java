@@ -1,14 +1,14 @@
 package ru.z8.louttsev.easynotes;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.FragmentManager;
-
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentManager;
 
 import ru.z8.louttsev.easynotes.security.Protector;
 
@@ -65,14 +65,27 @@ public class SettingActivity extends AppCompatActivity {
     }
 
     private void changeProtectionKey() {
-        mProtector
-                .enableProtection(mFragmentManager, new Protector.ResultListener() {
+        mProtector.checkAuthorization(mFragmentManager, new Protector.ResultListener() {
             @Override
             public void onProtectionResultSuccess() {
-                Toast.makeText(SettingActivity.this,
-                        getString(R.string.protection_key_changed_success_toast_message),
-                        Toast.LENGTH_SHORT)
-                        .show();
+                mProtector
+                        .enableProtection(mFragmentManager, new Protector.ResultListener() {
+                            @Override
+                            public void onProtectionResultSuccess() {
+                                Toast.makeText(SettingActivity.this,
+                                        getString(R.string.protection_key_changed_success_toast_message),
+                                        Toast.LENGTH_SHORT)
+                                        .show();
+                            }
+
+                            @Override
+                            public void onProtectionResultFailure() {
+                                Toast.makeText(SettingActivity.this,
+                                        getString(R.string.protection_key_changed_error_toast_message),
+                                        Toast.LENGTH_SHORT)
+                                        .show();
+                            }
+                        });
             }
 
             @Override
@@ -82,7 +95,7 @@ public class SettingActivity extends AppCompatActivity {
                         Toast.LENGTH_SHORT)
                         .show();
             }
-        });
+        }, true);
     }
 
     private void switchProtectionToEnabled() {

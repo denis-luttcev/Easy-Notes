@@ -39,6 +39,9 @@ public class PinCodeProtector implements Protector {
     private final Context context;
     private InputDialogFragment pinCodeInput;
 
+    private final String DIALOG_CHECK_PIN_CODE_INPUT = "check_pin_code";
+    private final String DIALOG_NEW_PIN_CODE_INPUT = "new_pin_code";
+
     private boolean isLogged = false;
 
     final private int LIMIT_LOGIN_ATTEMPTS = 3;
@@ -66,15 +69,18 @@ public class PinCodeProtector implements Protector {
     public void enableProtection(@NonNull FragmentManager fragmentManager,
                                  @NonNull final ResultListener resultListener) {
 
-        pinCodeInput = getInputDialogFragment(fragmentManager);
-
+        pinCodeInput = getInputDialogFragment(fragmentManager, DIALOG_NEW_PIN_CODE_INPUT);
         pinCodeInput.setResultListener(new InputDialogFragment.ResultListener() {
             @Override
             public void onDismiss(String enteredPinCode) {
                 if (savePinCode(enteredPinCode)) { // technical problems will cause false
-                    resultListener.onProtectionResultSuccess();
                     isLogged = true;
-                } else resultListener.onProtectionResultFailure();
+                    pinCodeInput.dismiss();
+                    resultListener.onProtectionResultSuccess();
+                } else {
+                    pinCodeInput.dismiss();
+                    resultListener.onProtectionResultFailure();
+                }
             }
 
             @Override
@@ -85,15 +91,27 @@ public class PinCodeProtector implements Protector {
     }
 
     @NonNull
-    private InputDialogFragment getInputDialogFragment(@NonNull FragmentManager fragmentManager) {
-        final String DIALOG_PIN_CODE_INPUT = "pin_code";
+    private InputDialogFragment getInputDialogFragment(@NonNull FragmentManager fragmentManager,
+                                                       @NonNull String dialogTag) {
 
         InputDialogFragment pinCodeInput =
-                (InputDialogFragment) fragmentManager.findFragmentByTag(DIALOG_PIN_CODE_INPUT);
+                (InputDialogFragment) fragmentManager.findFragmentByTag(dialogTag);
 
         if (pinCodeInput == null) {
-            pinCodeInput = InputDialogFragment.newInstance();
-            pinCodeInput.show(fragmentManager, DIALOG_PIN_CODE_INPUT);
+
+            String dialogTitle = "";
+            switch (dialogTag) {
+                case DIALOG_CHECK_PIN_CODE_INPUT:
+                    dialogTitle = context.getString(R.string.pin_code_input_check_dialog_title);
+                    break;
+                case DIALOG_NEW_PIN_CODE_INPUT:
+                    dialogTitle = context.getString(R.string.pin_code_input_new_dialog_title);
+                    break;
+                default: // impossible
+            }
+
+            pinCodeInput = InputDialogFragment.newInstance(dialogTitle);
+            pinCodeInput.show(fragmentManager, dialogTag);
         }
 
         return pinCodeInput;
@@ -169,15 +187,15 @@ public class PinCodeProtector implements Protector {
         if (!forcibly && isLogged) {
             resultListener.onProtectionResultSuccess();
         } else {
-            pinCodeInput = getInputDialogFragment(fragmentManager);
+            pinCodeInput = getInputDialogFragment(fragmentManager, DIALOG_CHECK_PIN_CODE_INPUT);
             pinCodeInput.setResultListener(new InputDialogFragment.ResultListener() {
                 @Override
                 public void onDismiss(String enteredPinCode) {
                     if (checkPinCode(enteredPinCode)) { // technical problems will cause false
                         isLogged = true;
                         loginAttempt = 1;
-                        resultListener.onProtectionResultSuccess();
                         pinCodeInput.dismiss();
+                        resultListener.onProtectionResultSuccess();
                     } else {
                         if (loginAttempt < LIMIT_LOGIN_ATTEMPTS) {
                             Toast.makeText(context,
@@ -189,8 +207,8 @@ public class PinCodeProtector implements Protector {
                         } else {
                             isLogged = false;
                             loginAttempt = 1;
-                            resultListener.onProtectionResultFailure();
                             pinCodeInput.dismiss();
+                            resultListener.onProtectionResultFailure();
                         }
                     }
                 }

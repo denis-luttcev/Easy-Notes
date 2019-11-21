@@ -33,24 +33,32 @@ public class InputDialogFragment extends DialogFragment {
 
     private final String LISTENER = "listener";
     private final String PIN_CODE = "pin";
+    private final String TITLE = "title";
 
     private ResultListener mResultListener;
     private TextView mPinCodeField;
 
+    private String mDialogTitle;
+
     @NonNull
-    static InputDialogFragment newInstance() {
-        return new InputDialogFragment();
+    static InputDialogFragment newInstance(@NonNull String dialogTitle) {
+        InputDialogFragment inputDialogFragment = new InputDialogFragment();
+        inputDialogFragment.setDialogTitle(dialogTitle);
+        return inputDialogFragment;
     }
 
     void setResultListener(@NonNull ResultListener resultListener) {
         mResultListener = resultListener;
     }
 
+    private void setDialogTitle(String mDialogTitle) {
+        this.mDialogTitle = mDialogTitle;
+    }
+
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
         super.onCreateDialog(savedInstanceState);
-
 
         @SuppressLint("InflateParams") View pinCodeInputView = LayoutInflater.from(getActivity())
                 .inflate(R.layout.pin_code_input_dialog, null);
@@ -65,6 +73,9 @@ public class InputDialogFragment extends DialogFragment {
             }
             if (savedInstanceState.containsKey(PIN_CODE)) {
                 mPinCodeField.setText(savedInstanceState.getString(PIN_CODE));
+            }
+            if (savedInstanceState.containsKey(TITLE)) {
+                mDialogTitle = savedInstanceState.getString(TITLE);
             }
         }
 
@@ -144,8 +155,8 @@ public class InputDialogFragment extends DialogFragment {
         });
 
         return new AlertDialog.Builder(Objects.requireNonNull(getActivity()))
+                .setTitle(mDialogTitle)
                 .setView(pinCodeInputView)
-                .setTitle(R.string.pin_code_input_title)
                 .create();
     }
 
@@ -166,6 +177,7 @@ public class InputDialogFragment extends DialogFragment {
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
+        outState.putString(TITLE, mDialogTitle);
         outState.putString(PIN_CODE, mPinCodeField.getText().toString());
         outState.putSerializable(LISTENER, mResultListener);
     }
