@@ -65,7 +65,7 @@ public class SettingActivity extends AppCompatActivity {
     }
 
     private void changeProtectionKey() {
-        mProtector.checkAuthorization(mFragmentManager, new Protector.ResultListener() {
+        mProtector.checkAuthorization(getSupportFragmentManager(), new Protector.ResultListener() {
             @Override
             public void onProtectionResultSuccess() {
                 mProtector

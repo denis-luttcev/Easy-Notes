@@ -194,7 +194,7 @@ public class PinCodeProtector implements Protector {
                     if (checkPinCode(enteredPinCode)) { // technical problems will cause false
                         isLogged = true;
                         loginAttempt = 1;
-                        pinCodeInput.dismiss();
+                        pinCodeInput.close();
                         resultListener.onProtectionResultSuccess();
                     } else {
                         if (loginAttempt < LIMIT_LOGIN_ATTEMPTS) {

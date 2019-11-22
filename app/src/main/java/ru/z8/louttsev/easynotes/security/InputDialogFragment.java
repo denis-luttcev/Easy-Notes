@@ -168,6 +168,12 @@ public class InputDialogFragment extends DialogFragment {
         mResultListener.onDismiss(enteredPinCode);
     }
 
+    void close() {
+        if (isAdded()) {
+            dismiss();
+        }
+    }
+
     @Override
     public void onCancel(@NonNull DialogInterface dialog) {
         super.onCancel(dialog);
