@@ -37,7 +37,6 @@ public class PinCodeProtector implements Protector {
 
     private final SharedPreferences preferences;
     private final Context context;
-    private InputDialogFragment pinCodeInput;
 
     private final String DIALOG_CHECK_PIN_CODE_INPUT = "check_pin_code";
     private final String DIALOG_NEW_PIN_CODE_INPUT = "new_pin_code";
@@ -69,10 +68,12 @@ public class PinCodeProtector implements Protector {
     public void enableProtection(@NonNull FragmentManager fragmentManager,
                                  @NonNull final ResultListener resultListener) {
 
-        pinCodeInput = getInputDialogFragment(fragmentManager, DIALOG_NEW_PIN_CODE_INPUT);
+        InputDialogFragment pinCodeInput = getInputDialogFragment(fragmentManager, DIALOG_NEW_PIN_CODE_INPUT);
         pinCodeInput.setResultListener(new InputDialogFragment.ResultListener() {
             @Override
-            public void onDismiss(String enteredPinCode) {
+            public void onDismiss(@NonNull String enteredPinCode,
+                                  @NonNull InputDialogFragment pinCodeInput) {
+
                 if (savePinCode(enteredPinCode)) { // technical problems will cause false
                     isLogged = true;
                     pinCodeInput.dismiss();
@@ -187,14 +188,16 @@ public class PinCodeProtector implements Protector {
         if (!forcibly && isLogged) {
             resultListener.onProtectionResultSuccess();
         } else {
-            pinCodeInput = getInputDialogFragment(fragmentManager, DIALOG_CHECK_PIN_CODE_INPUT);
+            InputDialogFragment pinCodeInput = getInputDialogFragment(fragmentManager, DIALOG_CHECK_PIN_CODE_INPUT);
             pinCodeInput.setResultListener(new InputDialogFragment.ResultListener() {
                 @Override
-                public void onDismiss(String enteredPinCode) {
+                public void onDismiss(@NonNull String enteredPinCode,
+                                      @NonNull InputDialogFragment pinCodeInput) {
+
                     if (checkPinCode(enteredPinCode)) { // technical problems will cause false
                         isLogged = true;
                         loginAttempt = 1;
-                        pinCodeInput.close();
+                        pinCodeInput.dismiss();
                         resultListener.onProtectionResultSuccess();
                     } else {
                         if (loginAttempt < LIMIT_LOGIN_ATTEMPTS) {

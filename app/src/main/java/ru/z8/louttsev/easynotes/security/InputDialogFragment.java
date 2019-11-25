@@ -27,7 +27,7 @@ import ru.z8.louttsev.easynotes.R;
 @SuppressWarnings("WeakerAccess")
 public class InputDialogFragment extends DialogFragment {
     interface ResultListener extends Serializable {
-        void onDismiss(String enteredPinCode);
+        void onDismiss(@NonNull String enteredPinCode, @NonNull InputDialogFragment pinCodeInput);
         void onCancel();
     }
 
@@ -165,13 +165,7 @@ public class InputDialogFragment extends DialogFragment {
     }
 
     private void returnPinCode(@NonNull String enteredPinCode) {
-        mResultListener.onDismiss(enteredPinCode);
-    }
-
-    void close() {
-        if (isAdded()) {
-            dismiss();
-        }
+        mResultListener.onDismiss(enteredPinCode, this);
     }
 
     @Override
