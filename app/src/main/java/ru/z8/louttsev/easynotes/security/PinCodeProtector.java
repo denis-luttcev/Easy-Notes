@@ -41,6 +41,8 @@ public class PinCodeProtector implements Protector {
     private final String DIALOG_CHECK_PIN_CODE_INPUT = "check_pin_code";
     private final String DIALOG_NEW_PIN_CODE_INPUT = "new_pin_code";
 
+    private FragmentManager fragmentManager;
+
     private boolean isLogged = false;
 
     final private int LIMIT_LOGIN_ATTEMPTS = 3;
@@ -50,6 +52,11 @@ public class PinCodeProtector implements Protector {
         this.context = context;
         final String SECURITY_PREFERENCES = "security";
         preferences = context.getSharedPreferences(SECURITY_PREFERENCES, Context.MODE_PRIVATE);
+    }
+
+    @Override
+    public void updateFragmentManager(@NonNull FragmentManager fragmentManager) {
+        this.fragmentManager = fragmentManager;
     }
 
     @Override
@@ -65,10 +72,9 @@ public class PinCodeProtector implements Protector {
     }
 
     @Override
-    public void enableProtection(@NonNull FragmentManager fragmentManager,
-                                 @NonNull final ResultListener resultListener) {
+    public void enableProtection(@NonNull final ResultListener resultListener) {
 
-        InputDialogFragment pinCodeInput = getInputDialogFragment(fragmentManager, DIALOG_NEW_PIN_CODE_INPUT);
+        InputDialogFragment pinCodeInput = getInputDialogFragment(DIALOG_NEW_PIN_CODE_INPUT);
         pinCodeInput.setResultListener(new InputDialogFragment.ResultListener() {
             @Override
             public void onDismiss(@NonNull String enteredPinCode,
@@ -92,8 +98,7 @@ public class PinCodeProtector implements Protector {
     }
 
     @NonNull
-    private InputDialogFragment getInputDialogFragment(@NonNull FragmentManager fragmentManager,
-                                                       @NonNull String dialogTag) {
+    private InputDialogFragment getInputDialogFragment(@NonNull String dialogTag) {
 
         InputDialogFragment pinCodeInput =
                 (InputDialogFragment) fragmentManager.findFragmentByTag(dialogTag);
@@ -181,14 +186,13 @@ public class PinCodeProtector implements Protector {
     }
 
     @Override
-    public void checkAuthorization(@NonNull FragmentManager fragmentManager,
-                                   @NonNull final ResultListener resultListener,
+    public void checkAuthorization(@NonNull final ResultListener resultListener,
                                    boolean forcibly) {
 
         if (!forcibly && isLogged) {
             resultListener.onProtectionResultSuccess();
         } else {
-            InputDialogFragment pinCodeInput = getInputDialogFragment(fragmentManager, DIALOG_CHECK_PIN_CODE_INPUT);
+            InputDialogFragment pinCodeInput = getInputDialogFragment(DIALOG_CHECK_PIN_CODE_INPUT);
             pinCodeInput.setResultListener(new InputDialogFragment.ResultListener() {
                 @Override
                 public void onDismiss(@NonNull String enteredPinCode,

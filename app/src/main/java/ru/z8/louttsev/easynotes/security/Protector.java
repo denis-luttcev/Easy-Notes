@@ -9,16 +9,16 @@ public interface Protector {
         void onProtectionResultFailure();
     }
 
+    void updateFragmentManager(@NonNull FragmentManager fragmentManager);
+
     boolean isProtectionNotConfigured();
 
     boolean isProtectionEnabled();
 
-    void enableProtection(@NonNull FragmentManager fragmentManager,
-                          @NonNull ResultListener resultListener);
+    void enableProtection(@NonNull ResultListener resultListener);
 
     void disableProtection();
 
-    void checkAuthorization(@NonNull FragmentManager fragmentManager,
-                            @NonNull ResultListener resultListener,
+    void checkAuthorization(@NonNull ResultListener resultListener,
                             boolean forcibly);
 }

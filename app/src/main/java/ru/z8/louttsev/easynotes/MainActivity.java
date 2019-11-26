@@ -20,16 +20,16 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        final Protector mProtector = App.getProtector();
         mFragmentManager = getSupportFragmentManager();
+        final Protector mProtector = App.getProtector();
+        mProtector.updateFragmentManager(mFragmentManager);
 
         if (mProtector.isProtectionNotConfigured()) {
             Intent settingIntent = new Intent(MainActivity.this, SettingActivity.class);
             startActivity(settingIntent);
         } else {
             if (mProtector.isProtectionEnabled()) {
-                mProtector.checkAuthorization(mFragmentManager,
-                        new Protector.ResultListener() {
+                mProtector.checkAuthorization(new Protector.ResultListener() {
                             @Override
                             public void onProtectionResultSuccess() {
                                 // ignored

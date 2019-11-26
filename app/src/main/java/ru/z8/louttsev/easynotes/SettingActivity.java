@@ -23,6 +23,7 @@ public class SettingActivity extends AppCompatActivity {
         setContentView(R.layout.activity_setting);
 
         mProtector = App.getProtector();
+        mProtector.updateFragmentManager(getSupportFragmentManager());
 
         initViews();
     }
@@ -57,7 +58,7 @@ public class SettingActivity extends AppCompatActivity {
                         switchProtectionToEnabled();
                     }
                 } else {
-                    mProtector.checkAuthorization(getSupportFragmentManager(), new Protector.ResultListener() {
+                    mProtector.checkAuthorization(new Protector.ResultListener() {
                         @Override
                         public void onProtectionResultSuccess() {
                             switchProtectionToDisabled();
@@ -80,14 +81,16 @@ public class SettingActivity extends AppCompatActivity {
     @Override
     protected void onResumeFragments() {
         super.onResumeFragments();
+
+        mProtector.updateFragmentManager(getSupportFragmentManager());
     }
 
     private void changeProtectionKey() {
-        mProtector.checkAuthorization(getSupportFragmentManager(), new Protector.ResultListener() {
+        mProtector.checkAuthorization(new Protector.ResultListener() {
             @Override
             public void onProtectionResultSuccess() {
                 mProtector
-                        .enableProtection(getSupportFragmentManager(), new Protector.ResultListener() {
+                        .enableProtection(new Protector.ResultListener() {
                             @Override
                             public void onProtectionResultSuccess() {
                                 Toast.makeText(SettingActivity.this,
@@ -118,7 +121,7 @@ public class SettingActivity extends AppCompatActivity {
 
     private void switchProtectionToEnabled() {
         mProtector
-                .enableProtection(getSupportFragmentManager(), new Protector.ResultListener() {
+                .enableProtection(new Protector.ResultListener() {
             @Override
             public void onProtectionResultSuccess() {
                 Toast.makeText(SettingActivity.this,
