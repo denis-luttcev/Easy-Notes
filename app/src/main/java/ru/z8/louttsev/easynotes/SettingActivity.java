@@ -8,13 +8,11 @@ import android.widget.Switch;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.FragmentManager;
 
 import ru.z8.louttsev.easynotes.security.Protector;
 
 public class SettingActivity extends AppCompatActivity {
     private Protector mProtector;
-    private FragmentManager mFragmentManager;
 
     private Switch mProtectionSettingSwitch;
     private Button mProtectionSettingChangeKeyButton;
@@ -25,7 +23,6 @@ public class SettingActivity extends AppCompatActivity {
         setContentView(R.layout.activity_setting);
 
         mProtector = App.getProtector();
-        mFragmentManager = getSupportFragmentManager();
 
         initViews();
     }
@@ -56,20 +53,41 @@ public class SettingActivity extends AppCompatActivity {
             @Override
             public void onCheckedChanged(CompoundButton protectionSettingSwitch, boolean isChecked) {
                 if (isChecked) {
-                    switchProtectionToEnabled();
+                    if (!mProtector.isProtectionEnabled()) {
+                        switchProtectionToEnabled();
+                    }
                 } else {
-                    switchProtectionToDisabled();
+                    mProtector.checkAuthorization(getSupportFragmentManager(), new Protector.ResultListener() {
+                        @Override
+                        public void onProtectionResultSuccess() {
+                            switchProtectionToDisabled();
+                        }
+
+                        @Override
+                        public void onProtectionResultFailure() {
+                            mProtectionSettingSwitch.setChecked(true);
+                            Toast.makeText(SettingActivity.this,
+                                    getString(R.string.protection_disabled_error_toast_message),
+                                    Toast.LENGTH_SHORT)
+                                    .show();
+                        }
+                    }, true);
                 }
             }
         });
     }
 
+    @Override
+    protected void onResumeFragments() {
+        super.onResumeFragments();
+    }
+
     private void changeProtectionKey() {
-        mProtector.checkAuthorization(mFragmentManager, new Protector.ResultListener() {
+        mProtector.checkAuthorization(getSupportFragmentManager(), new Protector.ResultListener() {
             @Override
             public void onProtectionResultSuccess() {
                 mProtector
-                        .enableProtection(mFragmentManager, new Protector.ResultListener() {
+                        .enableProtection(getSupportFragmentManager(), new Protector.ResultListener() {
                             @Override
                             public void onProtectionResultSuccess() {
                                 Toast.makeText(SettingActivity.this,
@@ -100,7 +118,7 @@ public class SettingActivity extends AppCompatActivity {
 
     private void switchProtectionToEnabled() {
         mProtector
-                .enableProtection(mFragmentManager, new Protector.ResultListener() {
+                .enableProtection(getSupportFragmentManager(), new Protector.ResultListener() {
             @Override
             public void onProtectionResultSuccess() {
                 Toast.makeText(SettingActivity.this,

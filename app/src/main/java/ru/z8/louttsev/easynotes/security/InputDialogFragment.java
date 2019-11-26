@@ -18,6 +18,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import java.io.Serializable;
 import java.util.Objects;
@@ -162,6 +164,13 @@ public class InputDialogFragment extends DialogFragment {
 
     void clearPinCode() {
         mPinCodeField.setText("");
+    }
+
+    @Override
+    public void show(@NonNull FragmentManager manager, @Nullable String tag) {
+        FragmentTransaction transaction = manager.beginTransaction();
+        transaction.add(this, tag);
+        transaction.commitAllowingStateLoss();
     }
 
     private void returnPinCode(@NonNull String enteredPinCode) {

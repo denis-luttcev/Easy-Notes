@@ -15,6 +15,7 @@
     <string name="protection_key_changed_error_toast_message">Impossible to change protection key</string>
     <string name="protection_enabled_success_toast_message">Protection enabled</string>
     <string name="protection_enabled_error_toast_message">Impossible to enable protection</string>
+    <string name="protection_disabled_error_toast_message">Impossible to disable protection</string>
     <string name="protection_disabled_toast_message">Protection disabled</string>
     <string name="pin_code_input_check_dialog_title">Enter pin code</string>
     <string name="pin_code_input_new_dialog_title">Enter new pin code</string>

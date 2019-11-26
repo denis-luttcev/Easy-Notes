@@ -16,6 +16,7 @@
     <string name="protection_key_changed_error_toast_message">Невозможно изменить защитный ключ</string>
     <string name="protection_enabled_success_toast_message">Защита включена</string>
     <string name="protection_enabled_error_toast_message">Невозможно включить защиту</string>
+    <string name="protection_disabled_error_toast_message">Невозможно отключить защиту</string>
     <string name="protection_disabled_toast_message">Защита отключена</string>
     <string name="pin_code_input_check_dialog_title">Введите пин-код</string>
     <string name="pin_code_input_new_dialog_title">Введите новый пин-код</string>
