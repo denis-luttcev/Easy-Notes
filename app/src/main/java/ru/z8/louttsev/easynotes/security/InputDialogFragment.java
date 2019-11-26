@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -159,6 +160,16 @@ public class InputDialogFragment extends DialogFragment {
         return new AlertDialog.Builder(Objects.requireNonNull(getActivity()))
                 .setTitle(mDialogTitle)
                 .setView(pinCodeInputView)
+                .setOnKeyListener(new DialogInterface.OnKeyListener() {
+                    @Override
+                    public boolean onKey(DialogInterface dialogInterface, int keyCode, KeyEvent keyEvent) {
+                        if (keyCode == KeyEvent.KEYCODE_BACK) {
+                            onCancel(dialogInterface);
+                            return true;
+                        }
+                        return false;
+                    }
+                })
                 .create();
     }
 
@@ -180,6 +191,7 @@ public class InputDialogFragment extends DialogFragment {
     @Override
     public void onCancel(@NonNull DialogInterface dialog) {
         super.onCancel(dialog);
+        dismiss();
         mResultListener.onCancel();
     }
 

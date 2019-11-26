@@ -117,6 +117,7 @@ public class PinCodeProtector implements Protector {
             }
 
             pinCodeInput = InputDialogFragment.newInstance(dialogTitle);
+            pinCodeInput.setCancelable(false);
             pinCodeInput.show(fragmentManager, dialogTag);
         }
 

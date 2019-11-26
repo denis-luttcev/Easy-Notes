@@ -2,7 +2,7 @@
     <string name="app_name">Easy Notes</string>
     <string name="activity_main_title">Notes</string>
     <string name="incorrect_protection_key_toast_message">Incorrect protection key, try again</string>
-    <string name="access_denied_toast_message">Exhausted login attempts, access denied</string>
+    <string name="access_denied_toast_message">Access denied</string>
     <string name="yesterday">"Yesterday, "</string>
     <string name="today">"Today, "</string>
     <string name="tomorrow">"Tomorrow,  "</string>
