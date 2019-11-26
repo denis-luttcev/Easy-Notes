@@ -24,6 +24,8 @@ public class NotesRepository implements NotesKeeper {
     private final List<Note> notes; // sorted collection
     private final Map<UUID, Note> index; // indexed collection
 
+    private Note temporarilySavedNote;
+
     public NotesRepository(@NonNull Context context) {
         storage = new NotesDatabaseStorage(context);
 
@@ -202,5 +204,16 @@ public class NotesRepository implements NotesKeeper {
         }
 
         notes.add(position, note);
+    }
+
+    @Override
+    public void temporarilySaveNote(@NonNull Note note) {
+        temporarilySavedNote = note;
+    }
+
+    @NonNull
+    @Override
+    public Note getTemporarilySavedNote() {
+        return temporarilySavedNote;
     }
 }

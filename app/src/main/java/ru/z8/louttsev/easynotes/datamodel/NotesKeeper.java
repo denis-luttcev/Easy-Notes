@@ -37,4 +37,9 @@ public interface NotesKeeper {
     Note getNote(int position);
 
     int getNotesCount();
+
+    void temporarilySaveNote(@NonNull Note note);
+
+    @NonNull
+    Note getTemporarilySavedNote();
 }

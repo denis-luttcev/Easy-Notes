@@ -184,6 +184,10 @@ public class NoteFragment extends Fragment {
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
 
+        if (savedInstanceState != null) {
+            mNote = mNotesKeeper.getTemporarilySavedNote();
+        }
+
         mNoteLayout = inflater.inflate(R.layout.fragment_note, container, false);
 
         colorInstallation();
@@ -211,7 +215,6 @@ public class NoteFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 saveNote();
-                //requestRemoveConfirmation();
             }
         });
 
@@ -740,5 +743,11 @@ public class NoteFragment extends Fragment {
                 })
                 .create()
                 .show();
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        mNotesKeeper.temporarilySaveNote(mNote);
     }
 }
