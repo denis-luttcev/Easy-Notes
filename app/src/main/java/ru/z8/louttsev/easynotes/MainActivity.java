@@ -82,9 +82,8 @@ public class MainActivity extends AppCompatActivity {
                 = (NoteFragment) mFragmentManager.findFragmentByTag(NoteFragment.getFragmentTag());
 
         if (fragment != null) {
-            fragment.closeNote();
-        } else {
-            super.onBackPressed();
+            fragment.saveNote();
         }
+        super.onBackPressed();
     }
 }

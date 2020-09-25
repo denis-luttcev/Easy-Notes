@@ -206,15 +206,8 @@ public class NoteFragment extends Fragment {
         mBackButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View backButton) {
-                closeNote();
-            }
-        });
-
-        Button mSaveButton = mNoteLayout.findViewById(R.id.save_button);
-        mSaveButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
                 saveNote();
+                mFragmentManager.popBackStack();
             }
         });
 
@@ -681,7 +674,7 @@ public class NoteFragment extends Fragment {
         return string;
     }
 
-    private void saveNote() {
+    void saveNote() {
         mNote.setTitle(mTitleView.getText().toString().trim());
         mNote.setContent(mContentView);
 
@@ -714,33 +707,6 @@ public class NoteFragment extends Fragment {
                                         .show();
                             }
                         })
-                .create()
-                .show();
-    }
-
-    void closeNote() {
-        if (mNote.isModified()) {
-            requestCloseConfirmation();
-        } else mFragmentManager.popBackStack();
-    }
-
-    private void requestCloseConfirmation() {
-        new AlertDialog.Builder(mContext)
-                .setTitle(getString(R.string.close_note_dialog_title))
-                .setMessage(getString(R.string.close_note_dialog_message))
-                .setNegativeButton(getString(R.string.no_button_text), new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        mFragmentManager.popBackStack();
-                    }
-                })
-                .setPositiveButton(getString(R.string.yes_button_text), new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        saveNote();
-                        mFragmentManager.popBackStack();
-                    }
-                })
                 .create()
                 .show();
     }

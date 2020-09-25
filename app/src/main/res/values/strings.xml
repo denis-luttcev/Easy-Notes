@@ -40,8 +40,6 @@
     <string name="save_empty_note_dialog_title">Save empty note</string>
     <string name="save_empty_note_dialog_message">This note has neither title nor content.\n\nWant to save it like that?</string>
     <string name="save_note_toast_message">Note saved successfully</string>
-    <string name="close_note_dialog_title">Unsaved note</string>
-    <string name="close_note_dialog_message">This note has been modified.\n\nWant to save changes?</string>
     <string name="clear_button_text">Clear</string>
     <string name="yes_button_text">Yes</string>
     <string name="no_button_text">No</string>
